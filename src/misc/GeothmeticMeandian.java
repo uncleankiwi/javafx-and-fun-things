@@ -55,14 +55,6 @@ public class GeothmeticMeandian {
 		return true;
 	}
 
-	private static double arithmeticMean(List<Double> list) {
-		double total = 0;
-		for (double x : list) {
-			total += x;
-		}
-		return total / list.size();
-	}
-
 	private static boolean precisionEquals(double x1, double x2, int precision) {
 		return (round(x1, precision) == round(x2, precision));
 	}
@@ -75,17 +67,26 @@ public class GeothmeticMeandian {
 		return bigDec.doubleValue();
 	}
 
-	private static double geometricMean(List<Double> list) {
+	private static double arithmeticMean(List<Double> list) {
 		double total = 0;
+		for (double x : list) {
+			total += x;
+		}
+		return total / list.size();
+	}
+
+	private static double geometricMean(List<Double> list) {
+		double total = 1;
 		for (double x : list) {
 			total *= x;
 		}
 
-		System.out.println(Math.pow(total, 1.0d / list.size()));	//TODO
+		System.out.println("geomean " + Math.pow(total, 1.0d / list.size()));	//TODO
 		return Math.pow(total, 1.0d / list.size());
 	}
 
 	private static double median(List<Double> list) {
+		System.out.println("median " + list.get(list.size() / 2)); //TODO
 		return list.get(list.size() / 2 - 1);
 	}
 }
