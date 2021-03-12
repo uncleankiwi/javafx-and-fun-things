@@ -1,6 +1,6 @@
 # javafx-and-fun-things
 
-###Geothmetic Meandian
+### Geothmetic Meandian
 Original idea: [xkcd](https://xkcd.com/2435/)
 
 - Given a series of numbers:
