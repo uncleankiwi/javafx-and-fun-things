@@ -24,14 +24,15 @@ public class GeothmeticMeandian {
 
 	public static void GMMDrecursive(List<Double> list, int precision) {
 		Collections.sort(list);
-		System.out.println("Input: " + list);
+		System.out.println("Input: " + print(list, precision));
+		int steps = 0;
 
 		while(!hasConverged(list, precision)) {
 			list = GMMD(list);
-			System.out.println("Step: " + list);
+			System.out.println("Step " + ++steps + ": " + print(list, precision));
 		}
 
-		System.out.println("Value: " + list.get(0));
+		System.out.println("Value: " + round(list.get(0), precision) + ". Steps: " + steps);
 	}
 
 	private static List<Double> GMMD(List<Double> list) {
@@ -55,6 +56,21 @@ public class GeothmeticMeandian {
 		return true;
 	}
 
+	//prints a list of doubles, but every element is rounded to $precision decimal places
+	private static String print(List<Double> list, int precision) {
+		StringBuilder output = new StringBuilder("[");
+		boolean first = true;
+		for (Double x : list) {
+			if (first) first = false;
+			else output.append(",");
+
+			output.append(round(x, precision));
+		}
+
+		return output + "]";
+	}
+
+	//checks if x1 == x2 up to $precision number of decimal places
 	private static boolean precisionEquals(double x1, double x2, int precision) {
 		return (round(x1, precision) == round(x2, precision));
 	}
@@ -72,6 +88,7 @@ public class GeothmeticMeandian {
 		for (double x : list) {
 			total += x;
 		}
+
 		return total / list.size();
 	}
 
@@ -81,12 +98,10 @@ public class GeothmeticMeandian {
 			total *= x;
 		}
 
-		System.out.println("geomean " + Math.pow(total, 1.0d / list.size()));	//TODO
 		return Math.pow(total, 1.0d / list.size());
 	}
 
 	private static double median(List<Double> list) {
-		System.out.println("median " + list.get(list.size() / 2)); //TODO
-		return list.get(list.size() / 2 - 1);
+		return list.get(list.size() / 2);
 	}
 }
