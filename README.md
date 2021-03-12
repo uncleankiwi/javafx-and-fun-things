@@ -1,5 +1,11 @@
 # javafx-and-fun-things
 
+### Jfx Clock
+It ticks.
+
+![JfxClock preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/JfxClock.PNG)
+
+
 ### Geothmetic Meandian
 Original idea: [xkcd](https://xkcd.com/2435/)
 

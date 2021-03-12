@@ -21,7 +21,7 @@ public class JfxClock extends Application {
 		ClockWrapper clockwrapper = new ClockWrapper();
 		Scene scene = new Scene(clockwrapper, 300, 325);
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("A3Q1");
+		primaryStage.setTitle("JFX Clock");
 		primaryStage.show();
 	}
 
