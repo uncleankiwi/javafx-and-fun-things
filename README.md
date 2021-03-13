@@ -19,3 +19,8 @@ Original idea: [xkcd](https://xkcd.com/2435/)
 - e.g. `GMMD(1, 1, 2, 3, 5) = 2.089`
 
 ![GeothmeticMeandian preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/geothmeticmeandian.PNG)
+
+### Mastermind
+Playable. Easy.
+
+![Mastermind preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/Mastermind.PNG)
