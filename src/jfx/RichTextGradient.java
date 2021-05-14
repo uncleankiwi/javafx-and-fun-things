@@ -2,14 +2,13 @@ package jfx;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -50,15 +49,34 @@ public class RichTextGradient extends Application {
 }
 
 class RtgUI extends HBox {
-	Text txtInput;
-	TextFlow txtOutput;
-	ColourList colourList;
-	RadioButton radRGB;
-	RadioButton radHSB;
+	TextArea txtInput = new TextArea("sdfsdf");
+	HTMLEditor txtOutput = new HTMLEditor();
+	ColourList colourList = new ColourList();
+	RadioButton radRGB = new RadioButton("RGB");
+	RadioButton radHSB = new RadioButton("HSB");
+	ToggleGroup toggleGroup = new ToggleGroup();
+	Button btnColour = new Button("Colour!");
 
 
 	RtgUI () {
+		txtInput.setPrefWidth(500);
+		txtInput.setPrefHeight(250);
 
+		txtOutput.setPrefWidth(500);
+		txtOutput.setPrefHeight(250);
+
+		txtOutput.setHtmlText("<p>asdfasdf</p><br /><h2>sdfsdf</h2>");
+
+		radRGB.setToggleGroup(toggleGroup);
+		radHSB.setToggleGroup(toggleGroup);
+
+		VBox rtgWrapperLeft = new VBox();
+		VBox rtgWrapperRight = new VBox();
+
+		rtgWrapperLeft.getChildren().addAll(txtInput, txtOutput);
+		rtgWrapperRight.getChildren().addAll(colourList, radRGB, radHSB, btnColour);
+
+		this.getChildren().addAll(rtgWrapperLeft, rtgWrapperRight);
 	}
 }
 
@@ -69,6 +87,12 @@ class ColourList extends VBox {
 		colourItems = new ArrayList<>();
 
 		addColour(0);
+	}
+
+	public List<Color> getColours() {
+		List<Color> colours = new ArrayList<>();
+		colourItems.forEach(x -> colours.add(x.getColour()));
+		return colours;
 	}
 
 	//adds it 1 after the index if the list isn't currently empty
@@ -117,6 +141,10 @@ class ColourItem extends HBox {
 		colourPicker.setOnAction(event -> this.colour = colourPicker.getValue());
 
 		this.getChildren().addAll(btnAddColour, btnRemoveColour, colourPicker);
+	}
+
+	public Color getColour() {
+		return this.colour;
 	}
 
 
