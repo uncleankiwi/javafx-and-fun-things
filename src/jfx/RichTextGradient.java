@@ -46,7 +46,7 @@ public class RichTextGradient extends Application {
 		launch();
 	}
 
-	public static String colourText(String input, List<Color> palette) {
+	public static String colourText(String input, List<Color> palette, AlgorithmType algorithmType) {
 		StringBuilder output = new StringBuilder();
 
 		//if there's only one colour, just apply it to everything
@@ -92,17 +92,9 @@ public class RichTextGradient extends Application {
 						//calculating a particular colour based on distance from two nearest colours
 						Color colorLeft = palette.get(paletteLeftIndex);
 						Color colorRight = palette.get(paletteLeftIndex + 1);
-						double tempRed = colorLeft.getRed() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
-								+ colorRight.getRed() * (characterPosition - paletteLeftPosition) / paletteSpacing;
-						double tempGreen = colorLeft.getGreen() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
-								+ colorRight.getGreen() * (characterPosition - paletteLeftPosition) / paletteSpacing;
-						double tempBlue = colorLeft.getBlue() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
-								+ colorRight.getBlue() * (characterPosition - paletteLeftPosition) / paletteSpacing;
-						Color color = new Color(tempRed, tempGreen, tempBlue, 1f);
+						Color color = getColor(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft, colorRight, algorithmType);
 						gradient.add(color);
 					}
-
-					//TODO: refactor into own method, add algorithm switching
 				}
 			}
 
@@ -119,6 +111,36 @@ public class RichTextGradient extends Application {
 		}
 
 		return output.toString();
+	}
+
+	private static Color getColor(double paletteSpacing, double paletteLeftPosition, double characterPosition,
+								  Color colorLeft, Color colorRight, AlgorithmType algorithmType) {
+		Color color = null;
+
+		if (algorithmType == AlgorithmType.RGB) {
+			double tempRed = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getRed(), colorRight.getRed());
+			double tempGreen = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getGreen(), colorRight.getGreen());
+			double tempBlue = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBlue(), colorRight.getBlue());
+			color = new Color(tempRed, tempGreen, tempBlue, 1f);
+		}
+		else if (algorithmType == AlgorithmType.HSB) {
+			double tempHue = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getHue(), colorRight.getHue());
+			double tempSaturation = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getSaturation(), colorRight.getSaturation());
+			double tempBrightness = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBrightness(), colorRight.getBrightness());
+
+			java.awt.Color awtColour = new java.awt.Color(
+					java.awt.Color.HSBtoRGB((float) tempHue, (float) tempSaturation, (float) tempBrightness));
+			float[] awtColourArray = awtColour.getRGBColorComponents(null);
+			color = new Color(awtColourArray[0], awtColourArray[1], awtColourArray[2], 1f);
+		}
+
+		return color;
+	}
+
+	private static double calcNewColourValue(double paletteSpacing, double paletteLeftPosition, double characterPosition,
+											 double colourLeftVal, double colourRightVal) {
+		return colourLeftVal * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
+				+ colourRightVal * (characterPosition - paletteLeftPosition) / paletteSpacing;
 	}
 
 	private static String applySpan(String input, Color colour) {
@@ -162,11 +184,16 @@ class RtgUI extends HBox {
 
 		radRGB.setToggleGroup(toggleGroup);
 		radHSB.setToggleGroup(toggleGroup);
+		radRGB.setSelected(true);
 
 		btnColour.setOnAction(event -> {
 			List<Color> palette = colourList.getPalette();
 			String input = txtInput.getText();
-			txtOutput.setHtmlText(RichTextGradient.colourText(input, palette));
+			AlgorithmType algorithmType = null;
+			if (radRGB.isSelected()) algorithmType = AlgorithmType.RGB;
+			else if (radHSB.isSelected()) algorithmType = AlgorithmType.HSB;
+
+			txtOutput.setHtmlText(RichTextGradient.colourText(input, palette, algorithmType));
 		});
 
 		VBox rtgWrapperLeft = new VBox();
@@ -247,4 +274,9 @@ class ColourItem extends HBox {
 	}
 
 
+}
+
+enum AlgorithmType {
+	RGB,
+	HSB
 }
