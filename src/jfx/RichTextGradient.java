@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /*
 primaryStage
@@ -18,7 +19,7 @@ primaryStage
 		rtgWrapper
 			rtgWrapperLeft
 				txtInput
-				txtOutput	- textflow
+				txtOutput	- HTMLEditor
 			rtgWrapperRight
 				lstColours - ColourList
 					colorItem - ColorItem
@@ -45,35 +46,66 @@ public class RichTextGradient extends Application {
 		launch();
 	}
 
-	public static String colourText(String input, List<Color> pallette) {
-		String output = "";
+	public static String colourText(String input, List<Color> palette) {
+		StringBuilder output = new StringBuilder();
 
 		//if there's only one colour, just apply it to everything
-		if (pallette.size() == 1) {
-			output = applySpan(input, pallette.get(0));
+		if (palette.size() == 1) {
+			output = new StringBuilder(applySpan(input, palette.get(0)));
 		}
 		else {
 			//count non-space characters
-
+			int nonSpaceChars = 0;
+			Pattern pattern = Pattern.compile("[\\S]");	//i.e. non-whitespace character
+			String[] strings = input.split("");
+			for (String s : strings) {
+				if (pattern.matcher(s).matches()) nonSpaceChars++;
+			}
+			if (nonSpaceChars == 0) return input;
 
 			//create a gradient of colours
+			List<Color> gradient = new ArrayList<>();
+
 
 			//apply gradient
+			for (int i = 1; i <= nonSpaceChars; i++) {
+				if (pattern.matcher(strings[i - 1]).matches()) {
+					output.append(applySpan(strings[i - 1], gradient.get(i - 1)));
+				}
+				else {
+					output.append(strings[i - 1]);
+				}
+
+			}
 		}
 
-		return output;
+		return output.toString();
 	}
 
 	private static String applySpan(String input, Color colour) {
-		String output = "<span style=\"" + colour + "\">";
+		String output = "<span style=\"color: " + colourToHex(colour) + ";\">";
 		output += input;
 		output += "</span>";
 		return output;
 	}
+
+	private static String doubleToHex(double d) {
+		String string = Integer.toHexString((int) Math.round(d * 255));
+		return string.length() == 1 ? "0" + string : string;
+	}
+
+	private static String colourToHex(Color colour) {
+		return "#" + (
+				doubleToHex(colour.getRed()) +
+				doubleToHex(colour.getGreen()) +
+				doubleToHex(colour.getBlue()) +
+				doubleToHex(colour.getOpacity()))
+				.toUpperCase();
+	}
 }
 
 class RtgUI extends HBox {
-	TextArea txtInput = new TextArea("sdfsdf");
+	TextArea txtInput = new TextArea();
 	HTMLEditor txtOutput = new HTMLEditor();
 	ColourList colourList = new ColourList();
 	RadioButton radRGB = new RadioButton("RGB");
@@ -89,13 +121,11 @@ class RtgUI extends HBox {
 		txtOutput.setPrefWidth(500);
 		txtOutput.setPrefHeight(250);
 
-		txtOutput.setHtmlText("<p>asdfasdf</p><br /><h2>sdfsdf</h2>");
-
 		radRGB.setToggleGroup(toggleGroup);
 		radHSB.setToggleGroup(toggleGroup);
 
 		btnColour.setOnAction(event -> {
-			List<Color> palette = colourList.getPallete();
+			List<Color> palette = colourList.getPalette();
 			String input = txtInput.getText();
 			txtOutput.setHtmlText(RichTextGradient.colourText(input, palette));
 		});
@@ -119,7 +149,7 @@ class ColourList extends VBox {
 		addColour(0);
 	}
 
-	public List<Color> getPallete() {
+	public List<Color> getPalette() {
 		List<Color> colours = new ArrayList<>();
 		colourItems.forEach(x -> colours.add(x.getColour()));
 		return colours;
