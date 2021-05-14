@@ -65,7 +65,10 @@ public class RichTextGradient extends Application {
 
 			//create a gradient of colours
 			List<Color> gradient = new ArrayList<>();
+			if (nonSpaceChars <= palette.size()) gradient = palette;
+			else {
 
+			}
 
 			//apply gradient
 			for (int i = 1; i <= nonSpaceChars; i++) {
