@@ -6,8 +6,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
 
@@ -46,6 +44,32 @@ public class RichTextGradient extends Application {
 	public static void main(String[] args) {
 		launch();
 	}
+
+	public static String colourText(String input, List<Color> pallette) {
+		String output = "";
+
+		//if there's only one colour, just apply it to everything
+		if (pallette.size() == 1) {
+			output = applySpan(input, pallette.get(0));
+		}
+		else {
+			//count non-space characters
+
+
+			//create a gradient of colours
+
+			//apply gradient
+		}
+
+		return output;
+	}
+
+	private static String applySpan(String input, Color colour) {
+		String output = "<span style=\"" + colour + "\">";
+		output += input;
+		output += "</span>";
+		return output;
+	}
 }
 
 class RtgUI extends HBox {
@@ -70,6 +94,12 @@ class RtgUI extends HBox {
 		radRGB.setToggleGroup(toggleGroup);
 		radHSB.setToggleGroup(toggleGroup);
 
+		btnColour.setOnAction(event -> {
+			List<Color> palette = colourList.getPallete();
+			String input = txtInput.getText();
+			txtOutput.setHtmlText(RichTextGradient.colourText(input, palette));
+		});
+
 		VBox rtgWrapperLeft = new VBox();
 		VBox rtgWrapperRight = new VBox();
 
@@ -89,7 +119,7 @@ class ColourList extends VBox {
 		addColour(0);
 	}
 
-	public List<Color> getColours() {
+	public List<Color> getPallete() {
 		List<Color> colours = new ArrayList<>();
 		colourItems.forEach(x -> colours.add(x.getColour()));
 		return colours;
@@ -101,7 +131,7 @@ class ColourList extends VBox {
 		else index++;
 
 		ColourItem colourItem = new ColourItem(this, index);
-		colourItems.add(colourItem);
+		colourItems.add(index, colourItem);
 
 		refresh();
 	}
@@ -122,8 +152,8 @@ class ColourList extends VBox {
 }
 
 class ColourItem extends HBox {
-	Button btnAddColour = new Button();
-	Button btnRemoveColour = new Button();
+	Button btnAddColour = new Button("+");
+	Button btnRemoveColour = new Button("-");
 	ColorPicker colourPicker = new ColorPicker();
 	ColourList parent;
 	Color colour;
