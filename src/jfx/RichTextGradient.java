@@ -63,11 +63,47 @@ public class RichTextGradient extends Application {
 			}
 			if (nonSpaceChars == 0) return input;
 
-			//create a gradient of colours
+			//Create a gradient of colours:
+			//1. Assign doubles to every character in input, ranging from 0 to 1
+			//2. Do the same for every colour in palette
+			//3. Compare those positions to calculate resulting gradient colours
+			//This won't account for floating point errors. Instead, it'll just assign the first and last
+			//characters to the first and last colours.
 			List<Color> gradient = new ArrayList<>();
 			if (nonSpaceChars <= palette.size()) gradient = palette;
 			else {
+				double letterSpacing = 1 / ((double) nonSpaceChars - 1);
+				double paletteSpacing = 1 / ((double) palette.size() - 1);
+				double paletteLeftPosition = 0;
+				int paletteLeftIndex = 0;
 
+				for (int i = 0; i < nonSpaceChars; i++) {
+					//hard-assigning first and last characters to first and last colours
+					if (i == 0) gradient.add(palette.get(0));
+					else if (i == nonSpaceChars - 1) gradient.add(palette.get(palette.size() - 1));
+					else {
+						double characterPosition = i * letterSpacing;
+						//check if moving to the next colour in the palette
+						if (paletteLeftPosition + paletteSpacing < characterPosition) {
+							paletteLeftPosition += paletteSpacing;
+							paletteLeftIndex++;
+						}
+
+						//calculating a particular colour based on distance from two nearest colours
+						Color colorLeft = palette.get(paletteLeftIndex);
+						Color colorRight = palette.get(paletteLeftIndex + 1);
+						double tempRed = colorLeft.getRed() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
+								+ colorRight.getRed() * (characterPosition - paletteLeftPosition) / paletteSpacing;
+						double tempGreen = colorLeft.getGreen() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
+								+ colorRight.getGreen() * (characterPosition - paletteLeftPosition) / paletteSpacing;
+						double tempBlue = colorLeft.getBlue() * (paletteLeftPosition + paletteSpacing - characterPosition) / paletteSpacing
+								+ colorRight.getBlue() * (characterPosition - paletteLeftPosition) / paletteSpacing;
+						Color color = new Color(tempRed, tempGreen, tempBlue, 1f);
+						gradient.add(color);
+					}
+
+					//TODO: refactor into own method, add algorithm switching
+				}
 			}
 
 			//apply gradient
