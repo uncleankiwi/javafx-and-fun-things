@@ -32,6 +32,9 @@ primaryStage
 
 */
 
+//TODO recalculate colourItem indices
+//TODO fix truncation of input by adding whitespaces
+
 public class RichTextGradient extends Application {
 	@Override
 	public void start(Stage primaryStage) {
@@ -118,15 +121,25 @@ public class RichTextGradient extends Application {
 		Color color = null;
 
 		if (algorithmType == AlgorithmType.RGB) {
-			double tempRed = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getRed(), colorRight.getRed());
-			double tempGreen = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getGreen(), colorRight.getGreen());
-			double tempBlue = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBlue(), colorRight.getBlue());
+			double tempRed =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getRed(), colorRight.getRed());
+			double tempGreen =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getGreen(), colorRight.getGreen());
+			double tempBlue =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBlue(), colorRight.getBlue());
 			color = new Color(tempRed, tempGreen, tempBlue, 1f);
 		}
 		else if (algorithmType == AlgorithmType.HSB) {
-			double tempHue = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getHue(), colorRight.getHue());
-			double tempSaturation = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getSaturation(), colorRight.getSaturation());
-			double tempBrightness = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBrightness(), colorRight.getBrightness());
+			//jfx color hue: 0 - 360
+			//jfx color saturation/brightness: 0 - 1
+			//java.awt.Color: all 3 parameters are 0 - 1
+
+			double tempHue =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getHue(), colorRight.getHue()) / 360;
+			double tempSaturation =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getSaturation(), colorRight.getSaturation());
+			double tempBrightness =
+					calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, colorLeft.getBrightness(), colorRight.getBrightness());
 
 			java.awt.Color awtColour = new java.awt.Color(
 					java.awt.Color.HSBtoRGB((float) tempHue, (float) tempSaturation, (float) tempBrightness));
