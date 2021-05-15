@@ -114,10 +114,14 @@ public class RichTextGradient extends Application {
 					k++;
 				}
 				else {
-					output.append(str);
+					if (str.equals(" ")) output.append("&nbsp;");
+					else if (str.equals("\n")) output.append("<br />");
+					else output.append(str);
 				}
 			}
 		}
+
+		System.out.println(output);
 
 		return output.toString();
 	}
