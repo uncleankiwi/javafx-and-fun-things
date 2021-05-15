@@ -1,8 +1,10 @@
 package jfx;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -33,8 +35,6 @@ primaryStage
 
 */
 
-//TODO whitespaces not showing?
-
 public class RichTextGradient extends Application {
 	@Override
 	public void start(Stage primaryStage) {
@@ -53,8 +53,13 @@ public class RichTextGradient extends Application {
 		StringBuilder output = new StringBuilder();
 
 		//if there's only one colour, just apply it to everything
+		//still have to loop through it to replace whitespaces with <br /> and such though
 		if (palette.size() == 1) {
-			output = new StringBuilder(applySpan(input, palette.get(0)));
+			for (char c : input.toCharArray()) {
+				String str = replaceWhiteSpace(String.valueOf(c));
+				output.append(str);
+			}
+			output = new StringBuilder(applySpan(output.toString(), palette.get(0)));
 		}
 		else {
 			//count non-space characters
@@ -114,14 +119,10 @@ public class RichTextGradient extends Application {
 					k++;
 				}
 				else {
-					if (str.equals(" ")) output.append("&nbsp;");
-					else if (str.equals("\n")) output.append("<br />");
-					else output.append(str);
+					output.append(replaceWhiteSpace(str));
 				}
 			}
 		}
-
-		System.out.println(output);
 
 		return output.toString();
 	}
@@ -186,6 +187,12 @@ public class RichTextGradient extends Application {
 				doubleToHex(colour.getOpacity()))
 				.toUpperCase();
 	}
+
+	private static String replaceWhiteSpace(String str) {
+		if (str.equals(" ")) return "&nbsp;";
+		else if (str.equals("\n")) return "<br />";
+		else return str;
+	}
 }
 
 class RtgUI extends HBox {
@@ -196,18 +203,33 @@ class RtgUI extends HBox {
 	RadioButton radHSB = new RadioButton("HSB");
 	ToggleGroup toggleGroup = new ToggleGroup();
 	Button btnColour = new Button("Colour!");
+	private static final Insets INSETS = new Insets(5);
+	private static final String CSS =
+			"-fx-padding: 5px;" +
+			"-fx-border-insets: 5px;" +
+			"-fx-background-insets: 5px;";
 
 
 	RtgUI () {
+		this.setPadding(INSETS);
+
 		txtInput.setPrefWidth(500);
 		txtInput.setPrefHeight(250);
+		txtInput.setStyle(CSS);
 
 		txtOutput.setPrefWidth(500);
-		txtOutput.setPrefHeight(250);
+		txtOutput.setPrefHeight(300);
+		txtOutput.setPadding(INSETS);
+		txtOutput.setStyle(CSS);
 
+		colourList.setStyle(CSS);
 		radRGB.setToggleGroup(toggleGroup);
 		radHSB.setToggleGroup(toggleGroup);
 		radRGB.setSelected(true);
+		VBox radioGroup = new VBox();
+		radioGroup.getChildren().addAll(radRGB, radHSB);
+		radioGroup.setStyle(CSS);
+
 
 		btnColour.setOnAction(event -> {
 			List<Color> palette = colourList.getPalette();
@@ -221,9 +243,10 @@ class RtgUI extends HBox {
 
 		VBox rtgWrapperLeft = new VBox();
 		VBox rtgWrapperRight = new VBox();
+		rtgWrapperRight.setPadding(INSETS);
 
 		rtgWrapperLeft.getChildren().addAll(txtInput, txtOutput);
-		rtgWrapperRight.getChildren().addAll(colourList, radRGB, radHSB, btnColour);
+		rtgWrapperRight.getChildren().addAll(colourList, radioGroup, btnColour);
 
 		this.getChildren().addAll(rtgWrapperLeft, rtgWrapperRight);
 	}
