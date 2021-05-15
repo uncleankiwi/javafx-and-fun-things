@@ -16,6 +16,8 @@ A JavaFX rehash of an earlier VB.NET application. Fleshed out a bit more.
 
 ![RichTextGradient swatches comparison](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/RTGswatches.png)
 
+Above: a comparison of results. From top to bottom: RGB, HSB, and CMYK.
+
 - RGB tends to produce more muted colours in between as they are more likely to pass through grays.
 
 - HSB results in more colourful gradients.
