@@ -10,17 +10,17 @@ A JavaFX rehash of an earlier VB.NET application. Fleshed out a bit more.
 
 ![RichTextGradient preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/RTG.PNG)
 
-Applies a gradient of colours to a given string of text and outputs rich text.
+- Applies a gradient of colours to a given string of text and outputs rich text.
 
-There are a number of algorithms available: RGB, HSB, and an approximation of CMYK.
+- There are a number of algorithms available: RGB, HSB, and an approximation of CMYK.
 
-![RichTextGradient swatches comparison](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/RTGswatches.PNG)
+![RichTextGradient swatches comparison](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/RTGswatches.png)
 
-RGB tends to produce more muted colours in between as they are more likely to pass through grays.
+- RGB tends to produce more muted colours in between as they are more likely to pass through grays.
 
-HSB results in more colourful gradients.
+- HSB results in more colourful gradients.
 
-CMYK is in between the other two.
+- CMYK is in between the other two.
 
 ### Geothmetic Meandian
 Original idea: [xkcd](https://xkcd.com/2435/)
