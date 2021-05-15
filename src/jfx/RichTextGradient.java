@@ -32,7 +32,6 @@ primaryStage
 
 */
 
-//TODO recalculate colourItem indices
 //TODO fix truncation of input by adding whitespaces
 
 public class RichTextGradient extends Application {
@@ -254,6 +253,12 @@ class ColourList extends VBox {
 	}
 
 	private void refresh() {
+		//recalculate colourItem indices
+		for (int i = 0; i < colourItems.size(); i++) {
+			colourItems.get(i).setIndex(i);
+		}
+
+		//refresh parent pane's children
 		this.getChildren().clear();
 		this.getChildren().addAll(this.colourItems);
 	}
@@ -286,6 +291,9 @@ class ColourItem extends HBox {
 		return this.colour;
 	}
 
+	public void setIndex(int index) {
+		this.index = index;
+	}
 
 }
 
