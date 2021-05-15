@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -154,8 +153,19 @@ public class RichTextGradient extends Application {
 
 			java.awt.Color awtColour = new java.awt.Color(
 					java.awt.Color.HSBtoRGB((float) tempHue, (float) tempSaturation, (float) tempBrightness));
+
 			float[] awtColourArray = awtColour.getRGBColorComponents(null);
 			color = new Color(awtColourArray[0], awtColourArray[1], awtColourArray[2], 1f);
+		}
+		else if (algorithmType == AlgorithmType.CMYK) {
+			double[] cmykLeft = RGBToCMYK(colorLeft);
+			double[] cmykRight = RGBToCMYK(colorRight);
+			double[] cmyk = new double[4];
+
+			for (int i = 0; i < 4; i++){
+				cmyk[i] = calcNewColourValue(paletteSpacing, paletteLeftPosition, characterPosition, cmykLeft[i], cmykRight[i]);
+			}
+			color = CMYKToRGB(cmyk);
 		}
 
 		return color;
@@ -193,6 +203,28 @@ public class RichTextGradient extends Application {
 		else if (str.equals("\n")) return "<br />";
 		else return str;
 	}
+
+	//an approximation of cmyk. For more accurate results, use a colour space
+	private static double[] RGBToCMYK(Color rgb) {
+		double white = Math.max(Math.max(rgb.getRed(), rgb.getGreen()), rgb.getBlue());
+		if (white == 0) {
+			return new double[] {0, 0, 0, 1};
+		}
+		else {
+			double cyan = (white - rgb.getRed()) / white;
+			double magenta = (white - rgb.getGreen()) / white;
+			double yellow = (white - rgb.getBlue()) / white;
+			return new double[] {cyan, magenta, yellow, 1 - white};
+		}
+	}
+
+	//again, another approximation of cmyk.
+	private static Color CMYKToRGB(double[] cmyk) {
+		double red = (1 - cmyk[0]) * (1 - cmyk[3]);
+		double green = (1 - cmyk[1]) * (1 - cmyk[3]);
+		double blue = (1 - cmyk[2]) * (1 - cmyk[3]);
+		return new Color(red, green, blue, 1f);
+	}
 }
 
 class RtgUI extends HBox {
@@ -201,6 +233,7 @@ class RtgUI extends HBox {
 	ColourList colourList = new ColourList();
 	RadioButton radRGB = new RadioButton("RGB");
 	RadioButton radHSB = new RadioButton("HSB");
+	RadioButton radCMYK = new RadioButton("CMYK");
 	ToggleGroup toggleGroup = new ToggleGroup();
 	Button btnColour = new Button("Colour!");
 	private static final Insets INSETS = new Insets(5);
@@ -225,9 +258,10 @@ class RtgUI extends HBox {
 		colourList.setStyle(CSS);
 		radRGB.setToggleGroup(toggleGroup);
 		radHSB.setToggleGroup(toggleGroup);
+		radCMYK.setToggleGroup(toggleGroup);
 		radRGB.setSelected(true);
 		VBox radioGroup = new VBox();
-		radioGroup.getChildren().addAll(radRGB, radHSB);
+		radioGroup.getChildren().addAll(radRGB, radHSB, radCMYK);
 		radioGroup.setStyle(CSS);
 
 
@@ -237,6 +271,7 @@ class RtgUI extends HBox {
 			AlgorithmType algorithmType = null;
 			if (radRGB.isSelected()) algorithmType = AlgorithmType.RGB;
 			else if (radHSB.isSelected()) algorithmType = AlgorithmType.HSB;
+			else if (radCMYK.isSelected()) algorithmType = AlgorithmType.CMYK;
 
 			txtOutput.setHtmlText(RichTextGradient.colourText(input, palette, algorithmType));
 		});
@@ -333,5 +368,6 @@ class ColourItem extends HBox {
 
 enum AlgorithmType {
 	RGB,
-	HSB
+	HSB,
+	CMYK
 }
