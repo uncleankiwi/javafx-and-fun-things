@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
@@ -32,7 +33,7 @@ primaryStage
 
 */
 
-//TODO fix truncation of input by adding whitespaces
+//TODO whitespaces not showing?
 
 public class RichTextGradient extends Application {
 	@Override
@@ -59,11 +60,16 @@ public class RichTextGradient extends Application {
 			//count non-space characters
 			int nonSpaceChars = 0;
 			Pattern pattern = Pattern.compile("[\\S]");	//i.e. non-whitespace character
-			String[] strings = input.split("");
-			for (String s : strings) {
-				if (pattern.matcher(s).matches()) nonSpaceChars++;
-			}
-			if (nonSpaceChars == 0) return input;
+
+			Matcher matcher = pattern.matcher(input);
+			while(matcher.find()) nonSpaceChars++;
+
+			//alternative for counting non-space characters:
+//			String[] strings = input.split("");
+//			for (String s : strings) {
+//				if (pattern.matcher(s).matches()) nonSpaceChars++;
+//			}
+//			if (nonSpaceChars == 0) return input;
 
 			//Create a gradient of colours:
 			//1. Assign doubles to every character in input, ranging from 0 to 1
@@ -100,15 +106,16 @@ public class RichTextGradient extends Application {
 				}
 			}
 
-			//apply gradient
-			for (int i = 1; i <= nonSpaceChars; i++) {
-				if (pattern.matcher(strings[i - 1]).matches()) {
-					output.append(applySpan(strings[i - 1], gradient.get(i - 1)));
+			int k = 0;
+			for (char c : input.toCharArray()) {
+				String str = String.valueOf(c);
+				if (pattern.matcher(str).matches()) {
+					output.append(applySpan(str, gradient.get(k)));
+					k++;
 				}
 				else {
-					output.append(strings[i - 1]);
+					output.append(str);
 				}
-
 			}
 		}
 
