@@ -19,6 +19,14 @@ public class TimeToBitmap {
 		System.out.println(toNumberedBitString("18:56", true, false));
 		System.out.println(toNumberedBitString("18:56", false, true));
 		System.out.println(toNumberedBitString("18:56", true, true));
+
+		System.out.println("\n");
+
+		System.out.println(toNumberedBitString("1s2 4", false, false));
+		System.out.println(toNumberedBitString("1s2 4", true, false));
+
+		System.out.println(toNumberedBitString("1234567890", false, false));
+		System.out.println(toNumberedBitString("1234567890", true, false));
 	}
 
 	public static String toNumberedBitString(String time, boolean drawWithNumber, boolean asSingleLine) {
@@ -27,7 +35,7 @@ public class TimeToBitmap {
 
 		//for every character in input string...
 		for (int i = 0; i < timeArr.length; i++) {
-			int number = 0;
+			int number;
 			//if it's a colon
 			if (timeArr[i] == ':') {
 				number = 10;
@@ -62,90 +70,105 @@ public class TimeToBitmap {
 	}
 
 	private static void appendOutput(String[] outputArr, int number, boolean drawWithNumber) {
+		final int CHAR_WIDTH = 3;
 		for (int i = 0; i < BITMAP_HEIGHT; i++) {
-			outputArr[i] += cArr[number][i];
+			if (number == SPACE) {
+				outputArr[i] += drawWithNumber ? " " : "0";
+			}
+			else if (number == UNSUPPORTED_CHAR) {
+				for (int j = 0; j < CHAR_WIDTH; j++) {
+					outputArr[i] += drawWithNumber ? "?" : "0";
+				}
+			}
+			else {
+				for (char c : cArr[number][i]) {
+					for (int j = 0; j < cArr[number][i].length; j++) {
+						if (drawWithNumber) outputArr[i] += cArr[number][i][j] == 1 ? number : " ";
+						else outputArr[i] += cArr[number][i][j];
+					}
+				}
+			}
 		}
 	}
 
-
 	private static final char[][][] cArr = {
-			{
-					{1, 1, 1},	//0
-					{1, 0, 1},
-					{1, 0, 1},
-					{1, 0, 1},
-					{1, 1, 1}
-			},
-			{
-					{0, 1, 0},	//1
-					{1, 1, 0},
-					{0, 1, 0},
-					{0, 1, 0},
-					{1, 1, 1}
-			},
-			{
-					{1, 1, 1},	//2
-					{0, 0, 1},
-					{1, 1, 1},
-					{1, 0, 0},
-					{1, 1, 1}
-			},
-			{
-					{1, 1, 1},	//3
-					{0, 0, 1},
-					{1, 1, 1},
-					{0, 0, 1},
-					{1, 1, 1}
-			},
-			{
-					{1, 0, 1},	//4
-					{1, 0, 1},
-					{1, 1, 1},
-					{0, 0, 1},
-					{0, 0, 1}
-			},
-			{
-					{1, 1, 1},	//5
-					{1, 0, 0},
-					{1, 1, 1},
-					{0, 0, 1},
-					{1, 1, 1}
-			},
-			{
-					{1, 1, 1},	//6
-					{1, 0, 0},
-					{1, 1, 1},
-					{1, 0, 1},
-					{1, 1, 1}
-			},
-			{
-					{1, 1, 1},	//7
-					{0, 0, 1},
-					{0, 0, 1},
-					{0, 0, 1},
-					{0, 0, 1}
-			},
-			{
-					{1, 1, 1},	//8
-					{1, 0, 1},
-					{1, 1, 1},
-					{1, 0, 1},
-					{1, 1, 1}
-			},
-			{
-					{1, 1, 1},	//9
-					{1, 0, 1},
-					{1, 1, 1},
-					{0, 0, 1},
-					{0, 0, 1}
-			},
-			{
-					{0},		//:
-					{1},
-					{0},
-					{1},
-					{0}
-			}
+		{
+			{1, 1, 1},	//0
+			{1, 0, 1},
+			{1, 0, 1},
+			{1, 0, 1},
+			{1, 1, 1}
+		},
+		{
+			{0, 1, 0},	//1
+			{1, 1, 0},
+			{0, 1, 0},
+			{0, 1, 0},
+			{1, 1, 1}
+		},
+		{
+			{1, 1, 1},	//2
+			{0, 0, 1},
+			{1, 1, 1},
+			{1, 0, 0},
+			{1, 1, 1}
+		},
+		{
+			{1, 1, 1},	//3
+			{0, 0, 1},
+			{1, 1, 1},
+			{0, 0, 1},
+			{1, 1, 1}
+		},
+		{
+			{1, 0, 1},	//4
+			{1, 0, 1},
+			{1, 1, 1},
+			{0, 0, 1},
+			{0, 0, 1}
+		},
+		{
+			{1, 1, 1},	//5
+			{1, 0, 0},
+			{1, 1, 1},
+			{0, 0, 1},
+			{1, 1, 1}
+		},
+		{
+			{1, 1, 1},	//6
+			{1, 0, 0},
+			{1, 1, 1},
+			{1, 0, 1},
+			{1, 1, 1}
+		},
+		{
+			{1, 1, 1},	//7
+			{0, 0, 1},
+			{0, 0, 1},
+			{0, 0, 1},
+			{0, 0, 1}
+		},
+		{
+			{1, 1, 1},	//8
+			{1, 0, 1},
+			{1, 1, 1},
+			{1, 0, 1},
+			{1, 1, 1}
+		},
+		{
+			{1, 1, 1},	//9
+			{1, 0, 1},
+			{1, 1, 1},
+			{0, 0, 1},
+			{0, 0, 1}
+		},
+		{
+			{0},		//:
+			{1},
+			{0},
+			{1},
+			{0}
+		}
 	};
 
 	private static final int BITMAP_HEIGHT = cArr[0][0].length;
