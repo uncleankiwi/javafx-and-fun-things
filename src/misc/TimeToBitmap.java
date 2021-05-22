@@ -14,23 +14,39 @@ public class TimeToBitmap {
 	private static final int UNSUPPORTED_CHAR = -2;
 	private static final int SPACE = -1;
 
-		public static void main(String[] args) {
-		System.out.println(toNumberedBitString("18:56", false, false));
-		System.out.println(toNumberedBitString("18:56", true, false));
-		System.out.println(toNumberedBitString("18:56", false, true));
-		System.out.println(toNumberedBitString("18:56", true, true));
-
-		System.out.println("\n");
-
-		System.out.println(toNumberedBitString("1s2 4", false, false));
-		System.out.println(toNumberedBitString("1s2 4", true, false));
-
-		System.out.println(toNumberedBitString("1234567890", false, false));
-		System.out.println(toNumberedBitString("1234567890", true, false));
+	public enum DrawMode {
+		BIT,
+		NUMBER,
+		SQUARE
 	}
 
-	public static String toNumberedBitString(String time, boolean drawWithNumber, boolean asSingleLine) {
-		String[] outputArr = new String[5];
+	public static void main(String[] args) {
+
+		System.out.println(toNumberedBitString("18:56", DrawMode.BIT, false));
+		System.out.println(toNumberedBitString("18:56", DrawMode.NUMBER, false));
+		System.out.println(toNumberedBitString("18:56", DrawMode.SQUARE, false));
+
+		System.out.println("\nSingle line outputs:");
+
+		System.out.println(toNumberedBitString("18:56", DrawMode.BIT, true));
+		System.out.println(toNumberedBitString("18:56", DrawMode.NUMBER, true));
+		System.out.println(toNumberedBitString("18:56", DrawMode.SQUARE, true));
+
+		System.out.println("\nInvalid characters:");
+
+		System.out.println(toNumberedBitString("1s2 4", DrawMode.BIT, false));
+		System.out.println(toNumberedBitString("1s2 4", DrawMode.NUMBER, false));
+		System.out.println(toNumberedBitString("1s2 4", DrawMode.SQUARE, false));
+
+		System.out.println("\nBunch of numbers:");
+
+		System.out.println(toNumberedBitString("1234567890", DrawMode.BIT, false));
+		System.out.println(toNumberedBitString("1234567890", DrawMode.NUMBER, false));
+		System.out.println(toNumberedBitString("1234567890", DrawMode.SQUARE, false));
+	}
+
+	public static String toNumberedBitString(String time, DrawMode drawMode, boolean asSingleLine) {
+		String[] outputArr = {"", "", "", "", ""};
 		char[] timeArr = time.toCharArray();
 
 		//for every character in input string...
@@ -53,10 +69,10 @@ public class TimeToBitmap {
 			}
 
 			//write to output
-			appendOutput(outputArr, number, drawWithNumber);
+			appendOutput(outputArr, number, drawMode);
 
 			//and then add a space
-			if (i < timeArr.length - 1) appendOutput(outputArr, SPACE, drawWithNumber);
+			if (i < timeArr.length - 1) appendOutput(outputArr, SPACE, drawMode);
 		}
 
 		StringBuilder output = new StringBuilder();
@@ -69,29 +85,64 @@ public class TimeToBitmap {
 		return output.toString();
 	}
 
-	private static void appendOutput(String[] outputArr, int number, boolean drawWithNumber) {
+	private static void appendOutput(String[] outputArr, int number, DrawMode drawMode) {
 		final int CHAR_WIDTH = 3;
 		for (int i = 0; i < BITMAP_HEIGHT; i++) {
 			if (number == SPACE) {
-				outputArr[i] += drawWithNumber ? " " : "0";
+				switch (drawMode) {
+					case BIT: {
+						outputArr[i] += 0;
+						break;
+					}
+					case NUMBER:
+					case SQUARE: {
+						outputArr[i] += " ";
+						break;
+					}
+				}
 			}
 			else if (number == UNSUPPORTED_CHAR) {
 				for (int j = 0; j < CHAR_WIDTH; j++) {
-					outputArr[i] += drawWithNumber ? "?" : "0";
+					switch (drawMode) {
+						case BIT: {
+							outputArr[i] += 0;
+							break;
+						}
+						case NUMBER:
+						case SQUARE: {
+							outputArr[i] += "?";
+							break;
+						}
+					}
 				}
 			}
 			else {
-				for (char c : cArr[number][i]) {
-					for (int j = 0; j < cArr[number][i].length; j++) {
-						if (drawWithNumber) outputArr[i] += cArr[number][i][j] == 1 ? number : " ";
-						else outputArr[i] += cArr[number][i][j];
+				for (int j = 0; j < cArr[number][i].length; j++) {
+					switch (drawMode) {
+						case BIT: {
+							outputArr[i] += cArr[number][i][j];
+							break;
+						}
+						case NUMBER: {
+							//substitute number for a supported character if number is > 9
+							String s = (number <= 9) ? String.valueOf(number) : supportedChars[number - 10];
+
+							outputArr[i] += cArr[number][i][j] == 1 ? s : " ";
+							break;
+						}
+						case SQUARE: {
+							outputArr[i] += cArr[number][i][j] == 1 ? "■" : " ";
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private static final char[][][] cArr = {
+	private static final String[] supportedChars = {":"};
+
+	private static final int[][][] cArr = {
 		{
 			{1, 1, 1},	//0
 			{1, 0, 1},
@@ -171,5 +222,5 @@ public class TimeToBitmap {
 		}
 	};
 
-	private static final int BITMAP_HEIGHT = cArr[0][0].length;
+	private static final int BITMAP_HEIGHT = cArr[0].length;
 }
