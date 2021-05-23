@@ -14,6 +14,9 @@ expected output:
 */
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BishopMoves {
 	public static void main(String[] args) {
 		System.out.println(canBishopMove("a1", "b4", 2));
@@ -31,8 +34,40 @@ public class BishopMoves {
 		int[][] board = new int[8][8];
 
 		board[x1][y1] = 1;
+		int moves = 0;
 
-		return board[x2][y2] == 1;
+		//for every move
+		while (moves < maxMoves) {
+			//get lists of coordinates of non-propagated squares (1)
+			//also check if any of them are the end square
+			//if there are no non-propagated squares, quit.
+			List<Integer> xArr = new ArrayList<>();
+			List<Integer> yArr = new ArrayList<>();
+			boolean hasNonPropagatedSquares = false;
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					if (board[x][y] == 1) {
+						hasNonPropagatedSquares = true;
+						xArr.add(x);
+						yArr.add(y);
+						if (x == x2 && y == y2) return true;
+					}
+				}
+			}
+			if (!hasNonPropagatedSquares) break;
+
+			//propagate from the lists by marking as (1)
+			moves++;
+
+			//mark the squares in the lists as propagated (2)
+			for (int i = 0; i < xArr.size(); i++) {
+				board[xArr.get(i)][yArr.get(i)] = 2;
+			}
+		}
+
+
+
+		return false;
 	}
 
 	//two methods to convert rank and file into 0 - 8 array coordinates
