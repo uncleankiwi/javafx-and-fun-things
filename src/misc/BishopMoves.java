@@ -19,9 +19,14 @@ import java.util.List;
 
 public class BishopMoves {
 	public static void main(String[] args) {
-		System.out.println(canBishopMove("a1", "b4", 2));
-		System.out.println(canBishopMove("a1", "b5", 5));
-		System.out.println(canBishopMove("f1", "f1", 0));
+		System.out.println("============================");
+		System.out.println("Result: " + canBishopMove("a1", "b4", 2));
+		System.out.println();
+		System.out.println("============================");
+		System.out.println("Result: " + canBishopMove("a1", "b5", 5));
+		System.out.println();
+		System.out.println("============================");
+		System.out.println("Result: " + canBishopMove("f1", "f1", 0));
 	}
 
 	public static boolean canBishopMove(String start, String end, int maxMoves) {
@@ -34,10 +39,13 @@ public class BishopMoves {
 		int[][] board = new int[8][8];
 
 		board[x1][y1] = 1;
-		int moves = 0;
 
 		//for every move
-		while (moves < maxMoves) {
+		for (int moves = 0; moves <= maxMoves; moves++) {
+			System.out.println("Move #" + moves + ":");
+			print2DIntArray(board);
+			System.out.println();
+
 			//get lists of coordinates of non-propagated squares (1)
 			//also check if any of them are the end square
 			//if there are no non-propagated squares, quit.
@@ -56,18 +64,33 @@ public class BishopMoves {
 			}
 			if (!hasNonPropagatedSquares) break;
 
-			//propagate from the lists by marking as (1)
-			moves++;
+			//propagate if this isn't the final move
+			if (moves < maxMoves) {
+				//propagate from the lists, marking new squares as (1) if they were (0)
+				for (int i = 0; i < xArr.size(); i++) {	//for each square
+					for (int j = 1; j < 8; j++) {		//distance from this tile
+						tryPropagate(board, xArr.get(i) + j, yArr.get(i) + j);
+						tryPropagate(board, xArr.get(i) + j, yArr.get(i) - j);
+						tryPropagate(board, xArr.get(i) - j, yArr.get(i) + j);
+						tryPropagate(board, xArr.get(i) - j, yArr.get(i) - j);
+					}
+				}
 
-			//mark the squares in the lists as propagated (2)
-			for (int i = 0; i < xArr.size(); i++) {
-				board[xArr.get(i)][yArr.get(i)] = 2;
+				//mark the squares in the lists as propagated (2)
+				for (int i = 0; i < xArr.size(); i++) {
+					board[xArr.get(i)][yArr.get(i)] = 2;
+				}
 			}
 		}
 
-
-
 		return false;
+	}
+
+	private static void tryPropagate(int[][] board, int x, int y) {
+		if (x >= 0 && x < 8 && y >= 0 && y < 8) {	//check if on chessboard
+			if (board[x][y] == 0) board[x][y] = 1;
+		}
+
 	}
 
 	//two methods to convert rank and file into 0 - 8 array coordinates
@@ -89,4 +112,16 @@ public class BishopMoves {
 		return file - 'a';
 	}
 
+	private static void print2DIntArray(int[][] array) {
+		for (int[] row : array) {
+			StringBuilder output = new StringBuilder();
+			for (int i = 0; i < row.length; i++) {
+				output.append(row[i]);
+				if (i < row.length - 1) {
+					output.append(" ");
+				}
+			}
+			System.out.println(output);
+		}
+	}
 }
