@@ -1,4 +1,4 @@
-package misc;
+package misc.eda;
 
 /*
 convert a "hh:mm" string into

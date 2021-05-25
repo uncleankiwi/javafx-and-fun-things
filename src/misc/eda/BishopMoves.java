@@ -1,4 +1,4 @@
-package misc;
+package misc.eda;
 
 /*
 given a starting square, an ending square, and a max number of moves,
