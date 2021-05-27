@@ -5,10 +5,12 @@ package misc.eda;
 //Extra limitations: use recursion and don't use arrays/lists.
 public class RecursiveMultiply {
 	public static void main(String[] args) {
+		test("22", 11);
+		test("0", 11);
+		test("0000", 11);
 		test("11", 11);								//expected: 121
 		test("111111111", 11);						//expected: 1222222221
 		test("9473745364784876253253263723", 11);		//expected: 104211199012633638785785900953
-
 	}
 
 	public static String recursiveMultiply(String input, int number) {
@@ -16,6 +18,7 @@ public class RecursiveMultiply {
 		String result = rightPart;
 		if (input.length() != 1) {
 			String leftPart = recursiveMultiply(input.substring(0, input.length() - 1), number) + "0";
+
 			//creating a third string for carried numbers
 			//it should be 1 '0' longer than the left part since the left-most digit could also get carried
 			StringBuilder carryBuilder = new StringBuilder("0");
@@ -28,11 +31,11 @@ public class RecursiveMultiply {
 			//adding left, right, carry strings and putting into addedResult
 			for (int i = 0; i < addedResult.length(); i++) {
 				int numberLeft = 0;
-				if (leftPart.length() - 1 - i > 0) {
+				if (leftPart.length() - 1 - i >= 0) {
 					numberLeft = numberAt(leftPart, leftPart.length() - 1 - i);
 				}
 				int numberRight = 0;
-				if (rightPart.length() - 1 - i > 0) {
+				if (rightPart.length() - 1 - i >= 0) {
 					numberRight = numberAt(rightPart, rightPart.length() - 1 - i);
 				}
 				int numberCarry = numberAt(carry, carry.length() - 1 - i);
@@ -52,6 +55,17 @@ public class RecursiveMultiply {
 
 			result = addedResult;
 		}
+
+		//trim zeroes on left
+		if (result.charAt(0) == '0' && result.length() > 1) {
+			int zeroes = 0;
+			for (int i = 1; i < result.length() - 1; i++) {		//-1 to leave 1 '0' if input is multiple zeroes or something
+				if (result.charAt(i) == '0') zeroes++;
+				else break;
+			}
+			result = result.substring(zeroes + 1);
+		}
+
 		return result;
 	}
 
@@ -68,6 +82,6 @@ public class RecursiveMultiply {
 	private static String setNumberAt(String string, int index, int number) {
 		String left = (index > 0) ? string.substring(0, index) : "";
 		String right = (index < string.length() - 1) ? string.substring(index + 1) : "";
-		return  left + number + right;
+		return left + number + right;
 	}
 }
