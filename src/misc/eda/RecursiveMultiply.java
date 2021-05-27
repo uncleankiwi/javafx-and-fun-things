@@ -66,6 +66,8 @@ public class RecursiveMultiply {
 	//sets the number at index position in string to a new number
 	//TODO test if return needed?
 	private static String setNumberAt(String string, int index, int number) {
-
+		String left = (index > 0) ? string.substring(0, index) : "";
+		String right = (index < string.length() - 1) ? string.substring(index + 1) : "";
+		return  left + number + right;
 	}
 }
