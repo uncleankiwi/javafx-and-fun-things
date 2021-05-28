@@ -21,19 +21,20 @@ public class PuyoAnnihilation {
 
 	public static char[] annihilate(char[] input) {
 		while (true) {
+
 			//if this element is the same as the previous element, mark this and the previous element for removal
-			Character previousChar = null;
+			if (input.length == 0) break;
+
+			char previousChar = input[0];
 			boolean[] toRemove = new boolean[input.length];
 			int removeCount = 0;
-			for (int i = 0; i < input.length; i++) {
-				if (i != 0) {
-					if (input[i] == previousChar) {
-						toRemove[i] = true;
+			for (int i = 1; i < input.length; i++) {
+				if (input[i] == previousChar) {
+					toRemove[i] = true;
+					removeCount++;
+					if (!toRemove[i - 1]) {
 						removeCount++;
-						if (!toRemove[i - 1]) {
-							removeCount++;
-							toRemove[i - 1] = true;
-						}
+						toRemove[i - 1] = true;
 					}
 				}
 				previousChar = input[i];
@@ -42,7 +43,7 @@ public class PuyoAnnihilation {
 			//copy over elements not marked for removal
 			if (removeCount == 0) break;
 			else {
-				char[] newInput = new char[removeCount];
+				char[] newInput = new char[input.length - removeCount];
 				int savedCount = 0;
 				for (int i = 0; i < toRemove.length; i++) {
 					if (!toRemove[i]) {
