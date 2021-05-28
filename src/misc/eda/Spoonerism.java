@@ -8,8 +8,6 @@ If only one word begins with consonants, transplant those to the other word.
 For words that begin with a vowel, transplant the first vowels plus the following contiguous consonants.
 	e.g. "every afternoon" -> "aftery evernoon"
 "unassuming ambience" -> "amassuming unbience"
-
-
  */
 
 
