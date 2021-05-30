@@ -17,12 +17,12 @@ Balanced prime: equidistant.
  */
 public class StrongPrimes {
 	public static void main(String[] args) {
-//		test(211);
-		test(17);
-//		test(19);
-//		test(4);
-//		test(0);
-//		test(-200);
+		test(211);		//balanced
+		test(17);		//strong
+		test(19);		//weak
+		test(4);		//not a prime
+		test(0);		//out of bounds
+		test(-200);		//out of bounds
 	}
 
 	public static String primeStrength(int number) {
@@ -53,16 +53,10 @@ public class StrongPrimes {
 				else if (i > number && !numberFound) return NOT_PRIME; //number not a found. error.
 				else if (i > number) break;	//prime number after 'number' parameter has been found
 			}
-
-			if (i >= number)
-
 			if (i == Integer.MAX_VALUE) return OUT_OF_BOUNDS;
-			else i += 2;
 
-			System.out.println(primes.size());
+			i += 2;
 		}
-
-		System.out.println(primes.size() + " " + primes);
 
 		int primeBefore = primes.get(primes.size() - 3);
 		int primeAfter = primes.get(primes.size() - 1);
