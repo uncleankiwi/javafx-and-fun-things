@@ -58,6 +58,8 @@ public class StrongPrimes {
 
 			if (i == Integer.MAX_VALUE) return OUT_OF_BOUNDS;
 			else i += 2;
+
+			System.out.println(primes.size());
 		}
 
 		System.out.println(primes.size() + " " + primes);
