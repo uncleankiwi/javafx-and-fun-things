@@ -1,9 +1,6 @@
 package misc.eda;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import util.Fraction;
 
 /*
 Converts a decimal number in a string into a fraction in its lowest form.
@@ -34,10 +31,7 @@ public class RepeatingDecimals {
 	}
 
 	public static String convertToFraction(String decimalString) {
-		return null; //TODO
-	}
-
-	public static String simplify(long numerator, long divisor) {
+		Fraction fraction = new Fraction(123L, 123L);
 		return null; //TODO
 	}
 
