@@ -1,6 +1,8 @@
 package misc.eda;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /*
@@ -23,9 +25,6 @@ The idea here is that
  */
 public class RepeatingDecimals {
 	public static void main(String[] args) {
-		System.out.println(factor(12));
-		System.out.println(factor(36));
-
 		test("0.(6)");			//2/3
 		test("0.(9)");			//1
 		test("1.(1)");			//10/9
@@ -38,33 +37,15 @@ public class RepeatingDecimals {
 		return null; //TODO
 	}
 
-	public static String simplify(String numerator, String divisor) {
+	public static String simplify(long numerator, long divisor) {
 		return null; //TODO
-	}
-
-	//returns a set of numbers that a number n is divisible by, excluding 1 and n
-	public static Set<Integer> factor(int n) {
-		Set<Integer> factors = new HashSet<>();
-		int x = n;
-		boolean allFactorsFound = false;
-		while (!allFactorsFound) {
-			for (int i = 2; i <= x / 2; i++) {
-				if (x % i == 0 && x != i) {	//i is a factor
-					factors.add(i);
-					x = x / i;
-					break;
-				}
-				else if (i == x / 2) {
-					allFactorsFound = true;
-					if (x != n) factors.add(x);
-				}
-			}
-		}
-		return factors;
 	}
 
 	private static void test(String decimalString) {
 		System.out.println(decimalString + " -> " + convertToFraction(decimalString));
 	}
 
+
 }
+
+
