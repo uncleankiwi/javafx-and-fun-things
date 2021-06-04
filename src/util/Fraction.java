@@ -97,6 +97,11 @@ public class Fraction {
 		return result;
 	}
 
+	public static Fraction parseFraction(String s) throws NumberFormatException {
+		//TODO
+		return null;
+	}
+
 	//returns a set of numbers that a number n is divisible by, excluding 1 and n
 	private Map<Long, Long> factor(long n) {
 		Map<Long, Long> factors = new HashMap<>();

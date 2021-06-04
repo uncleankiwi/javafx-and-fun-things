@@ -30,13 +30,8 @@ public class RepeatingDecimals {
 		test("0.1097(3)");		//"823/7500"
 	}
 
-	public static String convertToFraction(String decimalString) {
-		Fraction fraction = new Fraction(123L, 123L);
-		return null; //TODO
-	}
-
 	private static void test(String decimalString) {
-		System.out.println(decimalString + " -> " + convertToFraction(decimalString));
+		System.out.println(decimalString + " -> " + Fraction.parseFraction(decimalString));
 	}
 
 
