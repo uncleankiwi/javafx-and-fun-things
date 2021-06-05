@@ -166,11 +166,16 @@ public class Fraction {
 		if (onesStr.toString().equals("")) onesStr.append("0");
 		long ones = Long.parseLong(onesStr.toString());
 
-		if (nonRepeatingStr.toString().equals("")) nonRepeatingStr.append("0");
-		long nonRepeating = Long.parseLong(nonRepeatingStr.toString());
+		Fraction nonRepeatingFraction;
 		int places = nonRepeatingStr.toString().length();
 		long placesMultiplier = (long) Math.pow(10, places);
-		Fraction nonRepeatingFraction = new Fraction(nonRepeating, placesMultiplier);
+		if (nonRepeatingStr.toString().equals("")) {
+			nonRepeatingFraction = new Fraction(0, 1);
+		}
+		else {
+			long nonRepeating = Long.parseLong(nonRepeatingStr.toString());
+			nonRepeatingFraction = new Fraction(nonRepeating, placesMultiplier);
+		}
 
 		if (repeatingStr.toString().equals("0")) repeatingStr.append("0");
 		long repeating = Long.parseLong(repeatingStr.toString());
@@ -186,11 +191,12 @@ public class Fraction {
 	}
 
 	//returns a set of numbers that a number n is divisible by, excluding 1 and n
-	private Map<Long, Long> factor(long n) {
+	private static Map<Long, Long> factor(long n) {
 		Map<Long, Long> factors = new HashMap<>();
 		long x = n;
 
-		boolean allFactorsFound = false;
+		boolean allFactorsFound = (x <= 2);
+
 		while (!allFactorsFound) {
 			for (int i = 2; i <= x; i++) {
 				if (x % i == 0 && x != i) {	//i is a factor
