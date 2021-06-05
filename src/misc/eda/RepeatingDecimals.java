@@ -22,6 +22,12 @@ See Fraction.java for more documentation.
  */
 public class RepeatingDecimals {
 	public static void main(String[] args) {
+		Fraction f = new Fraction(6, 9);
+		f.simplify();
+		System.out.println("2/3 simplified:" + f);
+
+
+
 		test("0.(6)");			//	2/3
 //		test("0.(9)");			//	1
 //		test("1.(1)");			//	10/9
