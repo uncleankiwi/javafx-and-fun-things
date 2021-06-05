@@ -20,21 +20,40 @@ See Fraction.java for more documentation.
  */
 public class RepeatingDecimals {
 	public static void main(String[] args) {
-//		test("0.(6)");			//	2/3
-//		test("0.(9)");			//	1
-//		test("1.(1)");			//	10/9
-//		test("3.(142857)");		//	22/7
-//		test("0.19(2367)");		//	5343/27775
-//		test("0.1097(3)");		//	823/7500
+		//standard
+		System.out.println("Standard:");
+		test("0.(6)");			//	2/3
+		test("0.(9)");			//	1
+		test("1.(1)");			//	10/9
+		test("3.(142857)");		//	22/7
+		test("0.19(2367)");		//	5343/27775
+		test("0.1097(3)");		//	823/7500
 
+		//whole numbers
+		System.out.println("\nWhole numbers:");
 		test("0");				//	0
 		test("12345");			//	12345
 		test("15.91");			//	1591/100
 
-//		test("abc");			//	exception
-//		test(".(6)");			//	2/3
-//		test(".19(2367)");		//	5343/27775
-//		test(".123(6)");
+		//no leading 0
+		System.out.println("\nNo leading 0s:");
+		test(".(6)");			//	2/3
+		test(".19(2367)");		//	5343/27775
+
+		//exceptions
+		System.out.println("\nExceptions:");
+		test("abc");
+		test("(2)");
+		test("0.3k");
+		test(".84(4*)");
+		test("3.3643(73)3");
+
+		//unknowns
+		System.out.println("\nUnknowns:");
+		test("");
+		test("00005.19(47)");
+		test(".123(6)");
+		test("0.(0)");		//TODO debug case
 	}
 
 	private static void test(String decimalString) {

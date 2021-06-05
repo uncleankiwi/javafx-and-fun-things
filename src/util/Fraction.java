@@ -180,14 +180,20 @@ public class Fraction {
 			nonRepeatingFraction = new Fraction(nonRepeating, placesMultiplier);
 		}
 
-		if (repeatingStr.toString().equals("0")) repeatingStr.append("0");
-		long repeating = Long.parseLong(repeatingStr.toString());
-		StringBuilder repeatingDivisorStr = new StringBuilder();
-		for (int i = 0; i < repeatingStr.length(); i++) repeatingDivisorStr.append("9");
-		long repeatingDivisor = Long.parseLong(repeatingDivisorStr.toString());
-		Fraction repeatingFraction = Fraction.multiply(
-			new Fraction(1, placesMultiplier),
-			new Fraction(repeating, repeatingDivisor));
+		Fraction repeatingFraction;
+		if (repeatingStr.toString().equals("")) {
+			repeatingFraction = new Fraction(0, 1);
+		}
+		else {
+			if (repeatingStr.toString().equals("0")) repeatingStr.append("0");
+			long repeating = Long.parseLong(repeatingStr.toString());
+			StringBuilder repeatingDivisorStr = new StringBuilder();
+			for (int i = 0; i < repeatingStr.length(); i++) repeatingDivisorStr.append("9");
+			long repeatingDivisor = Long.parseLong(repeatingDivisorStr.toString());
+			repeatingFraction = Fraction.multiply(
+				new Fraction(1, placesMultiplier),
+				new Fraction(repeating, repeatingDivisor));
+		}
 
 		//putting together components
 		return Fraction.add(ones, Fraction.add(nonRepeatingFraction, repeatingFraction));
