@@ -1,7 +1,5 @@
 package util;
 
-import com.sun.istack.internal.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -174,12 +172,17 @@ public class Fraction {
 		long placesMultiplier = (long) Math.pow(10, places);
 		Fraction nonRepeatingFraction = new Fraction(nonRepeating, placesMultiplier);
 
-		long repeating =
+		if (repeatingStr.toString().equals("0")) repeatingStr.append("0");
+		long repeating = Long.parseLong(repeatingStr.toString());
+		StringBuilder repeatingDivisorStr = new StringBuilder();
+		for (int i = 0; i < repeatingStr.length(); i++) repeatingDivisorStr.append("9");
+		long repeatingDivisor = Long.parseLong(repeatingDivisorStr.toString());
+		Fraction repeatingFraction = Fraction.multiply(
+			new Fraction(1, placesMultiplier),
+			new Fraction(repeating, repeatingDivisor));
 
 		//putting together components
-
-
-		return new Fraction(1L, 1L);
+		return Fraction.add(ones, Fraction.add(nonRepeatingFraction, repeatingFraction));
 	}
 
 	//returns a set of numbers that a number n is divisible by, excluding 1 and n
