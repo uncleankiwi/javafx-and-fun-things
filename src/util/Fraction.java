@@ -82,11 +82,11 @@ public class Fraction {
 		return result;
 	}
 
-	public static Fraction add(Fraction f1, int x) {
+	public static Fraction add(Fraction f1, long x) {
 		return new Fraction(f1.numerator + f1.denominator * x, f1.denominator);
 	}
 
-	public static Fraction add(int x, Fraction f1) {
+	public static Fraction add(long x, Fraction f1) {
 		return add(f1, x);
 	}
 
@@ -104,46 +104,79 @@ public class Fraction {
 	Splits input into components, then puts them back together as a fraction.
 	e.g. 20.19(2367)	= 20 + 19/100 + 1/100 * 2367/9999
 						= ones
-							+ nonRepeatingDigits / placesMultiplier
-							+ 1 / placesMultiplier * repeatingDigits / repeatingDivisor
+							+ nonRepeating / placesMultiplier
+							+ 1 / placesMultiplier * repeating / repeatingDivisor
+						= ones + nonRepeatingFraction + repeatingFraction
  */
 
-	@SuppressWarnings("SuspiciousRegexArgument")
 	public static Fraction parseFraction(String s) throws NumberFormatException {
-		//TODO
 		StringBuilder onesStr = new StringBuilder();
-		String nonRepeatingStr = "";
-		String repeatingStr = "";
+		StringBuilder nonRepeatingStr = new StringBuilder();
+		StringBuilder repeatingStr = new StringBuilder();
 
+		//separating input into components
 		ParseState parseState = ParseState.ONES;
 		char[] sCharArr = s.toCharArray();
-		for (int i = 0; i < sCharArr.length; i++) {
+		for (char c : sCharArr) {
 			switch (parseState) {
 				case ONES: {
-					if (sCharArr[i] == '.') {
-
+					if (c == '.') {
+						parseState = ParseState.NON_REPEATING;
+					} else {
+						try {
+							onesStr.append(Integer.parseInt(String.valueOf(c)));
+						} catch (NumberFormatException e) {
+							throw new NumberFormatException("Invalid character before decimal point");
+						}
 					}
-
-
+					break;
 				}
-				case NON_REPEATING: {}
-				case REPEATING: {}
+
+				case NON_REPEATING: {
+					if (c == '(') {
+						parseState = ParseState.REPEATING;
+					} else {
+						try {
+							nonRepeatingStr.append(Integer.parseInt(String.valueOf(c)));
+						} catch (NumberFormatException e) {
+							throw new NumberFormatException("Invalid character after decimal point");
+						}
+					}
+					break;
+				}
+
+				case REPEATING: {
+					if (c == ')') {
+						parseState = ParseState.AFTER_REPEATING;
+					} else {
+						try {
+							repeatingStr.append(Integer.parseInt(String.valueOf(c)));
+						} catch (NumberFormatException e) {
+							throw new NumberFormatException("Invalid character in repeating decimals");
+						}
+					}
+					break;
+				}
+
+				case AFTER_REPEATING: {
+					throw new NumberFormatException("Input has unexpected trailing characters");
+				}
 			}
 		}
 
+		//parsing each component as long or fraction
+		if (onesStr.toString().equals("")) onesStr.append("0");
+		long ones = Long.parseLong(onesStr.toString());
 
-		String[] sArr = s.split(".");
-		long ones;
-		try {
-			ones = Long.parseLong(sArr[0]);
-		}
-		catch (NumberFormatException e) {
-			throw new NumberFormatException("Input must begin with numbers");
-		}
+		if (nonRepeatingStr.toString().equals("")) nonRepeatingStr.append("0");
+		long nonRepeating = Long.parseLong(nonRepeatingStr.toString());
+		int places = nonRepeatingStr.toString().length();
+		long placesMultiplier = (long) Math.pow(10, places);
+		Fraction nonRepeatingFraction = new Fraction(nonRepeating, placesMultiplier);
 
-		//if input is a whole number
-		if (sArr.length == 1) return new Fraction(ones, 1L);
+		long repeating =
 
+		//putting together components
 
 
 		return new Fraction(1L, 1L);
@@ -183,7 +216,8 @@ public class Fraction {
 	private enum ParseState {
 		ONES,
 		NON_REPEATING,
-		REPEATING
+		REPEATING,
+		AFTER_REPEATING
 	}
 
 

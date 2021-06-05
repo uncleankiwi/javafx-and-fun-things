@@ -30,15 +30,19 @@ public class Mastermind {
 
 				case ANS: {
 					System.out.println("Answer: " + printAns());
+					break;
 				}
 				case NEWGAME: {
 					newgame();
+					break;
 				}
 				case QUIT: {
 					end();
+					break;
 				}
 				default: {
 					eval(input);
+					break;
 				}
 			}
 
