@@ -53,6 +53,7 @@ public class Fraction {
 			else {
 				numeratorFactors.replace(commonKey, numeratorFactors.get(commonKey)- commonFactors.get(commonKey));
 			}
+
 			if (denominatorFactors.get(commonKey).equals(commonFactors.get(commonKey))) {
 				denominatorFactors.remove(commonKey);
 			}
@@ -65,10 +66,10 @@ public class Fraction {
 		this.numerator = 1;
 		this.denominator = 1;
 		for (Map.Entry<Long, Long> entry : numeratorFactors.entrySet()) {
-			numerator = numerator * entry.getKey() * entry.getValue();
+			numerator = numerator * (long) Math.pow(entry.getKey(), entry.getValue());
 		}
 		for (Map.Entry<Long, Long> entry : denominatorFactors.entrySet()) {
-			denominator = denominator * entry.getKey() * entry.getValue();
+			denominator = denominator * (long) Math.pow(entry.getKey(), entry.getValue());
 		}
 	}
 
