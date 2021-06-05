@@ -1,5 +1,7 @@
 package util;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,7 +17,8 @@ public class Fraction {
 
 	@Override
 	public String toString() {
-		return this.numerator + "/" + this.denominator;
+		if (this.denominator == 1L) return String.valueOf(this.numerator);
+		else return this.numerator + "/" + this.denominator;
 	}
 
 	@Override
@@ -97,9 +100,53 @@ public class Fraction {
 		return result;
 	}
 
+	/*
+	Splits input into components, then puts them back together as a fraction.
+	e.g. 20.19(2367)	= 20 + 19/100 + 1/100 * 2367/9999
+						= ones
+							+ nonRepeatingDigits / placesMultiplier
+							+ 1 / placesMultiplier * repeatingDigits / repeatingDivisor
+ */
+
+	@SuppressWarnings("SuspiciousRegexArgument")
 	public static Fraction parseFraction(String s) throws NumberFormatException {
 		//TODO
-		return null;
+		StringBuilder onesStr = new StringBuilder();
+		String nonRepeatingStr = "";
+		String repeatingStr = "";
+
+		ParseState parseState = ParseState.ONES;
+		char[] sCharArr = s.toCharArray();
+		for (int i = 0; i < sCharArr.length; i++) {
+			switch (parseState) {
+				case ONES: {
+					if (sCharArr[i] == '.') {
+
+					}
+
+
+				}
+				case NON_REPEATING: {}
+				case REPEATING: {}
+			}
+		}
+
+
+		String[] sArr = s.split(".");
+		long ones;
+		try {
+			ones = Long.parseLong(sArr[0]);
+		}
+		catch (NumberFormatException e) {
+			throw new NumberFormatException("Input must begin with numbers");
+		}
+
+		//if input is a whole number
+		if (sArr.length == 1) return new Fraction(ones, 1L);
+
+
+
+		return new Fraction(1L, 1L);
 	}
 
 	//returns a set of numbers that a number n is divisible by, excluding 1 and n
@@ -131,6 +178,12 @@ public class Fraction {
 		else {
 			factors.put(factor, 1L);
 		}
+	}
+
+	private enum ParseState {
+		ONES,
+		NON_REPEATING,
+		REPEATING
 	}
 
 

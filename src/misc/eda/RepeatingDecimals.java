@@ -2,6 +2,8 @@ package misc.eda;
 
 import util.Fraction;
 
+import java.util.Objects;
+
 /*
 Converts a decimal number in a string into a fraction in its lowest form.
 Numbers surrounded by brackets in the decimal number repeat to infinity.
@@ -16,22 +18,35 @@ The idea here is that
 				= 3/9
 				= 1/3
 
-	0.19(2367)	= 19/100 + 1/100 * 2367/9999
-				= nonRepeatingDigits / placesMultiplier
-					+ 1 / placesMultiplier * repeatingDigits / repeatingDivisor
+See Fraction.java for more documentation.
  */
 public class RepeatingDecimals {
 	public static void main(String[] args) {
-		test("0.(6)");			//2/3
-		test("0.(9)");			//1
-		test("1.(1)");			//10/9
-		test("3.(142857)");		//22/7
-		test("0.19(2367)");		//5343/27775
-		test("0.1097(3)");		//"823/7500"
+		test("0.(6)");			//	2/3
+		test("0.(9)");			//	1
+		test("1.(1)");			//	10/9
+		test("3.(142857)");		//	22/7
+		test("0.19(2367)");		//	5343/27775
+		test("0.1097(3)");		//	823/7500
+		test("0");				//	0
+		test("12345");			//	12345
+		test("15.91");			//	1591/100
+		test("abc");			//	exception
+		test(".(6)");			//	2/3
+		test(".19(2367)");		//	5343/27775
+		test(".123(6)");
 	}
 
 	private static void test(String decimalString) {
-		System.out.println(decimalString + " -> " + Fraction.parseFraction(decimalString));
+		String output;
+		try {
+			output = Fraction.parseFraction(decimalString).toString();
+		}
+		catch (NumberFormatException e) {
+			output = e.getMessage();
+		}
+
+		System.out.println(decimalString + " -> " + output);
 	}
 
 
