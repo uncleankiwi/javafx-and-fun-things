@@ -37,11 +37,13 @@ public class Fraction {
 		Map<Long, Long> numeratorFactors = factor(numerator);
 		Map<Long, Long> denominatorFactors = factor(denominator);
 		Map<Long, Long> commonFactors = new HashMap<>();
+
 		for (Long numeratorKey : numeratorFactors.keySet()) {
 			if (denominatorFactors.containsKey(numeratorKey)) {
 				commonFactors.put(numeratorKey, Math.min(numeratorFactors.get(numeratorKey), denominatorFactors.get(numeratorKey)));
 			}
 		}
+		if (commonFactors.size() == 0) return;
 
 		//cancelling out common factors
 		for (Long commonKey : commonFactors.keySet()) {
@@ -49,13 +51,13 @@ public class Fraction {
 				numeratorFactors.remove(commonKey);
 			}
 			else {
-				numeratorFactors.replace(commonKey, commonFactors.get(commonKey) - numeratorFactors.get(commonKey));
+				numeratorFactors.replace(commonKey, numeratorFactors.get(commonKey)- commonFactors.get(commonKey));
 			}
 			if (denominatorFactors.get(commonKey).equals(commonFactors.get(commonKey))) {
 				denominatorFactors.remove(commonKey);
 			}
 			else {
-				denominatorFactors.replace(commonKey, commonFactors.get(commonKey) - denominatorFactors.get(commonKey));
+				denominatorFactors.replace(commonKey, denominatorFactors.get(commonKey) - commonFactors.get(commonKey));
 			}
 		}
 
@@ -191,7 +193,7 @@ public class Fraction {
 	}
 
 	//returns a set of numbers that a number n is divisible by, excluding 1 and n
-	private static Map<Long, Long> factor(long n) {
+	public static Map<Long, Long> factor(long n) {
 		Map<Long, Long> factors = new HashMap<>();
 		long x = n;
 
