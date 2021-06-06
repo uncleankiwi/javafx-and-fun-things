@@ -53,7 +53,9 @@ public class RepeatingDecimals {
 		test("");
 		test("00005.19(47)");
 		test(".123(6)");
-		test("0.(0)");		//TODO debug case
+		test("14.5(0)");
+		test("0.0");
+		test("0.(0)");
 	}
 
 	private static void test(String decimalString) {

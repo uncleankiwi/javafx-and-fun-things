@@ -33,6 +33,12 @@ public class Fraction {
 	}
 
 	public void simplify() {
+		//if zero
+		if (numerator == 0) {
+			denominator = 1;
+			return;
+		}
+
 		//getting a set of common factors
 		Map<Long, Long> numeratorFactors = factor(numerator);
 		Map<Long, Long> denominatorFactors = factor(denominator);
@@ -63,8 +69,8 @@ public class Fraction {
 		}
 
 		//multiplying non-common factors to get numerator and denominator again
-		this.numerator = 1;
-		this.denominator = 1;
+		numerator = 1;
+		denominator = 1;
 		for (Map.Entry<Long, Long> entry : numeratorFactors.entrySet()) {
 			numerator = numerator * (long) Math.pow(entry.getKey(), entry.getValue());
 		}
