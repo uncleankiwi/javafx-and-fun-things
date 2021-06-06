@@ -47,15 +47,25 @@ public class RepeatingDecimals {
 		test("0.3k");
 		test(".84(4*)");
 		test("3.3643(73)3");
+		test("()");
 
 		//unknowns
-		System.out.println("\nUnknowns:");
+		System.out.println("\nUnknowns and stress testing:");
 		test("");
+		test(".");
+		test(".(");
+		test(".()");
+		test(".(5)");
 		test("00005.19(47)");
 		test(".123(6)");
 		test("14.5(0)");
 		test("0.0");
 		test("0.(0)");
+		test("6.");
+
+		//pi
+		System.out.println("\nApproximating pi:");
+		approximatePi();
 	}
 
 	private static void test(String decimalString) {
@@ -70,6 +80,16 @@ public class RepeatingDecimals {
 		System.out.println(decimalString + " -> " + output);
 	}
 
+	//approximating pi as a repeating decimal from 0 - 10 decimal places
+	private static void approximatePi() {
+		String piStr = String.valueOf(Math.PI);
+
+		for (int i = 0; i <= 10; i++) {
+			String testStr = "3.(" + piStr.substring(2, 2 + i) + ")";
+			System.out.print(i + " decimal places: ");
+			test(testStr);
+		}
+	}
 
 }
 
