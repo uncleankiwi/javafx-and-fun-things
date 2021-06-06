@@ -81,10 +81,11 @@ public class RepeatingDecimals {
 	}
 
 	//approximating pi as a repeating decimal from 0 - 10 decimal places
+	//results not as interesting as hoped
 	private static void approximatePi() {
 		String piStr = String.valueOf(Math.PI);
 
-		for (int i = 0; i <= 10; i++) {
+		for (int i = 0; i <= 5; i++) {			//when upper limit is 10 it takes a second or so
 			String testStr = "3.(" + piStr.substring(2, 2 + i) + ")";
 			System.out.print(i + " decimal places: ");
 			test(testStr);
