@@ -8,4 +8,11 @@ Given a number of 6-sided dice d and a desired outcome o,
  */
 
 public class DiceBinomial {
+	public static void main(String[] args) {
+
+	}
+
+	public static void draw(int dice, int desiredOutcome) {
+
+	}
 }
