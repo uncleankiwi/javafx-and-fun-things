@@ -7,6 +7,8 @@ Given a number of 6-sided dice d and a desired outcome o,
 	2. state the probability of outcome o as a fraction.
  */
 
+import util.Combination;
+
 public class DiceBinomial {
 	public static void main(String[] args) {
 
