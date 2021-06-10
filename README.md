@@ -42,3 +42,10 @@ Original idea: [xkcd](https://xkcd.com/2435/)
 Playable. Easy.
 
 ![Mastermind preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/Mastermind.PNG)
+
+### DiceBinomial
+Draws the binomial distribution of results from rolling d number of 6-sided dice.
+
+Also gives the probability of rolling a desired result r.
+
+![Mastermind preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/DiceBinomial.PNG)
