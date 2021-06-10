@@ -33,9 +33,12 @@ public class Fraction {
 	}
 
 	public void simplify() {
-		//if zero
+		//if zero or either side is one
 		if (numerator == 0) {
 			denominator = 1;
+			return;
+		}
+		else if (numerator == 1 || denominator == 1) {
 			return;
 		}
 
@@ -205,23 +208,16 @@ public class Fraction {
 		return Fraction.add(ones, Fraction.add(nonRepeatingFraction, repeatingFraction));
 	}
 
-	//returns a set of numbers that a number n is divisible by, excluding 1 and n
+	//returns a set of numbers that a number n is divisible by, excluding 1
 	public static Map<Long, Long> factor(long n) {
 		Map<Long, Long> factors = new HashMap<>();
-		long x = n;
-
-		boolean allFactorsFound = (x <= 2);
-
-		while (!allFactorsFound) {
-			for (int i = 2; i <= x; i++) {
-				if (x % i == 0 && x != i) {	//i is a factor
+		if (n <= 1) return factors;
+		while (n > 1) {
+			for (int i = 2; i <= n; i++) {
+				if (n % i == 0) {	//i is a factor
 					addFactor(factors, i);
-					x = x / i;
+					n = n / i;
 					break;
-				}
-				else if (x == i) {
-					allFactorsFound = true;
-					if (x != n) addFactor(factors, x);
 				}
 			}
 		}
