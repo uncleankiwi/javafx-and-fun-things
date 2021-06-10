@@ -14,6 +14,7 @@ The probability of getting desired result r when rolling a number of 6-sided dic
  */
 
 import util.Combination;
+import util.Fraction;
 import util.OutputDrawer;
 
 import java.util.ArrayList;
@@ -25,8 +26,10 @@ public class DiceBinomial {
 	static final int TAB_SIZE = 4;			//number of spaces to a tabs
 
 	public static void main(String[] args) {
+		draw(1, 11);
 		draw(2, 11);
 		draw(3, 11);
+		draw(4, 11);
 	}
 
 	//draw distribution of results r when rolling d 6-sided dice
@@ -51,18 +54,26 @@ public class DiceBinomial {
 		}
 
 		//scaling every frequency such that max width of a bar is 30
+		//but no matter how low a frequency is, it never gets scaled to 0
+		//unless the frequency was already 0.
 		List<Integer> scaledFrequencies = new ArrayList<>();
 		double scaleMultiplier = 1;
 		if (highestFrequency > GRAPH_WIDTH) {
 			scaleMultiplier = (double) GRAPH_WIDTH / highestFrequency;
 		}
 		for (long frequency : frequencies) {
-			scaledFrequencies.add((int) (frequency * scaleMultiplier));
+			if (frequency == 0) scaledFrequencies.add(0);
+			else {
+				int scaledFrequency = Math.max((int) (frequency * scaleMultiplier), 1);
+				scaledFrequencies.add(scaledFrequency);
+			}
+
 		}
 
 		//printing
-		//f		*****	<<
+		//f		*****	<--
 		System.out.println("Outcomes of rolling " + d + " 6-sided dice:");
+		System.out.println(OutputDrawer.padRightTabs("Outcome", OUTCOME_WIDTH) + "Frequency");
 		for (int i = 0; i < outcomes.size(); i++) {
 			String line =
 				OutputDrawer.padRightTabs(String.valueOf(outcomes.get(i)), OUTCOME_WIDTH) +
@@ -74,6 +85,8 @@ public class DiceBinomial {
 			}
 			System.out.println(line);
 		}
-		System.out.println("Probability of desired outcome " + desiredOutcome + ": " + desiredFrequency + "/" + (int) Math.pow(d, 6));
+		Fraction desiredOutcomeProbability = new Fraction(desiredFrequency, (long) Math.pow(d, 6));
+		desiredOutcomeProbability.simplify();
+		System.out.println("Probability of desired outcome " + desiredOutcome + ": " + desiredOutcomeProbability + "\n");
 	}
 }
