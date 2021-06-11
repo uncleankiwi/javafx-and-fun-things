@@ -82,6 +82,10 @@ public class Fraction {
 		}
 	}
 
+	public double asDouble() {
+		return (double) numerator / (double) denominator;
+	}
+
 	public static Fraction add(Fraction f1, Fraction f2) {
 		f1.simplify();
 		f2.simplify();
