@@ -1,10 +1,55 @@
 package pi_estimator;
 
+//pi: 3.141592653589793
+//22/7: 3.142857142857143
+
+import java.util.List;
+
+/*
+Generates a list of rational numbers that estimate pi
+The estimates use anywhere from 1 to a given number of total digits.
+The list of results should contain pairs of estimate that straddle pi;
+all others are ignored as they're never going to be any closer than these anyway.
+e.g.
+	for 1 digit, it should return 3 and 4.
+
+	for 3 digits, it should include pairs such as
+		18/6 = 3 and 19/6 = 3.16...
+		21/7 = 3 and 22/7 = 3.142...
+ */
 public class EstimateGenerator {
+	private static List<Estimate> estimates;
+	private static List<Estimate> bestEstimates;
+
 	public static void main(String[] args) {
 		System.out.println(Math.PI);
 		System.out.println((double) 22/7);
-		//3.141592653589793
-		//3.142857142857143
+
+
+		Estimate estimate = new Estimate(22, 7, 3);
+		System.out.println(estimate.closeness());
+	}
+
+	//fills the lists with estimates that use up to maxDigits
+	private static void populate(int maxDigits) {
+		for (int digits = 1; digits < maxDigits; digits++) {
+			int bestCloseness = 0;	//highest closeness in this band
+			Estimate bestEstimate;	//estimate with highest closeness in band
+
+			if (digits == 1) {
+
+			}
+			else {
+
+			}
+		}
+	}
+
+	public static List<Estimate> get() {
+		return estimates;
+	}
+
+	public static List<Estimate> getBest() {
+		return bestEstimates;
 	}
 }

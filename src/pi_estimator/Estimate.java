@@ -37,15 +37,24 @@ public class Estimate {
 		//calculating closeness
 		String fractionString = fraction.toString();
 		String piString = String.valueOf(Math.PI);
-		int correctNumbers;
-		int wrongDigit;
-		int correctPiDigit;
+		int correctNumbers = 0;
+		int wrongDigit = 0;
+		int correctPiDigit = 0;
+
+		for (int i = 0; i < fractionString.length(); i++) {
+			if (fractionString.charAt(i) != '.') {
+				if (fractionString.charAt(i) == piString.charAt(i)) correctNumbers++;
+				else {
+					wrongDigit = Integer.parseInt(String.valueOf(fractionString.charAt(i)));
+					correctPiDigit = Integer.parseInt(String.valueOf(piString.charAt(i)));
+					break;
+				}
+			}
+		}
+
 		int wrongDigitDifference = wrongDigit - correctPiDigit;
 		int closenessSign = (wrongDigitDifference > 0) ? 1 : -1;
-
-
-
-		this.closeness = closenessSign * correctNumbers * 10 + wrongDigitDifference;	//TODO
+		this.closeness = closenessSign * correctNumbers * 10 + wrongDigitDifference;
 	}
 
 	public int digits() {
