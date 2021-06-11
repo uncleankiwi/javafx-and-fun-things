@@ -35,7 +35,7 @@ public class Estimate {
 		this.digits = digits;
 
 		//calculating closeness
-		String fractionString = fraction.toString();
+		String fractionString = String.valueOf(fraction.asDouble());
 		String piString = String.valueOf(Math.PI);
 		int correctNumbers = 0;
 		int wrongDigit = 0;
