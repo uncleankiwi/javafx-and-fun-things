@@ -56,7 +56,7 @@ public class EstimateGenerator {
 	private static List<Estimate> bestEstimates;
 
 	public static void main(String[] args) {
-		populate(5);
+		populate(4);
 		System.out.println("\nEstimates:");
 		get().forEach(System.out::println);
 		System.out.println("\nBest estimates:");

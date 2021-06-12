@@ -10,6 +10,7 @@ Digits - the total number of digits used in the rational number for estimating p
 
 Closeness - measures how close this estimate is to pi. The higher the value, the close the match.
 	Right-most digit is how much the first incorrect digit is off from the corresponding digit in pi.
+	TODO - change formula to 9 - (guess - pi)
 
 	The other digits on the left are how many digits are correct.
 	The value is negative if the estimate is lower than pi, positive if otherwise.
@@ -58,6 +59,7 @@ public class Estimate {
 		this.closeness = closenessSign * correctNumbers * 10 + wrongDigitDifference;
 	}
 
+	@SuppressWarnings("unused")
 	public int digits() {
 		return digits;
 	}
