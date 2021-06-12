@@ -8,8 +8,9 @@ where the total number of digits in n and m is d.
 Digits - the total number of digits used in the rational number for estimating pi.
 	e.g. 22/7: 3 digits. 3: 1 digit.
 
-Closeness - measures how close this estimate is to pi.
+Closeness - measures how close this estimate is to pi. The higher the value, the close the match.
 	Right-most digit is how much the first incorrect digit is off from the corresponding digit in pi.
+
 	The other digits on the left are how many digits are correct.
 	The value is negative if the estimate is lower than pi, positive if otherwise.
 	e.g.
@@ -72,6 +73,6 @@ public class Estimate {
 
 	@Override
 	public String toString() {
-		return fraction.toString();
+		return fraction.toString() + ": closeness " + this.closeness();
 	}
 }
