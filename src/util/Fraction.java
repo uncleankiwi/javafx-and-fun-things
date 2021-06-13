@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Represents a fraction using a long numerator and denominator.
+ */
 public class Fraction {
 	long numerator;
 	long denominator;
@@ -32,6 +35,12 @@ public class Fraction {
 		return Objects.hash(numerator, denominator);
 	}
 
+	/**
+	 * Attempts to express this fraction in its simplest form, cancelling out
+	 * common factors in the numerator and denominator.
+	 *
+	 * <p>If numerator is 0 or 1, the denominator is set to 1.</p>
+	 */
 	public void simplify() {
 		//if zero or either side is one
 		if (numerator == 0) {
@@ -122,7 +131,18 @@ public class Fraction {
 							+ 1 / placesMultiplier * repeating / repeatingDivisor
 						= ones + nonRepeatingFraction + repeatingFraction
  */
-
+	/**
+	 * Attempts to express a string containing a number as a fraction.
+	 *
+	 * <p>The number may have repeating digits enclosed within brackets
+	 * e.g. 0.(3), which will be parsed as 1/3.</p>
+	 *
+	 * @param s String containing a decimal number.
+	 * @return Fraction equivalent to the decimal number in the input.
+	 * @throws NumberFormatException Thrown when it encounters invalid input
+	 * e.g. non-numerical characters in the input other than the decimal point
+	 * and brackets, or characters after the brackets.
+	 */
 	public static Fraction parseFraction(String s) throws NumberFormatException {
 		StringBuilder onesStr = new StringBuilder();
 		StringBuilder nonRepeatingStr = new StringBuilder();
@@ -212,7 +232,16 @@ public class Fraction {
 		return Fraction.add(ones, Fraction.add(nonRepeatingFraction, repeatingFraction));
 	}
 
-	//returns a set of numbers that a number n is divisible by, excluding 1
+	/**
+	 * Returns a set of numbers that a number n is divisible by, excluding 1.
+	 * The result is expressed as a set of key-value pairs x1-y1, x2-y2 and so on
+	 * such that
+	 *
+	 * <p>n = x1^y1 + x2^y2 + ...</p>
+	 *
+	 * @param n Number to be split into its factors.
+	 * @return A map containing the input's factors.
+	 */
 	public static Map<Long, Long> factor(long n) {
 		Map<Long, Long> factors = new HashMap<>();
 		if (n <= 1) return factors;

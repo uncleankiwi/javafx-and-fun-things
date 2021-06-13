@@ -3,19 +3,28 @@ package util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class's get() method calculates the combination of two numbers.
+ */
 /*
-If out of n elements, k are chosen, there are
-	n! / (k! * (n - k)!)
-possible results.
-The denominator is cancelled out first before multiplying the numerator
-to minimize the chances of overflow while calculating the result.
-
 e.g.
 	get(52, 5) -> 2,598,960
 	get(6, 4) -> 15
-
  */
-public class Combination {
+public final class Combination {
+	/**
+	 * Returns the number of possible results when out of n elements,
+	 * k are chosen.<br />
+	 *
+	 * i.e. n! / (k! * (n - k)!)
+
+	 * <p>The denominator is cancelled out first before multiplying the numerator
+	 * to minimize the chances of overflow while calculating the result.</p>
+	 *
+	 * @param n Pool of elements to choose from.
+	 * @param k Number of elements picked from the pool.
+	 * @return Number of possible results.
+	 */
 	public static long get(long n, long k) {
 		if (k > n) return 0;
 
