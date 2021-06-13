@@ -130,7 +130,7 @@ public class Fraction {
 							+ nonRepeating / placesMultiplier
 							+ 1 / placesMultiplier * repeating / repeatingDivisor
 						= ones + nonRepeatingFraction + repeatingFraction
- */
+	 */
 	/**
 	 * Attempts to express a string containing a number as a fraction.
 	 *

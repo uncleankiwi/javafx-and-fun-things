@@ -3,7 +3,7 @@ package util;
 /**
  * Contains methods for formatting output in the log.
  **/
-public final class OutputDrawer {
+public final class Padder {
 	/**Pads a string with tabs on the right such that the output is of
 	 * the given length (in tabs).
 	 *

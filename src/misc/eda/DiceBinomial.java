@@ -15,7 +15,7 @@ The probability of getting desired result r when rolling a number of 6-sided dic
 
 import util.Combination;
 import util.Fraction;
-import util.OutputDrawer;
+import util.Padder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,12 +73,12 @@ public class DiceBinomial {
 		//printing
 		//f		*****	<--
 		System.out.println("Outcomes of rolling " + d + " 6-sided dice:");
-		System.out.println(OutputDrawer.padRightTabs("Outcome", OUTCOME_WIDTH) + "Frequency");
+		System.out.println(Padder.padRightTabs("Outcome", OUTCOME_WIDTH) + "Frequency");
 		for (int i = 0; i < outcomes.size(); i++) {
 			String line =
-				OutputDrawer.padRightTabs(String.valueOf(outcomes.get(i)), OUTCOME_WIDTH) +
-				OutputDrawer.padRightTabs(
-					OutputDrawer.bar('*', scaledFrequencies.get(i)), GRAPH_WIDTH / TAB_SIZE + 1);
+				Padder.padRightTabs(String.valueOf(outcomes.get(i)), OUTCOME_WIDTH) +
+				Padder.padRightTabs(
+					Padder.bar('*', scaledFrequencies.get(i)), GRAPH_WIDTH / TAB_SIZE + 1);
 
 			if (outcomes.get(i) == desiredOutcome) {
 				line += "<--";

@@ -3,13 +3,12 @@ package pi_estimator;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/*
 Generates a list of rational numbers that estimate pi.
 The estimates use anywhere from 1 to a given number of total digits.
 The list of results should contain pairs of estimate that straddle pi ('bounding pairs');
 all others are ignored as they're never going to be any closer to pi than these anyway.
-**/
-/*
+
 The best estimate (bestimate?) in every 'band' of estimates is also placed in the bestEstimates list.
 e.g.
 	for 1 digit, it should return 3 and 4.	<-- best estimate in the 1-digit band: 3

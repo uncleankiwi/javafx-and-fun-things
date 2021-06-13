@@ -5,6 +5,12 @@ import java.util.List;
 
 public class PointerTest {
 	public static void main(String[] args) {
+		System.out.println((double) 22 / 7);
+		System.out.println((double) 4);
+	}
+
+	@SuppressWarnings("unused")
+	static void testPointer() {
 		String stuff = "stuff";
 		testReturn(stuff);
 		System.out.println("outside method:" + stuff);
