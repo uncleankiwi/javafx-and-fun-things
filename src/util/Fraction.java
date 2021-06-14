@@ -95,6 +95,12 @@ public class Fraction {
 		return (double) numerator / (double) denominator;
 	}
 
+	/**
+	 * Adds two fractions and simplifies the results.
+	 * @param f1 A fraction.
+	 * @param f2 Another fraction.
+	 * @return Their sum.
+	 */
 	public static Fraction add(Fraction f1, Fraction f2) {
 		f1.simplify();
 		f2.simplify();
@@ -105,14 +111,33 @@ public class Fraction {
 		return result;
 	}
 
+	/**
+	 * Adds a whole number to a fraction. Does not simplify the result.
+	 * @param f1 A fraction.
+	 * @param x A whole number to be added to the fraction.
+	 * @return The result.
+	 */
 	public static Fraction add(Fraction f1, long x) {
 		return new Fraction(f1.numerator + f1.denominator * x, f1.denominator);
 	}
 
+	/**
+	 * Adds a whole number to a fraction. Does not simplify the result.
+	 * An overload of the other add() method for completion's sake.
+	 * @param x A fraction.
+	 * @param f1 A whole number to be added to the fraction.
+	 * @return The result.
+	 */
 	public static Fraction add(long x, Fraction f1) {
 		return add(f1, x);
 	}
 
+	/**
+	 * Multiplies two fractions f1 and f2 and simplifies the results.
+	 * @param f1 A fraction.
+	 * @param f2 Another fraction.
+	 * @return Result.
+	 */
 	public static Fraction multiply(Fraction f1, Fraction f2) {
 		f1.simplify();
 		f2.simplify();
