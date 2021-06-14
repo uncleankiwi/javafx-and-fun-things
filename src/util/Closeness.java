@@ -39,9 +39,9 @@ public final class Closeness {
 	 * <p>The result is then multiplied by -1 if the value is smaller than the
 	 * reference.</p>
 	 *
-	 * @param reference long value to be compared to.
-	 * @param value long value to compare to reference.
-	 * @return Closeness of two numbers.
+	 * @param reference value to be compared to.
+	 * @param value value to compare to reference.
+	 * @return Closeness of the two numbers.
 	 */
 	public static int get(double reference, double value) {
 		//Converting both to a string and then padding with 0s such that they have the
