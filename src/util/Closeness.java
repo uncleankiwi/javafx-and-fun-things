@@ -9,9 +9,34 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 /*
-Examples: (reference value, given value)
+Examples: get(reference value, given value): expected result
+54100, 54103: 47
+	- Value is greater than reference, so result is positive.
+	- Values agree for the first 4 digits, so the left digit is 4.
+	- The absolute value of difference in the first digit that disagrees:
+		|3 - 0| = 3.
+	- Length(disagreeing digits) - length(absolute difference) = 0,
+		so
+	- Finally, arithmetic closeness = 10 - difference = 10 - 3 = 7, so right digit is 7.
+
 54100, 54097: -47
-54
+	- Value is smaller, so result is negative.
+	- Two digits agree, so left digit is 2 for now.
+	- |97 - 100| = 3
+	- Length(disagreeing digits) - length(absolute difference) = 2, which
+		is added to the logarithmic difference: 2 + 2 = 4
+	- Again, arithmetic closeness = 10 - 3 = 7.
+
+30, 100:
+	- Value is larger, so result is positive?
+	- No digits agree. Left digit is 0 for now.
+	- |100 - 30| = 70
+	- Resulting logarithmic difference = 1 + 0 = 1
+	- Arithmetic difference = 10 - 7(first digit) = 3.
+
+100, 97: -3
+	- Value is smaller, so result is negative.
+	- No digits agree. Logarithmic difference is -2.
 
  */
 /**
@@ -49,18 +74,33 @@ public final class Closeness {
 	 * <p>The result is similar to to -log(|reference - value|), but uses a
 	 * string implementation to arrive at the result.</p>
 	 *
-	 * @param reference value to be compared to.
-	 * @param value value to compare to reference.
+	 * <p>This assumes that both parameters have the same precision.</p>
+	 *
+	 * @param r Reference value to be compared to.
+	 * @param v value to compare to reference.
 	 * @return Closeness of the two numbers.
 	 */
-	public static int get(double reference, double value) {
+	public static int get(double r, double v) {
+		//Return 0 if r < 0 < v or v < 0 < r.
+		if ((r < 0 && 0 < v) || (v < 0 && r < v)) return 0;
+
+		//Polarity of result: positive if v > r, negative if v < r
+		int polarity = (v > r) ? 1 : -1;
+
+		//Padding right with zero so that both numbers have the same number of digits
+		//after the decimal point, then removing the decimal point.
+
+
+		//
+
+
 		//Converting both to a string and then padding with 0s such that they have the
 		//same length and their decimal points are in the same location.
 		//BigDecimal class has to be used to prevent the string from getting converted
 		//into scientific notation.
 
-		String referenceStr = (new BigDecimal(reference)).toPlainString();
-		String valueStr = (new BigDecimal(value)).toPlainString();
+		String referenceStr = (new BigDecimal(r)).toPlainString();
+		String valueStr = (new BigDecimal(v)).toPlainString();
 
 		if (!referenceStr.contains(".")) {
 			referenceStr += ".0";
