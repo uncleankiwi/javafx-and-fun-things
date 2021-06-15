@@ -1,16 +1,17 @@
 package util;
 
-
-/*
-
- */
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 
 /*
-Examples: get(reference value, given value): expected result
-54100, 54103: 47
+Closeness = k * (10 * logarithmic closeness + arithmetic closeness),
+where k = 1 or -1.
+
+Logarithmic difference
+= length of agreeing digits + length(
+
+Examples: get(reference value, given value) -> expected result
+54100, 54103 -> 47
 	- Value is greater than reference, so result is positive.
 	- Values agree for the first 4 digits, so the left digit is 4.
 	- The absolute value of difference in the first digit that disagrees:
@@ -19,7 +20,7 @@ Examples: get(reference value, given value): expected result
 		so
 	- Finally, arithmetic closeness = 10 - difference = 10 - 3 = 7, so right digit is 7.
 
-54100, 54097: -47
+54100, 54097 -> -47
 	- Value is smaller, so result is negative.
 	- Two digits agree, so left digit is 2 for now.
 	- |97 - 100| = 3
@@ -27,16 +28,32 @@ Examples: get(reference value, given value): expected result
 		is added to the logarithmic difference: 2 + 2 = 4
 	- Again, arithmetic closeness = 10 - 3 = 7.
 
-30, 100:
+30, 100 -> 13
 	- Value is larger, so result is positive?
 	- No digits agree. Left digit is 0 for now.
 	- |100 - 30| = 70
 	- Resulting logarithmic difference = 1 + 0 = 1
 	- Arithmetic difference = 10 - 7(first digit) = 3.
 
-100, 97: -3
+3, 100 -> 11
+	- |100 - 3| = 97
+	- 0 digits agree.
+	- Length(disagreeing digits) - length(|difference|) = 1
+	- Log difference = 1 + 0 = 1
+	- Arithmetic difference = 10 - 9(first digit) = 1.
+
+100, 197 -> 11
+	- 1 digit agrees.
+	- |97 - 0| = 97 -> arithmetic difference of 1st digit = 9.
+	- Arithmetic closeness = 10 - 9 = 1.
+
+100, 97 -> -27
 	- Value is smaller, so result is negative.
-	- No digits agree. Logarithmic difference is -2.
+	- |97 - 100| = 3
+	- Logarithmic difference length(100) - length(2)
+	- No digits agree
+
+540333, 535222 -> -25
 
  */
 /**
@@ -56,6 +73,9 @@ public final class Closeness {
 	/**
 	 * Returns a measure of the 'closeness' of a value relative to a reference
 	 * number.
+	 *
+	 * Closeness = k * (10 * logarithmic closeness + arithmetic closeness),
+	 * where k = 1 or -1.
 	 *
 	 * <p>The right-most digit is the 'arithmetic closeness' between the first
 	 * digits in the reference and given values that do not match up, equal to
