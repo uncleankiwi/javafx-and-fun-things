@@ -8,6 +8,12 @@ package util;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+/*
+Examples: (reference value, given value)
+54100, 54097: -47
+54
+
+ */
 /**
  * Holds a get() method that determines the closeness of two numbers.
  */
@@ -23,21 +29,25 @@ public final class Closeness {
 	}
 
 	/**
-	 * Similar to -log(|reference - value|), but using a string implementation, and
-	 * large differences between references and value returns 0. The result is also
-	 * negative value < reference, and positive otherweise.
+	 * Returns a measure of the 'closeness' of a value relative to a reference
+	 * number.
 	 *
-	 * <p>The right-most digit is <br />
-	 * (100 - |first two incorrect digits - two correct digits|) / 10<br />
-	 * which is how close the first incorrect digit is to be correct. This accounts
-	 * for carry-over amounts.</p>
+	 * <p>The right-most digit is the 'arithmetic closeness' between the first
+	 * digits in the reference and given values that do not match up, equal to
+	 * (10 - their absolute difference).</p>
 	 *
-	 * <p>The remaining digits on the left of the output is the number of digits
-	 * in the given value that match the exact same decimal position in the
-	 * reference value.</p>
+	 * <p>The remaining digits on the left is the number of decimal places up
+	 * to which the two numbers agree, and can be considered the 'logarithmic
+	 * closeness' of the two numbers.</p>
 	 *
-	 * <p>The result is then multiplied by -1 if the value is smaller than the
-	 * reference.</p>
+	 * <p>The resulting number is also positive if the value is greater than</p>
+	 * the reference, or negative if smaller.
+	 *
+	 * <p>e.g. 54100 (reference) and 54097 (value) give -47, while 54100 and
+	 * 54103 give 47.</p>
+	 *
+	 * <p>The result is similar to to -log(|reference - value|), but uses a
+	 * string implementation to arrive at the result.</p>
 	 *
 	 * @param reference value to be compared to.
 	 * @param value value to compare to reference.
