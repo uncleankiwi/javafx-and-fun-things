@@ -8,7 +8,8 @@ Closeness = k * (10 * logarithmic closeness + arithmetic closeness),
 where k = 1 or -1.
 
 Logarithmic difference
-= length of agreeing digits + length(
+= length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference(
+
 
 Examples: get(reference value, given value) -> expected result
 54100, 54103 -> 47
@@ -50,10 +51,21 @@ Examples: get(reference value, given value) -> expected result
 100, 97 -> -27
 	- Value is smaller, so result is negative.
 	- |97 - 100| = 3
-	- Logarithmic difference length(100) - length(2)
-	- No digits agree
+	- Agreeing digits = 0.
+	- Logarithmic difference = agreeing digits + length(100) - length(2)
+		= 0 + 3 - 1 = 2
+	- Arithmetic difference = 10 - 3 = 7
 
 540333, 535222 -> -25
+	- Polarity = -1.
+	- Agreeing digits = 1.
+	- |35222 - 40333| = 5111
+	- Logarithmic difference = 1 + length(40333) - length(5111)
+		= 1 + 5 - 4 = 2
+	- Arithmetic difference = 10 - 5 = 5
+
+3, 1000 -> 1
+	- 997
 
  */
 /**
