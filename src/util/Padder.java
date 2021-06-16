@@ -36,4 +36,20 @@ public final class Padder {
 		}
 		return output.toString();
 	}
+
+	/**
+	 * Removes a contiguous sequence of characters on the left
+	 * of a string.
+	 *
+	 * @param s String from which characters are to be removed.
+	 * @param c Character to be removed.
+	 * @return String output.
+	 */
+	public static String unpadLeft(String s, char c) {
+		int sequenceEnd = -1;
+		while (sequenceEnd + 1 < s.length() && s.charAt(sequenceEnd + 1) == c) {
+			sequenceEnd++;
+		}
+		return s.substring(sequenceEnd + 1);
+	}
 }

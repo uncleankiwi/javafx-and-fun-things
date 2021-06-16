@@ -1,19 +1,20 @@
 package misc.testing_grounds;
 
-import util.Fraction;
+import util.Padder;
 
 public class UtilTest {
 	public static void main(String[] args) {
-		System.out.println(Fraction.factor(2));
-
-		Fraction f = new Fraction(2, 64);
-		System.out.println(f);
-		f.simplify();
-		System.out.println(f);
-
-		Fraction g = new Fraction(3, 9);
-		System.out.println(g);
-		g.simplify();
-		System.out.println(g);
+		String s1 = "...34";
+		String s2 = ".34";
+		String s3 = "..sdf..";
+		String s4 = "sdfsdf";
+		String s5 = "...";
+		String s6 = "";
+		System.out.println(Padder.unpadLeft(s1, '.'));
+		System.out.println(Padder.unpadLeft(s2, '.'));
+		System.out.println(Padder.unpadLeft(s3, '.'));
+		System.out.println(Padder.unpadLeft(s4, '.'));
+		System.out.println(Padder.unpadLeft(s5, '.'));
+		System.out.println(Padder.unpadLeft(s6, '.'));
 	}
 }
