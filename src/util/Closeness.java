@@ -6,10 +6,11 @@ import java.util.Arrays;
 /*
 Closeness = k * (10 * logarithmic closeness + arithmetic closeness),
 where k = 1 or -1.
+Exception: when the two numbers are 2 orders of magnitude or more apart.
+e.g. 3 and 100.
 
 Logarithmic difference
-= length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference(
-
+= length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference)
 
 Examples: get(reference value, given value) -> expected result
 54100, 54103 -> 47
@@ -37,11 +38,7 @@ Examples: get(reference value, given value) -> expected result
 	- Arithmetic difference = 10 - 7(first digit) = 3.
 
 3, 100 -> 11
-	- |100 - 3| = 97
-	- 0 digits agree.
-	- Length(disagreeing digits) - length(|difference|) = 1
-	- Log difference = 1 + 0 = 1
-	- Arithmetic difference = 10 - 9(first digit) = 1.
+	- 0. 2 orders of magnitude in difference.
 
 100, 197 -> 11
 	- 1 digit agrees.
@@ -64,9 +61,6 @@ Examples: get(reference value, given value) -> expected result
 		= 1 + 5 - 4 = 2
 	- Arithmetic difference = 10 - 5 = 5
 
-3, 1000 -> 1
-	- 997
-
  */
 /**
  * Holds a get() method that determines the closeness of two numbers.
@@ -80,6 +74,8 @@ public final class Closeness {
 		get(Math.PI, 8);
 		System.out.println("...");
 		get(700000000, 0);
+		System.out.println("...");
+		get(0.005, 0.007);
 	}
 
 	/**
@@ -109,7 +105,7 @@ public final class Closeness {
 	 * <p>This assumes that both parameters have the same precision.</p>
 	 *
 	 * @param r Reference value to be compared to.
-	 * @param v value to compare to reference.
+	 * @param v Value to compare to reference.
 	 * @return Closeness of the two numbers.
 	 */
 	public static int get(double r, double v) {
@@ -121,46 +117,50 @@ public final class Closeness {
 
 		//Padding right with zero so that both numbers have the same number of digits
 		//after the decimal point, then removing the decimal point.
-
-
-		//
-
-
-		//Converting both to a string and then padding with 0s such that they have the
-		//same length and their decimal points are in the same location.
 		//BigDecimal class has to be used to prevent the string from getting converted
 		//into scientific notation.
-
 		String referenceStr = (new BigDecimal(r)).toPlainString();
 		String valueStr = (new BigDecimal(v)).toPlainString();
 
 		if (!referenceStr.contains(".")) {
-			referenceStr += ".0";
+			referenceStr += ".";
 		}
 		if (!valueStr.contains(".")) {
-			valueStr += ".0";
+			valueStr += ".";
 		}
 
 		String[] referenceArray = referenceStr.split("\\.");
 		String[] valueArray = valueStr.split("\\.");
 		System.out.println(Arrays.toString(referenceArray) + "::::" + Arrays.toString(valueArray));
 
-		int placesLeft = Math.max(referenceArray[0].length(), valueArray[0].length());
-		int placesRight = Math.max(referenceArray[1].length(), valueArray[1].length());
+		int rDecimalPlaces = 0;
+		String rDecimalStr = "";
+		if (referenceArray.length > 1) {
+			rDecimalStr = referenceArray[1];
+			rDecimalPlaces = referenceArray[1].length();
+		}
+		String vDecimalStr = "";
+		int vDecimalPlaces = 0;
+		if (valueArray.length > 1) {
+			vDecimalStr = valueArray[1];
+			vDecimalPlaces = valueArray[1].length();
+		}
+		int placesRight = Math.max(rDecimalPlaces, vDecimalPlaces);
 
-		referenceStr = Padder.bar('0', placesLeft - referenceArray[0].length()) +
-			referenceArray[0] +
-			"." +
-			referenceArray[1] +
-			Padder.bar('0', placesRight - referenceArray[1].length());
-		valueStr = Padder.bar('0', placesLeft - valueArray[0].length()) +
-			valueArray[0] +
-			"." +
-			valueArray[1] +
-			Padder.bar('0', placesRight - valueArray[1].length());
+		referenceStr = referenceArray[0] + rDecimalStr +
+			Padder.bar('0', placesRight - rDecimalPlaces);
+		valueStr = valueArray[0] + vDecimalStr +
+			Padder.bar('0', placesRight - vDecimalPlaces);
 		System.out.println(referenceStr);
 		System.out.println(valueStr);
 
-		return 0;
+		//Remove 0s on the left
+
+
+		//Return 0 if the numbers are 2 or more orders of magnitude apart.
+		if (Math.abs(referenceStr.length() - valueStr.length()) >= 2) return 0;
+
+
+		return 30887870;
 	}
 }
