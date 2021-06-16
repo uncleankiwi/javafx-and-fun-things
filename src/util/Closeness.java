@@ -151,11 +151,13 @@ public final class Closeness {
 			Padder.bar('0', placesRight - rDecimalPlaces);
 		valueStr = valueArray[0] + vDecimalStr +
 			Padder.bar('0', placesRight - vDecimalPlaces);
-		System.out.println(referenceStr);
-		System.out.println(valueStr);
 
 		//Remove 0s on the left
+		referenceStr = Padder.unpadLeft(referenceStr, '0');
+		valueStr = Padder.unpadLeft(valueStr, '0');
 
+		System.out.println(referenceStr);
+		System.out.println(valueStr);
 
 		//Return 0 if the numbers are 2 or more orders of magnitude apart.
 		if (Math.abs(referenceStr.length() - valueStr.length()) >= 2) return 0;
