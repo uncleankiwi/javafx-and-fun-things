@@ -8,6 +8,7 @@ public class UtilTest {
 		testDoubleToString();
 	}
 
+	@SuppressWarnings("unused")
 	private static void testDoubleToString() {
 		double d1 = 0.00004;		//adds a 0 to the right, but acceptable
 		double d2 = 400000000d;
@@ -15,7 +16,7 @@ public class UtilTest {
 		double d4 = 0.000041;
 		double d5 = 43210000d;
 		double d6 = 43.214321;
-		double d7 = 12341234.5;		//wrong?
+		double d7 = 12341234.5;
 		System.out.println(d1 + " -> " + NumberToString.doubleToString(d1));
 		System.out.println(d2 + " -> " + NumberToString.doubleToString(d2));
 		System.out.println(d3 + " -> " + NumberToString.doubleToString(d3));

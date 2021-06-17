@@ -39,8 +39,12 @@ public class NumberToString {
 				oldFractionPointless = Padder.bar('0', Math.max(0, newRightLength - oldFractionPointless.length())) + oldFractionPointless;
 			}
 
-			if (newLeftLength == 0) return "0." + oldFractionPointless;
-			else if (newRightLength == 0) return oldFractionPointless;
+			if (newLeftLength == 0) return "0." + oldFractionPointless;		//number is in the form of 0.nnnnn
+			else if (newRightLength == 0) return oldFractionPointless;		//number is an integer: nnnn
+			else {															//number is in the form of nnn.nnnn
+				return oldFractionPointless.substring(0, newLeftLength) + "." +
+					oldFractionPointless.substring(newLeftLength);
+			}
 		}
 		return s;
 	}
