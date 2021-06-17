@@ -19,7 +19,7 @@ public class NumberToString {
 		if (s.contains("E")) {
 			String[] oldDouble = s.split("E");
 			String[] oldFraction = oldDouble[0].split("\\.");
-			String oldFractionPointless = oldDouble[0] + oldDouble[1];
+			String oldFractionPointless = oldFraction[0] + oldFraction[1];
 			int exponent = Integer.parseInt(oldDouble[1]);
 			int newRightLength;
 			int newLeftLength;
@@ -36,7 +36,7 @@ public class NumberToString {
 				newRightLength = Math.abs(exponent) + oldFraction[1].length();
 				newLeftLength = Math.max(0, oldFraction[0].length() - Math.abs(exponent));
 				//padding with 0s to the left if necessary
-				oldFractionPointless = Padder.bar('0', ) + oldFractionPointless;
+				oldFractionPointless = Padder.bar('0', Math.max(0, newRightLength - oldFractionPointless.length())) + oldFractionPointless;
 			}
 
 			if (newLeftLength == 0) return "0." + oldFractionPointless;
