@@ -17,7 +17,16 @@ public class NumberToString {
 	public static String doubleToString(double d) {
 		String s = String.valueOf(d);
 		if (s.contains("E")) {
+			String[] sArr = s.split("E");
+			int exponent = Integer.parseInt(sArr[1]);
+			if (exponent > 0) {
+				//move decimal point to the right
 
+			}
+			else {
+				//move decimal point to the left
+
+			}
 		}
 		return s;
 	}

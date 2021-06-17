@@ -5,18 +5,22 @@ import util.Padder;
 
 public class UtilTest {
 	public static void main(String[] args) {
-		System.out.println(0.00004);
-		System.out.println(400000000d);
-		System.out.println(12341234d);
+		testDoubleToString();
 	}
 
 	private static void testDoubleToString() {
 		double d1 = 0.00004;
 		double d2 = 400000000d;
 		double d3 = 12341234d;
+		double d4 = 0.000041;
+		double d5 = 43210000d;
+		double d6 = 43.214321;
 		System.out.println(d1 + " -> " + NumberToString.doubleToString(d1));
 		System.out.println(d2 + " -> " + NumberToString.doubleToString(d2));
 		System.out.println(d3 + " -> " + NumberToString.doubleToString(d3));
+		System.out.println(d4 + " -> " + NumberToString.doubleToString(d4));
+		System.out.println(d5 + " -> " + NumberToString.doubleToString(d5));
+		System.out.println(d6 + " -> " + NumberToString.doubleToString(d6));
 	}
 
 	@SuppressWarnings("unused")
