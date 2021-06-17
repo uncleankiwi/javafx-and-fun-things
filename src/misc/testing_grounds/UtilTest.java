@@ -15,12 +15,14 @@ public class UtilTest {
 		double d4 = 0.000041;
 		double d5 = 43210000d;
 		double d6 = 43.214321;
+		double d7 = 12341234.5;
 		System.out.println(d1 + " -> " + NumberToString.doubleToString(d1));
 		System.out.println(d2 + " -> " + NumberToString.doubleToString(d2));
 		System.out.println(d3 + " -> " + NumberToString.doubleToString(d3));
 		System.out.println(d4 + " -> " + NumberToString.doubleToString(d4));
 		System.out.println(d5 + " -> " + NumberToString.doubleToString(d5));
 		System.out.println(d6 + " -> " + NumberToString.doubleToString(d6));
+		System.out.println(d7 + " -> " + NumberToString.doubleToString(d7));
 	}
 
 	@SuppressWarnings("unused")
