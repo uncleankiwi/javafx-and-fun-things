@@ -17,6 +17,7 @@ public class UtilTest {
 		double d5 = 43210000d;
 		double d6 = 43.214321;
 		double d7 = 12341234.5;
+		double d8 = 0d;
 		System.out.println(d1 + " -> " + NumberToString.doubleToString(d1));
 		System.out.println(d2 + " -> " + NumberToString.doubleToString(d2));
 		System.out.println(d3 + " -> " + NumberToString.doubleToString(d3));
@@ -24,6 +25,7 @@ public class UtilTest {
 		System.out.println(d5 + " -> " + NumberToString.doubleToString(d5));
 		System.out.println(d6 + " -> " + NumberToString.doubleToString(d6));
 		System.out.println(d7 + " -> " + NumberToString.doubleToString(d7));
+		System.out.println(d8 + " -> " + NumberToString.doubleToString(d8));
 	}
 
 	@SuppressWarnings("unused")

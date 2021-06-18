@@ -1,16 +1,16 @@
 package util;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
 /*
 Closeness = k * (10 * logarithmic closeness + arithmetic closeness),
 where k = 1 or -1.
 Exception: when the two numbers are 2 orders of magnitude or more apart.
 e.g. 3 and 100.
 
-Logarithmic difference
+Logarithmic closeness
 = length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference)
+
+Arithmetic closeness
+= |10 - first digit of difference between disagreeing digits|
 
 Examples: get(reference value, given value) -> expected result
 54100, 54103 -> 47
@@ -116,22 +116,12 @@ public final class Closeness {
 		int polarity = (v > r) ? 1 : -1;
 
 		//Padding right with zero so that both numbers have the same number of digits
-		//after the decimal point, then removing the decimal point.
-		//BigDecimal class has to be used to prevent the string from getting converted
-		//into scientific notation.
-		String referenceStr = (new BigDecimal(r)).toPlainString();
-		String valueStr = (new BigDecimal(v)).toPlainString();
-
-		if (!referenceStr.contains(".")) {
-			referenceStr += ".";
-		}
-		if (!valueStr.contains(".")) {
-			valueStr += ".";
-		}
+		//after the decimal point, then removing the decimal point if any.
+		String referenceStr = NumberToString.doubleToString(r);
+		String valueStr = NumberToString.doubleToString(v);
 
 		String[] referenceArray = referenceStr.split("\\.");
 		String[] valueArray = valueStr.split("\\.");
-		System.out.println(Arrays.toString(referenceArray) + "::::" + Arrays.toString(valueArray));
 
 		int rDecimalPlaces = 0;
 		String rDecimalStr = "";
@@ -161,6 +151,11 @@ public final class Closeness {
 
 		//Return 0 if the numbers are 2 or more orders of magnitude apart.
 		if (Math.abs(referenceStr.length() - valueStr.length()) >= 2) return 0;
+
+		//Logarithmic difference
+		//= length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference)
+
+
 
 
 		return 30887870;
