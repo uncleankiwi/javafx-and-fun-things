@@ -67,15 +67,17 @@ Examples: get(reference value, given value) -> expected result
  */
 public final class Closeness {
 	public static void main(String[] args) {
-		get(3, 5);
+		System.out.println(get(3, 5));
 		System.out.println("...");
-		get(35678, 0.00004);
+		System.out.println(get(35678, 0.00004));
 		System.out.println("...");
-		get(Math.PI, 8);
+		System.out.println(get(Math.PI, 8));
 		System.out.println("...");
-		get(700000000, 0);
+		System.out.println(get(700000000, 0));
 		System.out.println("...");
-		get(0.005, 0.007);
+		System.out.println(get(0.005, 0.007));
+		System.out.println("...");
+		System.out.println(get(0, 1));
 	}
 
 	/**
@@ -117,8 +119,8 @@ public final class Closeness {
 
 		//Padding right with zero so that both numbers have the same number of digits
 		//after the decimal point, then removing the decimal point if any.
-		String referenceStr = NumberToString.doubleToString(r);
-		String valueStr = NumberToString.doubleToString(v);
+		String referenceStr = NumberToString.doubleToString(Math.abs(r));
+		String valueStr = NumberToString.doubleToString(Math.abs(v));
 
 		String[] referenceArray = referenceStr.split("\\.");
 		String[] valueArray = valueStr.split("\\.");
@@ -142,9 +144,11 @@ public final class Closeness {
 		valueStr = valueArray[0] + vDecimalStr +
 			Padder.bar('0', placesRight - vDecimalPlaces);
 
-		//Remove 0s on the left
+		//Remove 0s on the left, but leave a zero if result is empty
 		referenceStr = Padder.unpadLeft(referenceStr, '0');
 		valueStr = Padder.unpadLeft(valueStr, '0');
+		if (referenceStr.equals("")) referenceStr = "0";
+		if (valueStr.equals("")) valueStr = "0";
 
 		System.out.println(referenceStr);
 		System.out.println(valueStr);
@@ -152,12 +156,37 @@ public final class Closeness {
 		//Return 0 if the numbers are 2 or more orders of magnitude apart.
 		if (Math.abs(referenceStr.length() - valueStr.length()) >= 2) return 0;
 
-		//Logarithmic difference
-		//= length of agreeing digits + length(max(r,v)) - length(disagreeing digits difference)
+		//Determine all components needed to calculate logarithmic closeness:
+		//Logarithmic closeness
+		//= agreeingDigitLength + largerLength - length(disagreeing digits difference)
+		//where largerLength = length(max(r,v))
+		int agreeingDigitLength = 0;
+		if (referenceStr.length() == valueStr.length()) {
+			for (int i = 0; i < referenceStr.length(); i++) {
+				if (referenceStr.charAt(i) == valueStr.charAt(i)) agreeingDigitLength++;
+				else break;
+			}
+		}
+
+		int largerLength = Math.max(referenceStr.length(), valueStr.length());
+
+		referenceStr = referenceStr.substring(0, agreeingDigitLength);
+		valueStr = valueStr.substring(0, agreeingDigitLength);
+		String disagreeingDigitDifference = String.valueOf(Math.abs(
+			Long.parseLong(referenceStr) - Long.parseLong(valueStr)));
+		int disagreeingDigitLength = disagreeingDigitDifference.length();
+
+		int logarithmicCloseness = agreeingDigitLength + largerLength - disagreeingDigitLength;
+
+		//arithmetic closeness
+		//= |10 - first digit of difference between disagreeing digits|
+		int arithmeticCloseness = 0;
+		if (disagreeingDigitDifference.length() > 0) {
+			int firstDisagreeingDigit = Integer.parseInt(String.valueOf(disagreeingDigitDifference.charAt(0)));
+			arithmeticCloseness = 10 - firstDisagreeingDigit;
+		}
 
 
-
-
-		return 30887870;
+		return polarity * (logarithmicCloseness * 10 + arithmeticCloseness);
 	}
 }
