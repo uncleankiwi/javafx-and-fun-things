@@ -25,6 +25,7 @@ Closeness - measures how close this estimate is to pi. The higher the value, the
 Absolute closeness - closeness but always positive.
  */
 
+import util.Closeness;
 import util.Fraction;
 
 public class Estimate {
@@ -37,26 +38,7 @@ public class Estimate {
 		this.digits = digits;
 
 		//calculating closeness
-		String fractionString = String.valueOf(fraction.asDouble());
-		String piString = String.valueOf(Math.PI);
-		int correctNumbers = 0;
-		int wrongDigit = 0;
-		int correctPiDigit = 0;
-
-		for (int i = 0; i < fractionString.length(); i++) {
-			if (fractionString.charAt(i) != '.') {
-				if (fractionString.charAt(i) == piString.charAt(i)) correctNumbers++;
-				else {
-					wrongDigit = Integer.parseInt(String.valueOf(fractionString.charAt(i)));
-					correctPiDigit = Integer.parseInt(String.valueOf(piString.charAt(i)));
-					break;
-				}
-			}
-		}
-
-		int wrongDigitDifference = wrongDigit - correctPiDigit;
-		int closenessSign = (wrongDigitDifference > 0) ? 1 : -1;
-		this.closeness = closenessSign * correctNumbers * 10 + wrongDigitDifference;
+		this.closeness = Closeness.get(Math.PI, fraction.asDouble());
 	}
 
 	@SuppressWarnings("unused")
