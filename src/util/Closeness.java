@@ -66,19 +66,6 @@ Examples: get(reference value, given value) -> expected result
  * Holds a get() method that determines the closeness of two numbers.
  */
 public final class Closeness {
-	public static void main(String[] args) {
-		System.out.println(get(3, 5));
-		System.out.println("...");
-		System.out.println(get(35678, 0.00004));
-		System.out.println("...");
-		System.out.println(get(Math.PI, 8));
-		System.out.println("...");
-		System.out.println(get(700000000, 0));
-		System.out.println("...");
-		System.out.println(get(0.005, 0.007));
-		System.out.println("...");
-		System.out.println(get(0, 1));
-	}
 
 	/**
 	 * Returns a measure of the 'closeness' of a value relative to a reference
@@ -150,9 +137,6 @@ public final class Closeness {
 		if (referenceStr.equals("")) referenceStr = "0";
 		if (valueStr.equals("")) valueStr = "0";
 
-		System.out.println(referenceStr);
-		System.out.println(valueStr);
-
 		//Return 0 if the numbers are 2 or more orders of magnitude apart.
 		if (Math.abs(referenceStr.length() - valueStr.length()) >= 2) return 0;
 
@@ -170,8 +154,8 @@ public final class Closeness {
 
 		int largerLength = Math.max(referenceStr.length(), valueStr.length());
 
-		referenceStr = referenceStr.substring(0, agreeingDigitLength);
-		valueStr = valueStr.substring(0, agreeingDigitLength);
+		referenceStr = referenceStr.substring(agreeingDigitLength);
+		valueStr = valueStr.substring(agreeingDigitLength);
 		String disagreeingDigitDifference = String.valueOf(Math.abs(
 			Long.parseLong(referenceStr) - Long.parseLong(valueStr)));
 		int disagreeingDigitLength = disagreeingDigitDifference.length();
