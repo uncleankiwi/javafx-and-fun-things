@@ -11,12 +11,15 @@ public class UtilTest {
 
 	@SuppressWarnings("unused")
 	private static void testCloseness() {
-		System.out.println("3 vs 5 -> " + Closeness.get(3, 5));
-		System.out.println("35678 vs 0.00004 -> " + Closeness.get(35678, 0.00004));
-		System.out.println("pi vs 8 -> " + Closeness.get(Math.PI, 8));
-		System.out.println("700000000 vs 0 -> " + Closeness.get(700000000, 0));
-		System.out.println("0.005 vs 0.007 -> " + Closeness.get(0.005, 0.007));
-		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
+//		System.out.println("3 vs 5 -> " + Closeness.get(3, 5));
+//		System.out.println("35678 vs 0.00004 -> " + Closeness.get(35678, 0.00004));
+//		System.out.println(Math.PI + " vs 8 -> " + Closeness.get(Math.PI, 8));
+//		System.out.println("700000000 vs 0 -> " + Closeness.get(700000000, 0));
+//		System.out.println("0.005 vs 0.007 -> " + Closeness.get(0.005, 0.007));
+//		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
+		System.out.println("10 vs 1 -> " + Closeness.get(10, 1));
+//		System.out.println("45723.58 vs 45753.535236 -> " + Closeness.get(45723.58, 45751.535236));
+
 	}
 
 	@SuppressWarnings("unused")

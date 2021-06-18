@@ -152,15 +152,16 @@ public final class Closeness {
 			}
 		}
 
-		int largerLength = Math.max(referenceStr.length(), valueStr.length());
-
 		referenceStr = referenceStr.substring(agreeingDigitLength);
 		valueStr = valueStr.substring(agreeingDigitLength);
+
+		int largerLength = Math.max(referenceStr.length(), valueStr.length());
+
 		String disagreeingDigitDifference = String.valueOf(Math.abs(
 			Long.parseLong(referenceStr) - Long.parseLong(valueStr)));
-		int disagreeingDigitLength = disagreeingDigitDifference.length();
+		int differenceLength = disagreeingDigitDifference.length();
 
-		int logarithmicCloseness = agreeingDigitLength + largerLength - disagreeingDigitLength;
+		int logarithmicCloseness = agreeingDigitLength + largerLength - differenceLength;
 
 		//arithmetic closeness
 		//= |10 - first digit of difference between disagreeing digits|
