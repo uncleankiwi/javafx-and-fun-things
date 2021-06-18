@@ -37,7 +37,7 @@ Examples: get(reference value, given value) -> expected result
 	- Resulting logarithmic difference = 1 + 0 = 1
 	- Arithmetic difference = 10 - 7(first digit) = 3.
 
-3, 100 -> 11
+3, 100 -> 0
 	- 0. 2 orders of magnitude in difference.
 
 100, 197 -> 11

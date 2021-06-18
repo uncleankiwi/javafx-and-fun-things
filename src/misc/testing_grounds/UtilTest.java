@@ -11,14 +11,33 @@ public class UtilTest {
 
 	@SuppressWarnings("unused")
 	private static void testCloseness() {
-//		System.out.println("3 vs 5 -> " + Closeness.get(3, 5));
-//		System.out.println("35678 vs 0.00004 -> " + Closeness.get(35678, 0.00004));
-//		System.out.println(Math.PI + " vs 8 -> " + Closeness.get(Math.PI, 8));
-//		System.out.println("700000000 vs 0 -> " + Closeness.get(700000000, 0));
-//		System.out.println("0.005 vs 0.007 -> " + Closeness.get(0.005, 0.007));
-//		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
+		/*
+		54100, 54103 -> 47
+		54100, 54097 -> -47
+		30, 100 -> 13
+		3, 100 -> 0
+		100, 197 -> 11
+		100, 97 -> -27
+		540333, 535222 -> -25
+		 */
+		System.out.println("Testing with expected results:");
+		System.out.println("54100 vs 54103 -> " + Closeness.get(54100, 54103));
+		System.out.println("54100 vs 54097 -> " + Closeness.get(54100, 54097));
+		System.out.println("30 vs 100 -> " + Closeness.get(30, 100));
+		System.out.println("3 vs 100 -> " + Closeness.get(3, 100));
+		System.out.println("100 vs 197 -> " + Closeness.get(100, 197));
+		System.out.println("100 vs 97 -> " + Closeness.get(100, 97));
+		System.out.println("540333 vs 535222 -> " + Closeness.get(540333, 535222));
+
+		System.out.println("\nTesting with unknown cases:");
+		System.out.println("3 vs 5 -> " + Closeness.get(3, 5));
+		System.out.println("35678 vs 0.00004 -> " + Closeness.get(35678, 0.00004));
+		System.out.println(Math.PI + " vs 8 -> " + Closeness.get(Math.PI, 8));
+		System.out.println("700000000 vs 0 -> " + Closeness.get(700000000, 0));
+		System.out.println("0.005 vs 0.007 -> " + Closeness.get(0.005, 0.007));
+		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
 		System.out.println("10 vs 1 -> " + Closeness.get(10, 1));
-//		System.out.println("45723.58 vs 45753.535236 -> " + Closeness.get(45723.58, 45751.535236));
+		System.out.println("45723.58 vs 45753.535236 -> " + Closeness.get(45723.58, 45751.535236));
 
 	}
 
