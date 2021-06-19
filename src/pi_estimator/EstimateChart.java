@@ -12,13 +12,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+//TODO modify x-axis - scale and description: denominator of fraction estimating pi?
+//TODO select charts via legend
+//TODO dull colours of unselected upon selection
+//TODO hover values for selected chart
+
+
 /*
 Draws estimates grouped by number of digits on a javafx chart.
 Probably not ideal because it's too resource-intensive when fed
 a high digit number; every estimate is a separate node.
 
 The display also gets a little... funky at high digits due
-to over-crowding. Looks best at >=6 digits.
+to over-crowding. Looks best at <=6 digits.
  */
 public class EstimateChart extends Application {
 	public static void main(String[] args) {
@@ -40,7 +46,6 @@ public class EstimateChart extends Application {
 		final int maxDigits = 6;
 		EstimateGenerator.populate(maxDigits);
 		List<Estimate> estimates = EstimateGenerator.get();
-		List<Estimate> bestEstimates = EstimateGenerator.getBest();
 
 		//get the number of points in each digit band's estimates
 		//while also splitting each band into a separate list
