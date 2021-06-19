@@ -55,14 +55,6 @@ public class EstimateGenerator {
 	private static List<Estimate> estimates;
 	private static List<Estimate> bestEstimates;
 
-	public static void main(String[] args) {
-		populate(9);
-//		System.out.println("\nEstimates:");
-//		get().forEach(System.out::println);
-		System.out.println("\nBest estimates:");
-		getBest().forEach(System.out::println);
-	}
-
 	//fills the lists with estimates that use up to the given number of maxDigits
 	public static void populate(int maxDigits) {
 		estimates = new ArrayList<>();

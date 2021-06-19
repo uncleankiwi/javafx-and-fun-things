@@ -1,5 +1,6 @@
 package misc.testing_grounds;
 
+import pi_estimator.EstimateGenerator;
 import util.Closeness;
 import util.NumberToString;
 import util.Padder;
@@ -10,8 +11,18 @@ public class UtilTest {
 	}
 
 	@SuppressWarnings("unused")
+	private static void testEstimateGenerator() {
+		EstimateGenerator.populate(4);
+		System.out.println("\nEstimates:");
+		EstimateGenerator.get().forEach(System.out::println);
+		System.out.println("\nBest estimates:");
+		EstimateGenerator.getBest().forEach(System.out::println);
+	}
+
+	@SuppressWarnings("unused")
 	private static void testCloseness() {
 		/*
+		Known cases:
 		54100, 54103 -> 47
 		54100, 54097 -> -47
 		30, 100 -> 13
@@ -38,7 +49,6 @@ public class UtilTest {
 		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
 		System.out.println("10 vs 1 -> " + Closeness.get(10, 1));
 		System.out.println("45723.58 vs 45753.535236 -> " + Closeness.get(45723.58, 45751.535236));
-
 	}
 
 	@SuppressWarnings("unused")
