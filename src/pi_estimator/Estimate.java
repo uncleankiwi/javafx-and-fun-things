@@ -9,18 +9,7 @@ Digits - the total number of digits used in the rational number for estimating p
 	e.g. 22/7: 3 digits. 3: 1 digit.
 
 Closeness - measures how close this estimate is to pi. The higher the value, the close the match.
-	Right-most digit is how much the first incorrect digit is off from the corresponding digit in pi.
-	TODO - change formula to 9 - (guess - pi)
-
-	The other digits on the left are how many digits are correct.
-	The value is negative if the estimate is lower than pi, positive if otherwise.
-	e.g.
-		Closeness of 3 is -11, since it has 1 digit correct (3)
-		and the first incorrect digit (0) is 1 lower than the actual digit (1).
-
-		Closeness of 22/7 should be 31.
-		The fraction works out to 3.142... Since there are 3 correct digits (3.14)
-		and the first incorrect digit (2) is 1 higher than the actual digit (1).
+	See util.Closeness for documentation on this value.
 
 Absolute closeness - closeness but always positive.
  */
