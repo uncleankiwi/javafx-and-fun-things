@@ -1,18 +1,20 @@
 package pi_estimator;
 
+import com.sun.javafx.charts.Legend;
 import javafx.application.Application;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO select charts via legend
-//TODO dull colours of unselected upon selection
 //TODO hover values for selected chart
 
 
@@ -61,12 +63,36 @@ public class EstimateChart extends Application {
 			List<Estimate> bandEstimates = estimates.get(i);
 
 			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
-
 				series.getData().add(new XYChart.Data<>(
 					((double) j / (bandEstimates.size() - 1)), bandEstimates.get(j).absoluteCloseness()));
 			}
 
 			chart.getData().add(series);
+		}
+
+		//making legend toggle graph opacity and tooltips
+		for (Node node : chart.getChildrenUnmodifiable()){
+			if (node instanceof Legend) {
+				Legend legend = (Legend) node;
+
+				//match each LegendItem to each series on chart
+				for (Legend.LegendItem legendItem : legend.getItems()) {
+					for (XYChart.Series<Number, Number> series : chart.getData()) {
+						if (legendItem.getText().equals(series.getName())) {
+
+							legendItem.getSymbol().setCursor(Cursor.HAND);
+							legendItem.getSymbol().setOnMouseClicked(event -> {
+								if (event.getButton() == MouseButton.PRIMARY) {
+
+									//TODO toggle opacity and mouseover
+									series.getNode().setVisible(!series.getNode().isVisible());
+								}
+							});
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
