@@ -1,18 +1,15 @@
 package pi_estimator;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-//TODO modify x-axis - scale and description: denominator of fraction estimating pi?
 //TODO select charts via legend
 //TODO dull colours of unselected upon selection
 //TODO hover values for selected chart
@@ -37,42 +34,35 @@ public class EstimateChart extends Application {
 
 		final NumberAxis yAxis = new NumberAxis();
 		yAxis.setLabel("Closeness of estimate");
+		yAxis.setMinorTickVisible(false);
 		final NumberAxis xAxis = new NumberAxis();
-		xAxis.setLabel("Denominator");
+		xAxis.setLabel("Denominator of fraction estimating pi");
+		xAxis.setTickMarkVisible(false);
+		xAxis.setTickLabelsVisible(false);
+		xAxis.setMinorTickVisible(false);
+		xAxis.setAutoRanging(false);
+		xAxis.setUpperBound(1.1);
+		xAxis.setLowerBound(-0.1);
 		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 		chart.setTitle("Closeness of estimates of pi");
+
 
 		//getting lists of estimate from the generator
 		final int maxDigits = 6;
 		EstimateGenerator.populate(maxDigits);
-		List<Estimate> estimates = EstimateGenerator.get();
-
-		//get the number of points in each digit band's estimates
-		//while also splitting each band into a separate list
-		final int[] bandSize = new int[maxDigits];
-		ArrayList<LinkedList<Integer>> closeness = new ArrayList<>();
-
-		for (int i = 0; i < maxDigits; i++) {
-			closeness.add(new LinkedList<>());
-		}
-
-		for (Estimate estimate : estimates) {
-			int digits = estimate.digits() - 1;
-			bandSize[digits]++;
-			closeness.get(digits).add(estimate.absoluteCloseness());
-		}
+		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in-sito
 		for (int i = 0; i < maxDigits; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
-			series.setName((i + 1) + " digits");
+			series.setName((i + 1) + " digit" + (i + 1 != 1 ? "s" : ""));
+			List<Estimate> bandEstimates = estimates.get(i);
 
-			List<Integer> bandCloseness = closeness.get(i);
-			for (int j = 0; j < bandCloseness.size(); j++) {	//for every different denominator
+			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
 
 				series.getData().add(new XYChart.Data<>(
-					((double) j / (bandSize[i] - 1)), bandCloseness.get(j)));
+					((double) j / (bandEstimates.size() - 1)), bandEstimates.get(j).absoluteCloseness()));
 			}
 
 			chart.getData().add(series);

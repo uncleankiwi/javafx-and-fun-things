@@ -1,7 +1,9 @@
 package pi_estimator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 Generates a list of rational numbers that estimate pi.
@@ -52,15 +54,16 @@ i.e. Only estimates that are bounding pairs of pi will be looked at.
 
  */
 public class EstimateGenerator {
-	private static List<Estimate> estimates;
+	private static Map<Integer, List<Estimate>> estimates;
 	private static List<Estimate> bestEstimates;
 
 	//fills the lists with estimates that use up to the given number of maxDigits
 	public static void populate(int maxDigits) {
-		estimates = new ArrayList<>();
+		estimates = new HashMap<>();
 		bestEstimates = new ArrayList<>();
 
 		for (int digits = 1; digits <= maxDigits; digits++) {
+			List<Estimate> estimatesInBand = new ArrayList<>();
 			int bestAbsoluteCloseness = 0;	//highest absolute closeness in this band
 			Estimate bestEstimate = null;	//estimate with highest closeness in band
 
@@ -73,8 +76,8 @@ public class EstimateGenerator {
 					int lowerNumerator = (int) (Math.PI * denominator);
 					Estimate lowerEstimate = new Estimate(lowerNumerator, denominator, digits);
 					Estimate higherEstimate = new Estimate(lowerNumerator + 1, denominator, digits);
-					estimates.add(lowerEstimate);
-					estimates.add(higherEstimate);
+					estimatesInBand.add(lowerEstimate);
+					estimatesInBand.add(higherEstimate);
 					if (lowerEstimate.absoluteCloseness() > bestAbsoluteCloseness) {
 						bestAbsoluteCloseness = lowerEstimate.absoluteCloseness();
 						bestEstimate = lowerEstimate;
@@ -85,13 +88,14 @@ public class EstimateGenerator {
 					}
 				}
 			}
+			estimates.put(digits, estimatesInBand);
 
 			//adding the best estimate found in this band
 			bestEstimates.add(bestEstimate);
 		}
 	}
 
-	public static List<Estimate> get() {
+	public static Map<Integer, List<Estimate>> get() {
 		return estimates;
 	}
 

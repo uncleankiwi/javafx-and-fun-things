@@ -5,3 +5,8 @@
 *{
     -fx-create-symbols: false;
 }
+
+.chart-vertical-zero-line{
+    -fx-stroke: null;
+    -fx-stroke-width: 0px;
+}

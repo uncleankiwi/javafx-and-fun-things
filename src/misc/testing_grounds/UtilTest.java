@@ -13,8 +13,6 @@ public class UtilTest {
 	@SuppressWarnings("unused")
 	private static void testEstimateGenerator() {
 		EstimateGenerator.populate(4);
-		System.out.println("\nEstimates:");
-		EstimateGenerator.get().forEach(System.out::println);
 		System.out.println("\nBest estimates:");
 		EstimateGenerator.getBest().forEach(System.out::println);
 	}
