@@ -9,8 +9,10 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +29,11 @@ The display also gets a little... funky at high digits due
 to over-crowding. Looks best at <=6 digits.
  */
 public class EstimateChart extends Application {
+	static final int MAX_DIGITS = 6;
+
+	private Map<Node, SeriesWrapper> nodeSeriesMap;
+	private Node selectedNode = null;
+
 	public static void main(String[] args) {
 		launch();
 	}
@@ -51,13 +58,12 @@ public class EstimateChart extends Application {
 
 
 		//getting lists of estimate from the generator
-		final int maxDigits = 6;
-		EstimateGenerator.populate(maxDigits);
+		EstimateGenerator.populate(MAX_DIGITS);
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in-sito
-		for (int i = 1; i <= maxDigits; i++) {	//for each digit band
+		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
 			series.setName(i + " digit" + (i != 1 ? "s" : ""));
 			List<Estimate> bandEstimates = estimates.get(i);
@@ -70,24 +76,26 @@ public class EstimateChart extends Application {
 			chart.getData().add(series);
 		}
 
-		//making legend toggle graph opacity and tooltips
+		//Making legend toggle graph opacity and tooltips.
+		//When nothing is selected, all are opaque and without tooltips.
+		//When a legend item is moused over or selected, then that graph is opaque with tooltips;
+		//all others are translucent and without tooltips.
 		for (Node node : chart.getChildrenUnmodifiable()){
 			if (node instanceof Legend) {
 				Legend legend = (Legend) node;
+				nodeSeriesMap = new HashMap<>();
 
 				//match each LegendItem to each series on chart
 				for (Legend.LegendItem legendItem : legend.getItems()) {
+
 					for (XYChart.Series<Number, Number> series : chart.getData()) {
 						if (legendItem.getText().equals(series.getName())) {
 
+							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series.getNode()));
 							legendItem.getSymbol().setCursor(Cursor.HAND);
-							legendItem.getSymbol().setOnMouseClicked(event -> {
-								if (event.getButton() == MouseButton.PRIMARY) {
-
-									//TODO toggle opacity and mouseover
-									series.getNode().setVisible(!series.getNode().isVisible());
-								}
-							});
+							legendItem.getSymbol().setOnMouseEntered(event -> legendOnMouseEntered(legendItem.getSymbol()));
+							legendItem.getSymbol().setOnMouseExited(event -> legendOnOnMouseExited());
+							legendItem.getSymbol().setOnMouseClicked(event -> legendOnMouseClicked(event, legendItem.getSymbol()));
 							break;
 						}
 					}
@@ -101,5 +109,54 @@ public class EstimateChart extends Application {
 		stage.show();
 	}
 
+	//set node to selected, set others to background
+	private void legendOnMouseEntered(Node node) {
+		SeriesWrapper seriesWrapper = nodeSeriesMap.get(node);
+		setOneToSelected(seriesWrapper);
+	}
+
+	//if nothing is selected, set all to idle
+	//if something is selected, set to selected, set others to background
+	private void legendOnOnMouseExited() {
+		if (selectedNode == null) {
+			setIdleAll();
+		}
+		else {
+			SeriesWrapper seriesWrapper = nodeSeriesMap.get(selectedNode);
+			setOneToSelected(seriesWrapper);
+		}
+	}
+
+	//if already selected, set all to idle
+	//if not selected, set to selected, and set others to background
+	private void legendOnMouseClicked(MouseEvent event, Node node) {
+		if (event.getButton() == MouseButton.PRIMARY) {
+			//if this is selected, deselect it
+			if (selectedNode == node) {
+				setIdleAll();
+				selectedNode = null;
+			}
+			//if a different node was selected, deselect that, and select this
+			else {
+				selectedNode = node;
+				SeriesWrapper seriesWrapper = nodeSeriesMap.get(node);
+				setOneToSelected(seriesWrapper);
+			}
+		}
+	}
+
+	private void setIdleAll() {
+		for (SeriesWrapper seriesWrapper : nodeSeriesMap.values()) {
+			seriesWrapper.setIdle();
+		}
+	}
+
+	//sets one series to selected and the remaining to background
+	private void setOneToSelected(SeriesWrapper selectedWrapper) {
+		for (SeriesWrapper seriesWrapper : nodeSeriesMap.values()) {
+			if (seriesWrapper == selectedWrapper) seriesWrapper.setSelected();
+			else seriesWrapper.setBackground();
+		}
+	}
 
 }
