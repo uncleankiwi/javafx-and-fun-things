@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -16,9 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-//TODO hover values for selected chart
-
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.
@@ -62,7 +60,7 @@ public class EstimateChart extends Application {
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//assign bands to separate series, then populate those series
-		//while calculating x-axis value in-sito
+		//while calculating x-axis value in situ
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
 			series.setName(i + " digit" + (i != 1 ? "s" : ""));
@@ -111,7 +109,26 @@ public class EstimateChart extends Application {
 			}
 		}
 
+		//Add a listener to chart that shows an appropriately-coloured point
+		//and pane with the fraction and closeness of the estimate
+		//that has the closest x value to the mouse cursor
+		//and also shows if it's a best estimate in the digit band.
 
+		//TODO hover values for selected chart
+
+//		chart.setOnMouseMoved(event -> {
+//			System.out.println(event.getX() + " : " + event.getY());
+//
+//		});
+		for (XYChart.Series<Number, Number> series : chart.getData()) {
+			for (XYChart.Data<Number, Number> data : series.getData()) {
+				String s = data.getXValue().toString() + "," + data.getYValue().toString();
+				Tooltip tooltip = new Tooltip(s + " asdfasdf");
+				Tooltip.install(data.getNode(), tooltip);
+				System.out.println("t installed");
+			}
+
+		}
 	}
 
 	//set node to selected, set others to background
