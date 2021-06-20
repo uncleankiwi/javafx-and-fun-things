@@ -76,6 +76,12 @@ public class EstimateChart extends Application {
 			chart.getData().add(series);
 		}
 
+		//initializing chart - seems like css properties can't be read before this
+		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
+		Scene scene = new Scene(chart, 800, 600);
+		stage.setScene(scene);
+		stage.show();
+
 		//Making legend toggle graph opacity and tooltips.
 		//When nothing is selected, all are opaque and without tooltips.
 		//When a legend item is moused over or selected, then that graph is opaque with tooltips;
@@ -91,7 +97,9 @@ public class EstimateChart extends Application {
 					for (XYChart.Series<Number, Number> series : chart.getData()) {
 						if (legendItem.getText().equals(series.getName())) {
 
-							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series.getNode()));
+//							System.out.println(series.nodeProperty().get());
+
+							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series));
 							legendItem.getSymbol().setCursor(Cursor.HAND);
 							legendItem.getSymbol().setOnMouseEntered(event -> legendOnMouseEntered(legendItem.getSymbol()));
 							legendItem.getSymbol().setOnMouseExited(event -> legendOnOnMouseExited());
@@ -103,10 +111,7 @@ public class EstimateChart extends Application {
 			}
 		}
 
-		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
-		Scene scene = new Scene(chart, 800, 600);
-		stage.setScene(scene);
-		stage.show();
+
 	}
 
 	//set node to selected, set others to background

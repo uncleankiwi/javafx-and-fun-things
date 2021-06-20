@@ -1,6 +1,9 @@
 package pi_estimator;
 
-import javafx.scene.Node;
+import javafx.scene.chart.XYChart;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 Holds a JavaFx Series node, its original colour, its translucent colour,
@@ -10,27 +13,49 @@ as well as methods to set it to different states:
 	3. background (translucent colour, no tooltip) - when something else is selected/moused-over
  */
 public class SeriesWrapper {
-	private final Node node;	//the node of a series on a Chart
+	private final XYChart.Series<Number, Number> series;
 	private State state;		//is this node fully visible/translucent/etc
+	private String colour;
+	private String fadedColour;
 
-	public SeriesWrapper(Node node) {
-		this.node = node;
+	public SeriesWrapper(XYChart.Series<Number, Number> series) {
 		this.state = State.IDLE;
+		this.series = series;
+		extractColour(series.nodeProperty().get().toString());
 	}
 
 	public void setIdle() {
-		this.state = State.IDLE;
-		this.node.setVisible(true);
+		state = State.IDLE;
+		setColour();
 	}
 
 	public void setSelected() {
-		this.state = State.SELECTED;
-		this.node.setVisible(true);
+		state = State.SELECTED;
+		series.getNode().toFront();
+		setColour();
 	}
 
 	public void setBackground() {
-		this.state = State.BACKGROUND;
-		this.node.setVisible(false);
+		state = State.BACKGROUND;
+		setFadedColour();
+	}
+
+	//Extract colour from node properties e.g. stroke=0x9a42c8ff
+	//and put it into the colour attribute
+	private void extractColour(String css) {
+		Pattern pattern = Pattern.compile("(?<=stroke=0x)[0-9a-z]{8}");
+		Matcher matcher = pattern.matcher(css);
+		if (matcher.find())	colour = "#" + matcher.group(0);
+		System.out.println(colour);
+		fadedColour = colour.substring(0, colour.length() - 2) + "33";
+	}
+
+	private void setColour() {
+		series.getNode().setStyle("-fx-stroke: " + colour + ";");
+	}
+
+	private void setFadedColour() {
+		series.getNode().setStyle("-fx-stroke: " + fadedColour + ";");
 	}
 
 	private enum State {
