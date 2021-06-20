@@ -1,14 +1,15 @@
 package pi_estimator;
 
 import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 //TODO select charts via legend
 //TODO dull colours of unselected upon selection
@@ -54,9 +55,9 @@ public class EstimateChart extends Application {
 
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in-sito
-		for (int i = 0; i < maxDigits; i++) {	//for each digit band
+		for (int i = 1; i <= maxDigits; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
-			series.setName((i + 1) + " digit" + (i + 1 != 1 ? "s" : ""));
+			series.setName(i + " digit" + (i != 1 ? "s" : ""));
 			List<Estimate> bandEstimates = estimates.get(i);
 
 			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
