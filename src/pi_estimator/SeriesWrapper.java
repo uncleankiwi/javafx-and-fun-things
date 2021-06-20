@@ -1,5 +1,6 @@
 package pi_estimator;
 
+import javafx.scene.Node;
 import javafx.scene.chart.XYChart;
 
 import java.util.regex.Matcher;
@@ -14,14 +15,19 @@ as well as methods to set it to different states:
  */
 public class SeriesWrapper {
 	private final XYChart.Series<Number, Number> series;
+	private final Node legendSymbol;
 	private State state;		//is this node fully visible/translucent/etc
 	private String colour;
 	private String fadedColour;
+	private static final String LEGEND_CSS = "-fx-background-radius: 0px; -fx-padding: 10px; -fx-background-color: ";
 
-	public SeriesWrapper(XYChart.Series<Number, Number> series) {
+	public SeriesWrapper(XYChart.Series<Number, Number> series, Node legendSymbol) {
 		this.state = State.IDLE;
 		this.series = series;
+		this.legendSymbol = legendSymbol;
 		extractColour(series.nodeProperty().get().toString());
+
+		legendSymbol.setStyle(LEGEND_CSS + colour + ";");
 	}
 
 	public void setIdle() {
@@ -46,16 +52,17 @@ public class SeriesWrapper {
 		Pattern pattern = Pattern.compile("(?<=stroke=0x)[0-9a-z]{8}");
 		Matcher matcher = pattern.matcher(css);
 		if (matcher.find())	colour = "#" + matcher.group(0);
-		System.out.println(colour);
 		fadedColour = colour.substring(0, colour.length() - 2) + "33";
 	}
 
 	private void setColour() {
 		series.getNode().setStyle("-fx-stroke: " + colour + ";");
+		legendSymbol.setStyle(LEGEND_CSS + colour + ";");
 	}
 
 	private void setFadedColour() {
 		series.getNode().setStyle("-fx-stroke: " + fadedColour + ";");
+		legendSymbol.setStyle(LEGEND_CSS + fadedColour + ";");
 	}
 
 	private enum State {

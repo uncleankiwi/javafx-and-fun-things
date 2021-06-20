@@ -99,7 +99,7 @@ public class EstimateChart extends Application {
 
 //							System.out.println(series.nodeProperty().get());
 
-							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series));
+							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series, legendItem.getSymbol()));
 							legendItem.getSymbol().setCursor(Cursor.HAND);
 							legendItem.getSymbol().setOnMouseEntered(event -> legendOnMouseEntered(legendItem.getSymbol()));
 							legendItem.getSymbol().setOnMouseExited(event -> legendOnOnMouseExited());
