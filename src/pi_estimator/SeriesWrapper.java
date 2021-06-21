@@ -56,10 +56,6 @@ public class SeriesWrapper {
 		return colour;
 	}
 
-	public XYChart.Series<Number, Number> getSeries() {
-		return series;
-	}
-
 	//Extract colour from node properties e.g. stroke=0x9a42c8ff
 	//and put it into the colour attribute
 	private void extractColour(String css) {

@@ -28,8 +28,8 @@ to over-crowding. Looks best at <=6 digits.
 public class EstimateChart extends Application {
 	static final int MAX_DIGITS = 6;
 
-	private Map<Node, SeriesWrapper> nodeSeriesMap;
-	private Node selectedNode = null;
+	static Map<Node, SeriesWrapper> nodeSeriesMap;
+	static Node selectedNode = null;
 
 	public static void main(String[] args) {
 		launch();
@@ -98,22 +98,22 @@ public class EstimateChart extends Application {
 
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in situ
-		//It also assigns a label that pops up, showing:
-		//1. the appropriate colour		TODO
-		//2. fraction and closeness of estimate
-		//3. if it's the best estimate in band TODO
-		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
-			System.out.println("digit band " + i);
+		//It also assigns a label that pops up.
 
+		//TODO hide series symbols again
+		//TODO popup only if series is selected
+		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
 
 			//getting serieswrapper by finding legend symbol with series name
 			//so that it can dictate colour to its EstimateNodes
 			SeriesWrapper seriesWrapper = null;
-			for (SeriesWrapper sw : nodeSeriesMap.values()) {
-				if (series.getName().equals(sw.getName())) {
-					seriesWrapper = sw;
+			Node legendSymbol = null;
+			for (Map.Entry<Node, SeriesWrapper> entry: nodeSeriesMap.entrySet()) {
+				if (series.getName().equals(entry.getValue().getName())) {
+					seriesWrapper = entry.getValue();
+					legendSymbol = entry.getKey();
 					break;
 				}
 			}
@@ -126,7 +126,7 @@ public class EstimateChart extends Application {
 						(double) j / (bandEstimates.size() - 1)),
 						currentEstimate.absoluteCloseness());
 				String colour = seriesWrapper != null ? seriesWrapper.getColour() : null;
-				data.setNode(new EstimateNode(currentEstimate, colour));
+				data.setNode(new EstimateNode(currentEstimate, colour, legendSymbol));
 
 				series.getData().add(data);
 			}
