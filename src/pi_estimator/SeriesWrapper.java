@@ -31,6 +31,10 @@ public class SeriesWrapper {
 		legendSymbol.setStyle(LEGEND_CSS + colour + ";");
 	}
 
+	public String getName() {
+		return series.getName();
+	}
+
 	public void setIdle() {
 		state = State.IDLE;
 		setColour();
@@ -50,6 +54,10 @@ public class SeriesWrapper {
 
 	public String getColour() {
 		return colour;
+	}
+
+	public XYChart.Series<Number, Number> getSeries() {
+		return series;
 	}
 
 	//Extract colour from node properties e.g. stroke=0x9a42c8ff

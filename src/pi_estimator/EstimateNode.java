@@ -4,7 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 public class EstimateNode extends Pane {
-	public EstimateNode(Estimate estimate) {
+	public EstimateNode(Estimate estimate, String colour) {
 		final Label label = new Label(estimate.toString() + "\nCloseness: " + estimate.closeness());
 
 		setOnMouseEntered(event -> {

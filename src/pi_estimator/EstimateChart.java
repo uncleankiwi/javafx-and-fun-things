@@ -63,55 +63,12 @@ public class EstimateChart extends Application {
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
 			series.setName(i + " digit" + (i != 1 ? "s" : ""));
-			List<Estimate> bandEstimates = estimates.get(i);
-
-			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
-				Estimate currentEstimate = bandEstimates.get(j);
-
-				XYChart.Data<Number, Number> data =
-					new XYChart.Data<>((
-						(double) j / (bandEstimates.size() - 1)),
-						currentEstimate.absoluteCloseness());
-				data.setNode(new EstimateNode(currentEstimate));
-
-				series.getData().add(data);
-			}
-
 			chart.getData().add(series);
 		}
 		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
 		Scene scene = new Scene(chart, 800, 600);
 		stage.setScene(scene);
 		stage.show();
-
-		//assign bands to separate series, then populate those series
-		//while calculating x-axis value in situ
-		//It also assigns a label that pops up, showing:
-		//1. the appropriate colour		TODO
-		//2. fraction and closeness of estimate
-		//3. if it's the best estimate in band TODO
-		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
-			XYChart.Series<Number, Number> series = new XYChart.Series<>();
-			series.setName(i + " digit" + (i != 1 ? "s" : ""));
-			List<Estimate> bandEstimates = estimates.get(i);
-
-			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
-				Estimate currentEstimate = bandEstimates.get(j);
-
-				XYChart.Data<Number, Number> data =
-					new XYChart.Data<>((
-						(double) j / (bandEstimates.size() - 1)),
-						currentEstimate.absoluteCloseness());
-				data.setNode(new EstimateNode(currentEstimate));
-
-				series.getData().add(data);
-			}
-
-			chart.getData().add(series);
-		}
-
-
-
 
 		//Making legend toggle graph opacity and tooltips.
 		//When nothing is selected, all are opaque and without tooltips.
@@ -138,6 +95,41 @@ public class EstimateChart extends Application {
 				}
 			}
 		}
+
+		//assign bands to separate series, then populate those series
+		//while calculating x-axis value in situ
+		//It also assigns a label that pops up, showing:
+		//1. the appropriate colour		TODO
+		//2. fraction and closeness of estimate
+		//3. if it's the best estimate in band TODO
+		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+			List<Estimate> bandEstimates = estimates.get(i);
+			XYChart.Series<Number, Number> series = chart.getData().get(i);
+
+			//getting serieswrapper by finding legend symbol with series name
+			SeriesWrapper seriesWrapper;
+			for (SeriesWrapper sw : nodeSeriesMap.values()) {
+				if (series.getName().equals(sw.getName())) seriesWrapper = sw;
+				break;
+			}
+
+			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
+				Estimate currentEstimate = bandEstimates.get(j);
+
+				XYChart.Data<Number, Number> data =
+					new XYChart.Data<>((
+						(double) j / (bandEstimates.size() - 1)),
+						currentEstimate.absoluteCloseness());
+				data.setNode(new EstimateNode(currentEstimate, seriesWrapper.getColour()));
+
+				series.getData().add(data);
+			}
+		}
+
+
+
+
+
 	}
 
 	//set node to selected, set others to background
