@@ -103,14 +103,19 @@ public class EstimateChart extends Application {
 		//2. fraction and closeness of estimate
 		//3. if it's the best estimate in band TODO
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+			System.out.println("digit band " + i);
+
 			List<Estimate> bandEstimates = estimates.get(i);
-			XYChart.Series<Number, Number> series = chart.getData().get(i);
+			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
 
 			//getting serieswrapper by finding legend symbol with series name
-			SeriesWrapper seriesWrapper;
+			//so that it can dictate colour to its EstimateNodes
+			SeriesWrapper seriesWrapper = null;
 			for (SeriesWrapper sw : nodeSeriesMap.values()) {
-				if (series.getName().equals(sw.getName())) seriesWrapper = sw;
-				break;
+				if (series.getName().equals(sw.getName())) {
+					seriesWrapper = sw;
+					break;
+				}
 			}
 
 			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
@@ -120,16 +125,12 @@ public class EstimateChart extends Application {
 					new XYChart.Data<>((
 						(double) j / (bandEstimates.size() - 1)),
 						currentEstimate.absoluteCloseness());
-				data.setNode(new EstimateNode(currentEstimate, seriesWrapper.getColour()));
+				String colour = seriesWrapper != null ? seriesWrapper.getColour() : null;
+				data.setNode(new EstimateNode(currentEstimate, colour));
 
 				series.getData().add(data);
 			}
 		}
-
-
-
-
-
 	}
 
 	//set node to selected, set others to background

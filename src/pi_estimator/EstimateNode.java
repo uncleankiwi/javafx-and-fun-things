@@ -5,7 +5,11 @@ import javafx.scene.layout.Pane;
 
 public class EstimateNode extends Pane {
 	public EstimateNode(Estimate estimate, String colour) {
-		final Label label = new Label(estimate.toString() + "\nCloseness: " + estimate.closeness());
+		final Label label = new Label(estimate.toString());
+		if (colour != null) {
+			label.setStyle("-fx-border-color: " + colour + ";");
+		}
+		label.getStyleClass().addAll( "button");
 
 		setOnMouseEntered(event -> {
 			this.getChildren().add(label);
