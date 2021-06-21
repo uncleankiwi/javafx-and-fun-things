@@ -101,7 +101,6 @@ public class EstimateChart extends Application {
 		//It also assigns a label that pops up.
 
 		//TODO hide series symbols again
-		//TODO popup only if series is selected
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
