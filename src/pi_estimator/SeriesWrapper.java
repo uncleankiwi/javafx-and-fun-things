@@ -16,6 +16,7 @@ as well as methods to set it to different states:
 public class SeriesWrapper {
 	private final XYChart.Series<Number, Number> series;
 	private final Node legendSymbol;
+
 	private State state;		//is this node fully visible/translucent/etc
 	private String colour;
 	private String fadedColour;
@@ -44,6 +45,11 @@ public class SeriesWrapper {
 	public void setBackground() {
 		state = State.BACKGROUND;
 		setFadedColour();
+	}
+
+
+	public String getColour() {
+		return colour;
 	}
 
 	//Extract colour from node properties e.g. stroke=0x9a42c8ff

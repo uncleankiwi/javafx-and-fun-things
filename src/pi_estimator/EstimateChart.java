@@ -8,7 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -54,13 +53,43 @@ public class EstimateChart extends Application {
 		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 		chart.setTitle("Closeness of estimates of pi");
 
-
 		//getting lists of estimate from the generator
 		EstimateGenerator.populate(MAX_DIGITS);
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
+		//initializing chart - seems like css properties can't be read before this.
+		//has to be done before putting nodes on each series, since each node also needs
+		//to read the colour of the series it's on.
+		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+			XYChart.Series<Number, Number> series = new XYChart.Series<>();
+			series.setName(i + " digit" + (i != 1 ? "s" : ""));
+			List<Estimate> bandEstimates = estimates.get(i);
+
+			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
+				Estimate currentEstimate = bandEstimates.get(j);
+
+				XYChart.Data<Number, Number> data =
+					new XYChart.Data<>((
+						(double) j / (bandEstimates.size() - 1)),
+						currentEstimate.absoluteCloseness());
+				data.setNode(new EstimateNode(currentEstimate));
+
+				series.getData().add(data);
+			}
+
+			chart.getData().add(series);
+		}
+		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
+		Scene scene = new Scene(chart, 800, 600);
+		stage.setScene(scene);
+		stage.show();
+
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in situ
+		//It also assigns a label that pops up, showing:
+		//1. the appropriate colour		TODO
+		//2. fraction and closeness of estimate
+		//3. if it's the best estimate in band TODO
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
 			series.setName(i + " digit" + (i != 1 ? "s" : ""));
@@ -81,11 +110,8 @@ public class EstimateChart extends Application {
 			chart.getData().add(series);
 		}
 
-		//initializing chart - seems like css properties can't be read before this
-		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
-		Scene scene = new Scene(chart, 800, 600);
-		stage.setScene(scene);
-		stage.show();
+
+
 
 		//Making legend toggle graph opacity and tooltips.
 		//When nothing is selected, all are opaque and without tooltips.
@@ -101,9 +127,6 @@ public class EstimateChart extends Application {
 
 					for (XYChart.Series<Number, Number> series : chart.getData()) {
 						if (legendItem.getText().equals(series.getName())) {
-
-//							System.out.println(series.nodeProperty().get());
-
 							nodeSeriesMap.put(legendItem.getSymbol(), new SeriesWrapper(series, legendItem.getSymbol()));
 							legendItem.getSymbol().setCursor(Cursor.HAND);
 							legendItem.getSymbol().setOnMouseEntered(event -> legendOnMouseEntered(legendItem.getSymbol()));
@@ -114,29 +137,6 @@ public class EstimateChart extends Application {
 					}
 				}
 			}
-		}
-
-		//Add a listener to chart that shows an appropriately-coloured point
-		//and pane with the fraction and closeness of the estimate
-		//that has the closest x value to the mouse cursor
-		//and also shows if it's a best estimate in the digit band.
-
-		//TODO hover values for selected chart
-
-
-
-//		chart.setOnMouseMoved(event -> {
-//			System.out.println(event.getX() + " : " + event.getY());
-//
-//		});
-		for (XYChart.Series<Number, Number> series : chart.getData()) {
-			for (XYChart.Data<Number, Number> data : series.getData()) {
-				String s = data.getXValue().toString() + "," + data.getYValue().toString();
-				Tooltip tooltip = new Tooltip(s + " asdfasdf");
-				Tooltip.install(data.getNode(), tooltip);
-				System.out.println("t installed");
-			}
-
 		}
 	}
 
