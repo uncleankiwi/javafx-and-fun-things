@@ -54,7 +54,8 @@ public class EstimateChart extends Application {
 		xAxis.setUpperBound(1.1);
 		xAxis.setLowerBound(-0.1);
 		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
-		chart.setTitle("Closeness of estimates of pi");
+		chart.setTitle("Closeness of estimates of pi\n" +
+			"(Select icons in the legend to enable tooltips)");
 
 		//getting lists of estimate from the generator
 		EstimateGenerator.populate(MAX_DIGITS);
