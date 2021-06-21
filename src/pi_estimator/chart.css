@@ -2,9 +2,9 @@
     -fx-stroke-width: 1px;
 }
 
-*{
-    -fx-create-symbols: false;
-}
+/**{*/
+/*    -fx-create-symbols: false;*/
+/*}*/
 
 .chart-vertical-zero-line{
     -fx-stroke: null;

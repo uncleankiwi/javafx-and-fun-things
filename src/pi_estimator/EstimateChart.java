@@ -67,8 +67,15 @@ public class EstimateChart extends Application {
 			List<Estimate> bandEstimates = estimates.get(i);
 
 			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
-				series.getData().add(new XYChart.Data<>(
-					((double) j / (bandEstimates.size() - 1)), bandEstimates.get(j).absoluteCloseness()));
+				Estimate currentEstimate = bandEstimates.get(j);
+
+				XYChart.Data<Number, Number> data =
+					new XYChart.Data<>((
+						(double) j / (bandEstimates.size() - 1)),
+						currentEstimate.absoluteCloseness());
+				data.setNode(new EstimateNode(currentEstimate));
+
+				series.getData().add(data);
 			}
 
 			chart.getData().add(series);
@@ -115,6 +122,8 @@ public class EstimateChart extends Application {
 		//and also shows if it's a best estimate in the digit band.
 
 		//TODO hover values for selected chart
+
+
 
 //		chart.setOnMouseMoved(event -> {
 //			System.out.println(event.getX() + " : " + event.getY());

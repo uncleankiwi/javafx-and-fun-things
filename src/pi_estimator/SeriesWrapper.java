@@ -28,8 +28,6 @@ public class SeriesWrapper {
 		extractColour(series.nodeProperty().get().toString());
 
 		legendSymbol.setStyle(LEGEND_CSS + colour + ";");
-
-
 	}
 
 	public void setIdle() {
