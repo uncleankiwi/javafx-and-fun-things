@@ -11,6 +11,12 @@
     -fx-stroke-width: 0px;
 }
 
+.chart-line-symbol {
+    -fx-background-color: #ffffff00;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
 .chart-symbol {
     -fx-background-radius: 50px;
     -fx-padding: 50px;

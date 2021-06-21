@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO label positioning: to left.
+//TODO enable tooltips for data points on bottom layer
+
 /*
 Draws estimates grouped by number of digits on a javafx chart.
 Probably not ideal because it's too resource-intensive when fed
@@ -99,8 +102,6 @@ public class EstimateChart extends Application {
 		//assign bands to separate series, then populate those series
 		//while calculating x-axis value in situ
 		//It also assigns a label that pops up.
-
-		//TODO hide series symbols again
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
