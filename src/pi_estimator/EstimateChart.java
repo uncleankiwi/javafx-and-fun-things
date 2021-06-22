@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO avoid cutting off labels outside chart boundaries
 //TODO zoom?
 //TODO determine if serieswrapper still needs state attribute
 
