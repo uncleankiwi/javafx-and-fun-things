@@ -8,8 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -28,12 +30,23 @@ a high digit number; every estimate is a separate node.
 
 The display also gets a little... funky at high digits due
 to over-crowding. Looks best at <=6 digits.
+
+A StackPane is needed; a Label cannot be directly added to EstimateNode,
+because then the Label would belong to the Chart, which cuts off anything
+that's outside it.
+
+EstimateChart
+	StackPane
+		Label - for estimate node tooltip
+		Chart
  */
 public class EstimateChart extends Application {
-	static final int MAX_DIGITS = 6;
+	final int MAX_DIGITS = 6;
 
-	static Map<Node, SeriesWrapper> nodeSeriesMap;
-	static Node selectedNode = null;
+	Map<Node, SeriesWrapper> nodeSeriesMap;
+	Node selectedNode = null;
+	final Label estimateNodeLabel = new Label();	//labels an EstimateNode when it's moused-over
+	final StackPane stackPane = new StackPane();	//holds chart and EstimateNode tooltip
 
 	public static void main(String[] args) {
 		launch();
@@ -57,6 +70,8 @@ public class EstimateChart extends Application {
 		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 		chart.setTitle("Closeness of estimates of pi\n" +
 			"(Select icons in the legend to enable tooltips)");
+		estimateNodeLabel.getStyleClass().addAll("chart-legend");
+		stackPane.getChildren().add(chart);
 
 		//getting lists of estimate from the generator
 		EstimateGenerator.populate(MAX_DIGITS);
@@ -71,7 +86,7 @@ public class EstimateChart extends Application {
 			chart.getData().add(series);
 		}
 		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
-		Scene scene = new Scene(chart, 800, 600);
+		Scene scene = new Scene(stackPane, 800, 600);
 		stage.setScene(scene);
 		stage.show();
 
@@ -127,11 +142,29 @@ public class EstimateChart extends Application {
 					new XYChart.Data<>((
 						(double) j / (bandEstimates.size() - 1)),
 						currentEstimate.absoluteCloseness());
-				data.setNode(new EstimateNode(currentEstimate, seriesWrapper, legendSymbol));
+				data.setNode(new EstimateNode(currentEstimate, seriesWrapper, legendSymbol, this));
 
 				series.getData().add(data);
 			}
 		}
+	}
+
+	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
+		//setting label text and colour
+		estimateNodeLabel.setText(estimate.toString());
+		if (seriesWrapper != null) estimateNodeLabel.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
+
+		stackPane.getChildren().add(estimateNodeLabel);
+		stackPane.applyCss();	//make it calculate width and height, otherwise they'll be 0
+		stackPane.layout();
+
+		estimateNodeLabel.setLayoutX(event.getSceneX() - estimateNodeLabel.getWidth() / 2);
+		estimateNodeLabel.setLayoutY(event.getSceneY() - 1.2 * estimateNodeLabel.getHeight());
+		estimateNodeLabel.toFront();
+	}
+
+	public void hideEstimateNodeTooltip() {
+		stackPane.getChildren().remove(estimateNodeLabel);
 	}
 
 	//set node to selected, set others to background
