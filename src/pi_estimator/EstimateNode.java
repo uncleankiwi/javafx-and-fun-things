@@ -5,10 +5,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 
 public class EstimateNode extends Pane {
-	public EstimateNode(Estimate estimate, String colour, Node legendSymbol) {
+	public EstimateNode(Estimate estimate, SeriesWrapper seriesWrapper, Node legendSymbol) {
 		final Label label = new Label(estimate.toString());
-		if (colour != null) {
-			label.setStyle("-fx-border-color: " + colour + ";");
+		if (seriesWrapper != null) {
+			label.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
 		}
 		label.getStyleClass().addAll("button");
 
