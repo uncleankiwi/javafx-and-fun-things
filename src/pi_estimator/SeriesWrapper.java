@@ -43,8 +43,7 @@ public class SeriesWrapper {
 	public void setSelected() {
 		state = State.SELECTED;
 		series.getNode().toFront();
-		//also bring this series' EstimateNodes to the front so that they
-		//can be mouseovered
+		//also bring this series' EstimateNodes to the front so that they can be mouseovered
 		series.getData().forEach(node -> node.getNode().toFront());
 		setColour();
 	}

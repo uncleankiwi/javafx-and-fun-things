@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 
 //TODO avoid cutting off labels outside chart boundaries
-//TODO estimate nodes also show up on mouseover?
 //TODO zoom?
 //TODO determine if serieswrapper still needs state attribute
 
