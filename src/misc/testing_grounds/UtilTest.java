@@ -12,7 +12,7 @@ public class UtilTest {
 
 	@SuppressWarnings("unused")
 	private static void testEstimateGenerator() {
-		EstimateGenerator.populate(4);
+		EstimateGenerator.populate(4, Math.PI);
 		System.out.println("\nBest estimates:");
 		EstimateGenerator.getBest().forEach(System.out::println);
 	}

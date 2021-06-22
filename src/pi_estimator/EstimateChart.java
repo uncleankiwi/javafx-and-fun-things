@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO add radiobuttons for selecting other irrational numbers?
 //TODO zoom?
 //TODO determine if serieswrapper still needs state attribute
 
@@ -73,7 +74,7 @@ public class EstimateChart extends Application {
 		stackPane.getChildren().add(chart);
 
 		//getting lists of estimate from the generator
-		EstimateGenerator.populate(MAX_DIGITS);
+		EstimateGenerator.populate(MAX_DIGITS, Math.PI);
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//initializing chart - seems like css properties can't be read before this.

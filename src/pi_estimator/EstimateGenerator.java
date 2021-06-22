@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 /*
-Generates a list of rational numbers that estimate pi.
+Generates a list of rational numbers that estimate a number r (e.g. pi).
 The estimates use anywhere from 1 to a given number of total digits.
-The list of results should contain pairs of estimate that straddle pi ('bounding pairs');
-all others are ignored as they're never going to be any closer to pi than these anyway.
+The list of results should contain pairs of estimate that straddle r ('bounding pairs');
+all others are ignored as they're never going to be any closer to r than these anyway.
 
 The best estimate (bestimate?) in every 'band' of estimates is also placed in the bestEstimates list.
-e.g.
+e.g. Estimating pi:
 	for 1 digit, it should return 3 and 4.	<-- best estimate in the 1-digit band: 3
 
 	for 2 digits, it should return these pairs:
@@ -58,7 +58,7 @@ public class EstimateGenerator {
 	private static List<Estimate> bestEstimates;
 
 	//fills the lists with estimates that use up to the given number of maxDigits
-	public static void populate(int maxDigits) {
+	public static void populate(int maxDigits, double r) {
 		estimates = new HashMap<>();
 		bestEstimates = new ArrayList<>();
 
@@ -72,10 +72,10 @@ public class EstimateGenerator {
 			int[] numeratorRange = numeratorRange(digits);
 			for (int denominator = denominatorRange[0]; denominator <= denominatorRange[1]; denominator++) {
 				//finding a pair of values only if they're a bounding pair
-				if ((double) numeratorRange[0] / denominator < Math.PI && (double) numeratorRange[1] / denominator > Math.PI) {
-					int lowerNumerator = (int) (Math.PI * denominator);
-					Estimate lowerEstimate = new Estimate(lowerNumerator, denominator, digits);
-					Estimate higherEstimate = new Estimate(lowerNumerator + 1, denominator, digits);
+				if ((double) numeratorRange[0] / denominator < r && (double) numeratorRange[1] / denominator > r) {
+					int lowerNumerator = (int) (r * denominator);
+					Estimate lowerEstimate = new Estimate(lowerNumerator, denominator, digits, r);
+					Estimate higherEstimate = new Estimate(lowerNumerator + 1, denominator, digits, r);
 					estimatesInBand.add(lowerEstimate);
 					estimatesInBand.add(higherEstimate);
 					if (lowerEstimate.absoluteCloseness() > bestAbsoluteCloseness) {
