@@ -49,3 +49,20 @@ Draws the binomial distribution of results from rolling d number of 6-sided dice
 Also gives the probability of rolling a desired result r.
 
 ![Mastermind preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/DiceBinomial.PNG)
+
+### Pi Estimator
+This contains:
+1. a method for generating fractions that are decent estimates of pi,
+2. a 'closeness' grading system that grades how good those estimates are of pi,
+3. and an interactive GUI that graphs the estimates by their closeness.
+
+The number of digits refers to the total number of digits used in the fraction estimating pi. For
+example:
+- 3 uses 1 digit
+- 4/1 uses 2 digits
+- 22/7 uses 3 digits
+
+The 'closeness' measure shows how many digits of that estimate are correct, and how close the first wrong digit is to being correct.
+Negative values are underestimates of pi, and positive values are overestimates.
+
+![Pi estimator preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator.PNG)
