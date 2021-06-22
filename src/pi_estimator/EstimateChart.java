@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO label positioning: to left.
+//TODO label css class to something else
+//TODO estimate nodes also show up on mouseover?
+//TODO zoom?
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.
