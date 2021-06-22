@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Objects;
 
 //TODO label positioning: to left.
-//TODO enable tooltips for data points on bottom layer
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.
@@ -100,15 +99,15 @@ public class EstimateChart extends Application {
 			}
 		}
 
-		//assign bands to separate series, then populate those series
+		//Assign bands to separate series, then populate those series
 		//while calculating x-axis value in situ
 		//It also assigns a label that pops up.
+		//Each EstimateNode also needs to know its SeriesWrapper so that it can share its colour.
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
 
 			//getting serieswrapper by finding legend symbol with series name
-			//so that it can dictate colour to its EstimateNodes
 			SeriesWrapper seriesWrapper = null;
 			Node legendSymbol = null;
 			for (Map.Entry<Node, SeriesWrapper> entry: nodeSeriesMap.entrySet()) {
@@ -126,8 +125,7 @@ public class EstimateChart extends Application {
 					new XYChart.Data<>((
 						(double) j / (bandEstimates.size() - 1)),
 						currentEstimate.absoluteCloseness());
-				String colour = seriesWrapper != null ? seriesWrapper.getColour() : null;
-				data.setNode(new EstimateNode(currentEstimate, colour, legendSymbol));
+				data.setNode(new EstimateNode(currentEstimate, seriesWrapper, legendSymbol));
 
 				series.getData().add(data);
 			}
