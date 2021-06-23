@@ -168,7 +168,7 @@ public class EstimateChart extends Application {
 				new Point2D(0, yAxis.getDisplayPosition(yAxis.getUpperBound())))).getY();
 			double maxY = chart.sceneToLocal(yAxis.localToScene(
 				new Point2D(0, yAxis.getDisplayPosition(yAxis.getLowerBound())))).getY();
-			double mouseY = event.getY();	//Math.min(Math.max(maxY, event.getY()), minY);
+			double mouseY = event.getY();
 			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
 			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
 			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
@@ -182,7 +182,7 @@ public class EstimateChart extends Application {
 				new Point2D(xAxis.getDisplayPosition(xAxis.getLowerBound()), 0))).getX();
 			double maxX = chart.sceneToLocal(xAxis.localToScene(
 				new Point2D(xAxis.getDisplayPosition(xAxis.getUpperBound()), 0))).getX();
-			double mouseX = event.getX();	//Math.min(Math.max(event.getX(), maxX), minX);
+			double mouseX = event.getX();
 			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
 			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
 			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
