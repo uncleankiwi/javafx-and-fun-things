@@ -22,9 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO reset zoom upon graphing
 //TODO improve ui margins, padding
-//TODO determine if serieswrapper still needs state attribute
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.

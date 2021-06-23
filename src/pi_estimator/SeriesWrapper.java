@@ -17,13 +17,11 @@ public class SeriesWrapper {
 	private final XYChart.Series<Number, Number> series;
 	private final Node legendSymbol;
 
-	private State state;		//is this node fully visible/translucent/etc
 	private String colour;
 	private String fadedColour;
 	private static final String LEGEND_CSS = "-fx-background-radius: 0px; -fx-padding: 10px; -fx-background-color: ";
 
 	public SeriesWrapper(XYChart.Series<Number, Number> series, Node legendSymbol) {
-		this.state = State.IDLE;
 		this.series = series;
 		this.legendSymbol = legendSymbol;
 		extractColour(series.nodeProperty().get().toString());
@@ -36,12 +34,10 @@ public class SeriesWrapper {
 	}
 
 	public void setIdle() {
-		state = State.IDLE;
 		setColour();
 	}
 
 	public void setSelected() {
-		state = State.SELECTED;
 		series.getNode().toFront();
 		//also bring this series' EstimateNodes to the front so that they can be mouseovered
 		series.getData().forEach(node -> node.getNode().toFront());
@@ -49,7 +45,6 @@ public class SeriesWrapper {
 	}
 
 	public void setBackground() {
-		state = State.BACKGROUND;
 		setFadedColour();
 	}
 
@@ -76,12 +71,4 @@ public class SeriesWrapper {
 		series.getNode().setStyle("-fx-stroke: " + fadedColour + ";");
 		legendSymbol.setStyle(LEGEND_CSS + fadedColour + ";");
 	}
-
-	private enum State {
-		IDLE,
-		SELECTED,
-		BACKGROUND
-	}
-
-
 }
