@@ -42,6 +42,11 @@ EstimateChart
  */
 public class EstimateChart extends Application {
 	final int MAX_DIGITS = 6;
+	final double ZOOM_FACTOR = 1.05;
+	double yUpperBound;
+	double yLowerBound;
+	double xUpperBound;
+	double xLowerBound;
 
 	Map<Node, SeriesWrapper> nodeSeriesMap;
 	Node selectedNode = null;
@@ -147,6 +152,28 @@ public class EstimateChart extends Application {
 				series.getData().add(data);
 			}
 		}
+
+		//enabling zoom. needs to know chart y-value range, so happens after populating with data.
+		//right click resets zoom.
+		chart.getYAxis().setAutoRanging(false);
+		yUpperBound = ((NumberAxis) chart.getYAxis()).getUpperBound();
+		yLowerBound = ((NumberAxis) chart.getYAxis()).getLowerBound();
+		xUpperBound = ((NumberAxis) chart.getXAxis()).getUpperBound();
+		xLowerBound = ((NumberAxis) chart.getXAxis()).getLowerBound();
+		chart.setOnScroll(event -> {
+			((NumberAxis) chart.getYAxis()).setUpperBound(((NumberAxis) chart.getYAxis()).getUpperBound() / 1.05);
+			((NumberAxis) chart.getYAxis()).setLowerBound(((NumberAxis) chart.getYAxis()).getLowerBound() / 1.05);
+			((NumberAxis) chart.getXAxis()).setUpperBound(((NumberAxis) chart.getXAxis()).getUpperBound() / 1.05);
+			((NumberAxis) chart.getXAxis()).setLowerBound(((NumberAxis) chart.getXAxis()).getLowerBound() / 1.05);
+		});
+		chart.setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.SECONDARY) {
+				((NumberAxis) chart.getYAxis()).setUpperBound(yUpperBound);
+				((NumberAxis) chart.getYAxis()).setLowerBound(yLowerBound);
+				((NumberAxis) chart.getXAxis()).setUpperBound(xUpperBound);
+				((NumberAxis) chart.getXAxis()).setLowerBound(xLowerBound);
+			}
+		});
 	}
 
 	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
