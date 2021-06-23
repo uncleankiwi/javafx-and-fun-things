@@ -6,7 +6,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -53,6 +52,9 @@ public class EstimateChart extends Application {
 	Node selectedNode = null;
 	final Label estimateNodeLabel = new Label();	//labels an EstimateNode when it's moused-over
 	final StackPane stackPane = new StackPane();	//holds chart and EstimateNode tooltip
+	final NumberAxis xAxis = new NumberAxis();
+	final NumberAxis yAxis = new NumberAxis();
+	final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 
 	public static void main(String[] args) {
 		launch();
@@ -60,46 +62,112 @@ public class EstimateChart extends Application {
 
 	@Override
 	public void start(Stage stage) {
-		stage.setTitle("Pi estimator");
 
-		final NumberAxis yAxis = new NumberAxis();
+		//initialize controls
+		stage.setTitle("Irrational number estimator");
 		yAxis.setLabel("Closeness of estimate");
 		yAxis.setMinorTickVisible(false);
-		final NumberAxis xAxis = new NumberAxis();
-		xAxis.setLabel("Denominator of fraction estimating pi");
+		xAxis.setLabel("Denominator of fraction estimating the number");
 		xAxis.setTickMarkVisible(false);
 		xAxis.setTickLabelsVisible(false);
 		xAxis.setMinorTickVisible(false);
 		xAxis.setAutoRanging(false);
 		xAxis.setUpperBound(1.1);
 		xAxis.setLowerBound(-0.1);
-		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
-		chart.setTitle("Closeness of estimates of pi\n" +
+		chart.setTitle("Closeness of estimates\n" +
 			"(Select icons in the legend to enable tooltips)");
 		estimateNodeLabel.getStyleClass().add("chart-legend");
 		stackPane.getChildren().add(chart);
 
-		//getting lists of estimate from the generator
-		EstimateGenerator.populate(MAX_DIGITS, Math.PI);
-		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
-
 		//initializing chart - seems like css properties can't be read before this.
 		//has to be done before putting nodes on each series, since each node also needs
 		//to read the colour of the series it's on.
-		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
-			XYChart.Series<Number, Number> series = new XYChart.Series<>();
-			series.setName(i + " digit" + (i != 1 ? "s" : ""));
-			chart.getData().add(series);
-		}
 		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
 		Scene scene = new Scene(stackPane, 800, 600);
 		stage.setScene(scene);
 		stage.show();
 
+		//populate chart
+		graph();
+
+		//enabling zoom
+		chart.setOnScroll(event -> {
+			int zoomPolarity = event.getDeltaY() > 0 ? 1 : -1;
+
+			double minY = chart.sceneToLocal(yAxis.localToScene(
+				new Point2D(0, yAxis.getDisplayPosition(yAxis.getUpperBound())))).getY();
+			double maxY = chart.sceneToLocal(yAxis.localToScene(
+				new Point2D(0, yAxis.getDisplayPosition(yAxis.getLowerBound())))).getY();
+			double mouseY = event.getY();
+			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
+			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
+			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
+			double newScaleMaxY = oldScaleMaxY - zoomPolarity * deltaScaleY * (mouseY - minY) / (maxY - minY);
+			double newScaleMinY = oldScaleMinY + zoomPolarity * deltaScaleY * (maxY - mouseY) / (maxY - minY);
+
+			((NumberAxis) chart.getYAxis()).setUpperBound(newScaleMaxY);
+			((NumberAxis) chart.getYAxis()).setLowerBound(newScaleMinY);
+
+			double minX = chart.sceneToLocal(xAxis.localToScene(
+				new Point2D(xAxis.getDisplayPosition(xAxis.getLowerBound()), 0))).getX();
+			double maxX = chart.sceneToLocal(xAxis.localToScene(
+				new Point2D(xAxis.getDisplayPosition(xAxis.getUpperBound()), 0))).getX();
+			double mouseX = event.getX();
+			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
+			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
+			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
+			double newScaleMaxX = oldScaleMaxX - zoomPolarity * deltaScaleX * (maxX - mouseX) / (maxX - minX);
+			double newScaleMinX = oldScaleMinX + zoomPolarity * deltaScaleX * (mouseX - minX) / (maxX - minX);
+
+			((NumberAxis) chart.getXAxis()).setUpperBound(newScaleMaxX);
+			((NumberAxis) chart.getXAxis()).setLowerBound(newScaleMinX);
+
+		});
+		chart.setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.SECONDARY) {
+				((NumberAxis) chart.getYAxis()).setUpperBound(yUpperBound);
+				((NumberAxis) chart.getYAxis()).setLowerBound(yLowerBound);
+				((NumberAxis) chart.getXAxis()).setUpperBound(xUpperBound);
+				((NumberAxis) chart.getXAxis()).setLowerBound(xLowerBound);
+			}
+		});
+	}
+
+	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
+		//setting label text and colour
+		estimateNodeLabel.setText(estimate.toString());
+		if (seriesWrapper != null) estimateNodeLabel.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
+
+		stackPane.getChildren().add(estimateNodeLabel);
+		stackPane.applyCss();	//make it calculate width and height, otherwise they'll be 0
+		stackPane.layout();
+
+		estimateNodeLabel.setLayoutX(event.getSceneX() - estimateNodeLabel.getWidth() / 2);
+		estimateNodeLabel.setLayoutY(event.getSceneY() - 1.2 * estimateNodeLabel.getHeight());
+		estimateNodeLabel.toFront();
+	}
+
+	public void graph() {
+		//clearing things
+		chart.getData().clear();
+
+		//getting lists of estimate from the generator
+		EstimateGenerator.populate(MAX_DIGITS, Math.PI);
+		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
+
+		//graphing series
+		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+			XYChart.Series<Number, Number> series = new XYChart.Series<>();
+			series.setName(i + " digit" + (i != 1 ? "s" : ""));
+			chart.getData().add(series);
+		}
+
 		//Making legend toggle graph opacity and tooltips.
 		//When nothing is selected, all are opaque and without tooltips.
 		//When a legend item is moused over or selected, then that graph is opaque with tooltips;
 		//all others are translucent and without tooltips.
+		chart.applyCss();
+		chart.layout();
 		for (Node node : chart.getChildrenUnmodifiable()){
 			if (node instanceof Legend) {
 				Legend legend = (Legend) node;
@@ -161,60 +229,6 @@ public class EstimateChart extends Application {
 		yLowerBound = ((NumberAxis) chart.getYAxis()).getLowerBound();
 		xUpperBound = ((NumberAxis) chart.getXAxis()).getUpperBound();
 		xLowerBound = ((NumberAxis) chart.getXAxis()).getLowerBound();
-		chart.setOnScroll(event -> {
-			int zoomPolarity = event.getDeltaY() > 0 ? 1 : -1;
-
-			double minY = chart.sceneToLocal(yAxis.localToScene(
-				new Point2D(0, yAxis.getDisplayPosition(yAxis.getUpperBound())))).getY();
-			double maxY = chart.sceneToLocal(yAxis.localToScene(
-				new Point2D(0, yAxis.getDisplayPosition(yAxis.getLowerBound())))).getY();
-			double mouseY = event.getY();
-			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
-			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
-			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
-			double newScaleMaxY = oldScaleMaxY - zoomPolarity * deltaScaleY * (mouseY - minY) / (maxY - minY);
-			double newScaleMinY = oldScaleMinY + zoomPolarity * deltaScaleY * (maxY - mouseY) / (maxY - minY);
-
-			((NumberAxis) chart.getYAxis()).setUpperBound(newScaleMaxY);
-			((NumberAxis) chart.getYAxis()).setLowerBound(newScaleMinY);
-
-			double minX = chart.sceneToLocal(xAxis.localToScene(
-				new Point2D(xAxis.getDisplayPosition(xAxis.getLowerBound()), 0))).getX();
-			double maxX = chart.sceneToLocal(xAxis.localToScene(
-				new Point2D(xAxis.getDisplayPosition(xAxis.getUpperBound()), 0))).getX();
-			double mouseX = event.getX();
-			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
-			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
-			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
-			double newScaleMaxX = oldScaleMaxX - zoomPolarity * deltaScaleX * (maxX - mouseX) / (maxX - minX);
-			double newScaleMinX = oldScaleMinX + zoomPolarity * deltaScaleX * (mouseX - minX) / (maxX - minX);
-
-			((NumberAxis) chart.getXAxis()).setUpperBound(newScaleMaxX);
-			((NumberAxis) chart.getXAxis()).setLowerBound(newScaleMinX);
-
-		});
-		chart.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.SECONDARY) {
-				((NumberAxis) chart.getYAxis()).setUpperBound(yUpperBound);
-				((NumberAxis) chart.getYAxis()).setLowerBound(yLowerBound);
-				((NumberAxis) chart.getXAxis()).setUpperBound(xUpperBound);
-				((NumberAxis) chart.getXAxis()).setLowerBound(xLowerBound);
-			}
-		});
-	}
-
-	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
-		//setting label text and colour
-		estimateNodeLabel.setText(estimate.toString());
-		if (seriesWrapper != null) estimateNodeLabel.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
-
-		stackPane.getChildren().add(estimateNodeLabel);
-		stackPane.applyCss();	//make it calculate width and height, otherwise they'll be 0
-		stackPane.layout();
-
-		estimateNodeLabel.setLayoutX(event.getSceneX() - estimateNodeLabel.getWidth() / 2);
-		estimateNodeLabel.setLayoutY(event.getSceneY() - 1.2 * estimateNodeLabel.getHeight());
-		estimateNodeLabel.toFront();
 	}
 
 	public void hideEstimateNodeTooltip() {
