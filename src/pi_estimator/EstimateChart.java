@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO add radiobuttons for selecting other irrational numbers?
+//TODO reset zoom upon graphing
+//TODO improve ui margins, padding
 //TODO determine if serieswrapper still needs state attribute
 
 /*
@@ -55,10 +56,9 @@ EstimateChart
 			Chart
  */
 public class EstimateChart extends Application {
-	final int MAX_DIGITS = 6;
 	final double ZOOM_FACTOR = 1.05;
 	double yUpperBound;
-	double yLowerBound;
+	final double Y_LOWER_BOUND = 0;
 	final double X_UPPER_BOUND = 1.1;
 	final double X_LOWER_BOUND = -0.1;
 
@@ -131,6 +131,7 @@ public class EstimateChart extends Application {
 
 		//enabling zoom
 		chart.setOnScroll(event -> {
+			if (yAxis.isAutoRanging()) yAxis.setAutoRanging(false);
 			int zoomPolarity = event.getDeltaY() > 0 ? 1 : -1;
 
 			double minY = chart.sceneToLocal(yAxis.localToScene(
@@ -138,38 +139,41 @@ public class EstimateChart extends Application {
 			double maxY = chart.sceneToLocal(yAxis.localToScene(
 				new Point2D(0, yAxis.getDisplayPosition(yAxis.getLowerBound())))).getY();
 			double mouseY = event.getY();
-			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
-			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
+			double oldScaleMaxY = yAxis.getUpperBound();
+			double oldScaleMinY = yAxis.getLowerBound();
 			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
 			double newScaleMaxY = oldScaleMaxY - zoomPolarity * deltaScaleY * (mouseY - minY) / (maxY - minY);
 			double newScaleMinY = oldScaleMinY + zoomPolarity * deltaScaleY * (maxY - mouseY) / (maxY - minY);
-
-			((NumberAxis) chart.getYAxis()).setUpperBound(newScaleMaxY);
-			((NumberAxis) chart.getYAxis()).setLowerBound(newScaleMinY);
+			yAxis.setUpperBound(newScaleMaxY);
+			yAxis.setLowerBound(newScaleMinY);
 
 			double minX = chart.sceneToLocal(xAxis.localToScene(
 				new Point2D(xAxis.getDisplayPosition(xAxis.getLowerBound()), 0))).getX();
 			double maxX = chart.sceneToLocal(xAxis.localToScene(
 				new Point2D(xAxis.getDisplayPosition(xAxis.getUpperBound()), 0))).getX();
 			double mouseX = event.getX();
-			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
-			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
+			double oldScaleMaxX = xAxis.getUpperBound();
+			double oldScaleMinX = xAxis.getLowerBound();
 			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
 			double newScaleMaxX = oldScaleMaxX - zoomPolarity * deltaScaleX * (maxX - mouseX) / (maxX - minX);
 			double newScaleMinX = oldScaleMinX + zoomPolarity * deltaScaleX * (mouseX - minX) / (maxX - minX);
 
-			((NumberAxis) chart.getXAxis()).setUpperBound(newScaleMaxX);
-			((NumberAxis) chart.getXAxis()).setLowerBound(newScaleMinX);
+			xAxis.setUpperBound(newScaleMaxX);
+			xAxis.setLowerBound(newScaleMinX);
 
 		});
 		chart.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.SECONDARY) {
-				((NumberAxis) chart.getYAxis()).setUpperBound(yUpperBound);
-				((NumberAxis) chart.getYAxis()).setLowerBound(yLowerBound);
-				((NumberAxis) chart.getXAxis()).setUpperBound(X_UPPER_BOUND);
-				((NumberAxis) chart.getXAxis()).setLowerBound(X_LOWER_BOUND);
+				resetZoom();
 			}
 		});
+	}
+
+	private void resetZoom() {
+		yAxis.setUpperBound(yUpperBound);
+		yAxis.setLowerBound(Y_LOWER_BOUND);
+		xAxis.setUpperBound(X_UPPER_BOUND);
+		xAxis.setLowerBound(X_LOWER_BOUND);
 	}
 
 	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
@@ -189,8 +193,8 @@ public class EstimateChart extends Application {
 	public void graph() {
 		//clearing things
 		chart.getData().clear();
-		chart.getYAxis().setAutoRanging(true);
 		selectedNode = null;
+		yAxis.setAutoRanging(true);
 
 		//getting lists of estimate from the generator
 		double referenceValue;
@@ -247,6 +251,8 @@ public class EstimateChart extends Application {
 		//while calculating x-axis value in situ.
 		//It also assigns a label that pops up.
 		//Each EstimateNode also needs to know its SeriesWrapper so that it can share its colour.
+		//The highest closeness is also noted to adjust the y-axis scale.
+		double highestCloseness = 0;
 		for (int i = 1; i <= maxDigits; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
@@ -264,6 +270,7 @@ public class EstimateChart extends Application {
 
 			for (int j = 0; j < bandEstimates.size(); j++) {	//for every different denominator
 				Estimate currentEstimate = bandEstimates.get(j);
+				if (currentEstimate.absoluteCloseness() > highestCloseness) highestCloseness = currentEstimate.absoluteCloseness();
 
 				XYChart.Data<Number, Number> data =
 					new XYChart.Data<>((
@@ -276,10 +283,8 @@ public class EstimateChart extends Application {
 		}
 
 		//resetting zoom
-		chart.getYAxis().setAutoRanging(false);
-		chart.getXAxis().setAutoRanging(false);
-		yUpperBound = ((NumberAxis) chart.getYAxis()).getUpperBound();
-		yLowerBound = ((NumberAxis) chart.getYAxis()).getLowerBound();
+		yUpperBound = yAxis.getUpperBound();	// highestCloseness * 1.2;
+		resetZoom();
 	}
 
 	public void hideEstimateNodeTooltip() {
