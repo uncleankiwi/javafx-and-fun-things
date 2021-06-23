@@ -70,7 +70,7 @@ public class EstimateChart extends Application {
 		final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 		chart.setTitle("Closeness of estimates of pi\n" +
 			"(Select icons in the legend to enable tooltips)");
-		estimateNodeLabel.getStyleClass().addAll("chart-legend");
+		estimateNodeLabel.getStyleClass().add("chart-legend");
 		stackPane.getChildren().add(chart);
 
 		//getting lists of estimate from the generator
@@ -117,7 +117,7 @@ public class EstimateChart extends Application {
 		}
 
 		//Assign bands to separate series, then populate those series
-		//while calculating x-axis value in situ
+		//while calculating x-axis value in situ.
 		//It also assigns a label that pops up.
 		//Each EstimateNode also needs to know its SeriesWrapper so that it can share its colour.
 		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
