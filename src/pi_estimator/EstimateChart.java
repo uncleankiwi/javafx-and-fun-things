@@ -161,10 +161,32 @@ public class EstimateChart extends Application {
 		xUpperBound = ((NumberAxis) chart.getXAxis()).getUpperBound();
 		xLowerBound = ((NumberAxis) chart.getXAxis()).getLowerBound();
 		chart.setOnScroll(event -> {
-			((NumberAxis) chart.getYAxis()).setUpperBound(((NumberAxis) chart.getYAxis()).getUpperBound() / 1.05);
-			((NumberAxis) chart.getYAxis()).setLowerBound(((NumberAxis) chart.getYAxis()).getLowerBound() / 1.05);
-			((NumberAxis) chart.getXAxis()).setUpperBound(((NumberAxis) chart.getXAxis()).getUpperBound() / 1.05);
-			((NumberAxis) chart.getXAxis()).setLowerBound(((NumberAxis) chart.getXAxis()).getLowerBound() / 1.05);
+			int zoomPolarity = event.getDeltaY() > 0 ? 1 : -1;
+
+			double minY = chart.getLayoutBounds().getMinY();
+			double maxY = chart.getLayoutBounds().getMaxY();
+			double mouseY = event.getY();
+			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
+			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
+			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
+			double newScaleMaxY = oldScaleMaxY - zoomPolarity * deltaScaleY * (mouseY - minY) / (maxY - minY);
+			double newScaleMinY = oldScaleMinY + zoomPolarity * deltaScaleY * (maxY - mouseY) / (maxY - minY);
+
+			((NumberAxis) chart.getYAxis()).setUpperBound(newScaleMaxY);
+			((NumberAxis) chart.getYAxis()).setLowerBound(newScaleMinY);
+
+			double minX = chart.getLayoutBounds().getMinX();
+			double maxX = chart.getLayoutBounds().getMaxX();
+			double mouseX = event.getX();
+			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
+			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
+			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
+			double newScaleMaxX = oldScaleMaxX - zoomPolarity * deltaScaleX * (maxX - mouseX) / (maxX - minX);
+			double newScaleMinX = oldScaleMinX + zoomPolarity * deltaScaleX * (mouseX - minX) / (maxX - minX);
+
+			((NumberAxis) chart.getXAxis()).setUpperBound(newScaleMaxX);
+			((NumberAxis) chart.getXAxis()).setLowerBound(newScaleMinX);
+
 		});
 		chart.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.SECONDARY) {
