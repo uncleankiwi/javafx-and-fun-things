@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 
 //TODO add radiobuttons for selecting other irrational numbers?
-//TODO zoom?
 //TODO determine if serieswrapper still needs state attribute
 
 /*
