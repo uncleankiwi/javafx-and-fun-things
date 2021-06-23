@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import util.Rounder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -282,8 +283,9 @@ public class EstimateChart extends Application {
 			}
 		}
 
-		//resetting zoom
-		yUpperBound = yAxis.getUpperBound();	// highestCloseness * 1.2;
+		//resetting zoom. yUpperBound, the max value on the y-axis, has to be manually
+		//calculated. yAxis.getUpperBound() seems to return wrong values.
+		yUpperBound = Rounder.oneSf(highestCloseness * 1.2);
 		resetZoom();
 	}
 
