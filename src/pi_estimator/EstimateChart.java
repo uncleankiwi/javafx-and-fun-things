@@ -2,9 +2,11 @@ package pi_estimator;
 
 import com.sun.javafx.charts.Legend;
 import javafx.application.Application;
+import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -162,9 +164,11 @@ public class EstimateChart extends Application {
 		chart.setOnScroll(event -> {
 			int zoomPolarity = event.getDeltaY() > 0 ? 1 : -1;
 
-			double minY = chart.getLayoutBounds().getMinY();
-			double maxY = chart.getLayoutBounds().getMaxY();
-			double mouseY = event.getY();
+			double minY = chart.sceneToLocal(yAxis.localToScene(
+				new Point2D(0, yAxis.getDisplayPosition(yAxis.getUpperBound())))).getY();
+			double maxY = chart.sceneToLocal(yAxis.localToScene(
+				new Point2D(0, yAxis.getDisplayPosition(yAxis.getLowerBound())))).getY();
+			double mouseY = event.getY();	//Math.min(Math.max(maxY, event.getY()), minY);
 			double oldScaleMaxY = ((NumberAxis) chart.getYAxis()).getUpperBound();
 			double oldScaleMinY = ((NumberAxis) chart.getYAxis()).getLowerBound();
 			double deltaScaleY = (oldScaleMaxY - oldScaleMinY) * (ZOOM_FACTOR - 1);
@@ -174,9 +178,11 @@ public class EstimateChart extends Application {
 			((NumberAxis) chart.getYAxis()).setUpperBound(newScaleMaxY);
 			((NumberAxis) chart.getYAxis()).setLowerBound(newScaleMinY);
 
-			double minX = chart.getLayoutBounds().getMinX();
-			double maxX = chart.getLayoutBounds().getMaxX();
-			double mouseX = event.getX();
+			double minX = chart.sceneToLocal(xAxis.localToScene(
+				new Point2D(xAxis.getDisplayPosition(xAxis.getLowerBound()), 0))).getX();
+			double maxX = chart.sceneToLocal(xAxis.localToScene(
+				new Point2D(xAxis.getDisplayPosition(xAxis.getUpperBound()), 0))).getX();
+			double mouseX = event.getX();	//Math.min(Math.max(event.getX(), maxX), minX);
 			double oldScaleMaxX = ((NumberAxis) chart.getXAxis()).getUpperBound();
 			double oldScaleMinX = ((NumberAxis) chart.getXAxis()).getLowerBound();
 			double deltaScaleX = (oldScaleMaxX - oldScaleMinX) * (ZOOM_FACTOR - 1);
