@@ -40,12 +40,16 @@ that's outside it.
 EstimateChart
 	VBox
 		lblHints - application usage hints
-		hBoxControls
+		hBoxRadioButtons
+			lblRadioButtons - number to estimate
 			radPi
 			radE
 			radOther
 			txtOther
+		hBoxSpinner
+			lblSpinner - max digits to use
 			btnGraph
+			spnDigits
 		StackPane
 			lblEstimateNode - Label: for estimate node tooltip
 			Chart
@@ -55,8 +59,8 @@ public class EstimateChart extends Application {
 	final double ZOOM_FACTOR = 1.05;
 	double yUpperBound;
 	double yLowerBound;
-	double xUpperBound;
-	double xLowerBound;
+	final double X_UPPER_BOUND = 1.1;
+	final double X_LOWER_BOUND = -0.1;
 
 	Map<Node, SeriesWrapper> nodeSeriesMap;
 	Node selectedNode = null;
@@ -70,6 +74,7 @@ public class EstimateChart extends Application {
 	RadioButton radE = new RadioButton("E");
 	RadioButton radOther = new RadioButton("Other");
 	TextField txtOther = new TextField();
+	Spinner<Integer> spnDigits = new Spinner<>(1, 9, 6);
 
 	public static void main(String[] args) {
 		launch();
@@ -86,8 +91,8 @@ public class EstimateChart extends Application {
 		xAxis.setTickLabelsVisible(false);
 		xAxis.setMinorTickVisible(false);
 		xAxis.setAutoRanging(false);
-		xAxis.setUpperBound(1.1);
-		xAxis.setLowerBound(-0.1);
+		xAxis.setUpperBound(X_UPPER_BOUND);
+		xAxis.setLowerBound(X_LOWER_BOUND);
 		chart.setTitle("Closeness of estimates");
 		lblEstimateNode.getStyleClass().add("chart-legend");
 		stackPane.getChildren().add(chart);
@@ -95,18 +100,23 @@ public class EstimateChart extends Application {
 		Label lblHints = new Label("Select icons in the legend to enable tooltips.\n" +
 			"Scroll to zoom in and out. Right click to reset zoom.");
 
-		HBox hBoxControls = new HBox();
+		HBox hBoxRadioButtons = new HBox();
 		ToggleGroup toggleGroupNumber = new ToggleGroup();
+		Label lblRadioButtons = new Label("Number to estimate");
 		radPi.setToggleGroup(toggleGroupNumber);
 		radE.setToggleGroup(toggleGroupNumber);
 		radOther.setToggleGroup(toggleGroupNumber);
 		radPi.setSelected(true);
 		Button btnGraph = new Button("Graph");
-		hBoxControls.getChildren().addAll(radPi, radE, radOther, txtOther, btnGraph);
+		hBoxRadioButtons.getChildren().addAll(lblRadioButtons, radPi, radE, radOther, txtOther);
 		btnGraph.setOnAction(event -> graph());
 
+		HBox hBoxSpinner = new HBox();
+		Label lblSpinner = new Label("Max digits to use");
+		hBoxSpinner.getChildren().addAll(lblSpinner, spnDigits, btnGraph);
+
 		VBox vBox = new VBox();
-		vBox.getChildren().addAll(lblHints, hBoxControls, stackPane);
+		vBox.getChildren().addAll(lblHints, hBoxRadioButtons, hBoxSpinner, stackPane);
 
 		//initializing chart - seems like css properties can't be read before this.
 		//has to be done before putting nodes on each series, since each node also needs
@@ -156,8 +166,8 @@ public class EstimateChart extends Application {
 			if (event.getButton() == MouseButton.SECONDARY) {
 				((NumberAxis) chart.getYAxis()).setUpperBound(yUpperBound);
 				((NumberAxis) chart.getYAxis()).setLowerBound(yLowerBound);
-				((NumberAxis) chart.getXAxis()).setUpperBound(xUpperBound);
-				((NumberAxis) chart.getXAxis()).setLowerBound(xLowerBound);
+				((NumberAxis) chart.getXAxis()).setUpperBound(X_UPPER_BOUND);
+				((NumberAxis) chart.getXAxis()).setLowerBound(X_LOWER_BOUND);
 			}
 		});
 	}
@@ -179,6 +189,7 @@ public class EstimateChart extends Application {
 	public void graph() {
 		//clearing things
 		chart.getData().clear();
+		chart.getYAxis().setAutoRanging(true);
 		selectedNode = null;
 
 		//getting lists of estimate from the generator
@@ -193,11 +204,12 @@ public class EstimateChart extends Application {
 				return;
 			}
 		}
-		EstimateGenerator.populate(MAX_DIGITS, referenceValue);
+		int maxDigits = spnDigits.getValue();
+		EstimateGenerator.populate(maxDigits, referenceValue);
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//graphing series
-		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+		for (int i = 1; i <= maxDigits; i++) {	//for each digit band
 			XYChart.Series<Number, Number> series = new XYChart.Series<>();
 			series.setName(i + " digit" + (i != 1 ? "s" : ""));
 			chart.getData().add(series);
@@ -235,7 +247,7 @@ public class EstimateChart extends Application {
 		//while calculating x-axis value in situ.
 		//It also assigns a label that pops up.
 		//Each EstimateNode also needs to know its SeriesWrapper so that it can share its colour.
-		for (int i = 1; i <= MAX_DIGITS; i++) {	//for each digit band
+		for (int i = 1; i <= maxDigits; i++) {	//for each digit band
 			List<Estimate> bandEstimates = estimates.get(i);
 			XYChart.Series<Number, Number> series = chart.getData().get(i - 1);
 
@@ -263,15 +275,11 @@ public class EstimateChart extends Application {
 			}
 		}
 
-		//enabling zoom. needs to know chart y-value range, so happens after populating with data.
-		//right click resets zoom.
+		//resetting zoom
 		chart.getYAxis().setAutoRanging(false);
+		chart.getXAxis().setAutoRanging(false);
 		yUpperBound = ((NumberAxis) chart.getYAxis()).getUpperBound();
 		yLowerBound = ((NumberAxis) chart.getYAxis()).getLowerBound();
-		xUpperBound = ((NumberAxis) chart.getXAxis()).getUpperBound();
-		xLowerBound = ((NumberAxis) chart.getXAxis()).getLowerBound();
-
-		System.out.println(chart.getData().size());
 	}
 
 	public void hideEstimateNodeTooltip() {
