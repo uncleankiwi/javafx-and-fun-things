@@ -16,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import util.Rounder;
 
 import java.util.HashMap;
 import java.util.List;
@@ -92,6 +91,7 @@ public class EstimateChart extends Application {
 		xAxis.setTickLabelsVisible(false);
 		xAxis.setMinorTickVisible(false);
 		xAxis.setAutoRanging(false);
+		yAxis.setAutoRanging(false);
 		xAxis.setUpperBound(X_UPPER_BOUND);
 		xAxis.setLowerBound(X_LOWER_BOUND);
 		chart.setTitle("Closeness of estimates");
@@ -195,7 +195,6 @@ public class EstimateChart extends Application {
 		//clearing things
 		chart.getData().clear();
 		selectedNode = null;
-		yAxis.setAutoRanging(true);
 
 		//getting lists of estimate from the generator
 		double referenceValue;
@@ -285,7 +284,7 @@ public class EstimateChart extends Application {
 
 		//resetting zoom. yUpperBound, the max value on the y-axis, has to be manually
 		//calculated. yAxis.getUpperBound() seems to return wrong values.
-		yUpperBound = Rounder.oneSf(highestCloseness * 1.2);
+		yUpperBound = Math.ceil(highestCloseness * 1.2);
 		resetZoom();
 	}
 
