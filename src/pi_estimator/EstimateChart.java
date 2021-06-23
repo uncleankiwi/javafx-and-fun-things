@@ -9,10 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -36,9 +38,17 @@ because then the Label would belong to the Chart, which cuts off anything
 that's outside it.
 
 EstimateChart
-	StackPane
-		Label - for estimate node tooltip
-		Chart
+	VBox
+		lblHints - application usage hints
+		hBoxControls
+			radPi
+			radE
+			radOther
+			txtOther
+			btnGraph
+		StackPane
+			lblEstimateNode - Label: for estimate node tooltip
+			Chart
  */
 public class EstimateChart extends Application {
 	final int MAX_DIGITS = 6;
@@ -50,11 +60,16 @@ public class EstimateChart extends Application {
 
 	Map<Node, SeriesWrapper> nodeSeriesMap;
 	Node selectedNode = null;
-	final Label estimateNodeLabel = new Label();	//labels an EstimateNode when it's moused-over
+	final Label lblEstimateNode = new Label();	//labels an EstimateNode when it's moused-over
 	final StackPane stackPane = new StackPane();	//holds chart and EstimateNode tooltip
 	final NumberAxis xAxis = new NumberAxis();
 	final NumberAxis yAxis = new NumberAxis();
 	final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+
+	RadioButton radPi = new RadioButton("Pi");
+	RadioButton radE = new RadioButton("E");
+	RadioButton radOther = new RadioButton("Other");
+	TextField txtOther = new TextField();
 
 	public static void main(String[] args) {
 		launch();
@@ -62,7 +77,6 @@ public class EstimateChart extends Application {
 
 	@Override
 	public void start(Stage stage) {
-
 		//initialize controls
 		stage.setTitle("Irrational number estimator");
 		yAxis.setLabel("Closeness of estimate");
@@ -74,16 +88,31 @@ public class EstimateChart extends Application {
 		xAxis.setAutoRanging(false);
 		xAxis.setUpperBound(1.1);
 		xAxis.setLowerBound(-0.1);
-		chart.setTitle("Closeness of estimates\n" +
-			"(Select icons in the legend to enable tooltips)");
-		estimateNodeLabel.getStyleClass().add("chart-legend");
+		chart.setTitle("Closeness of estimates");
+		lblEstimateNode.getStyleClass().add("chart-legend");
 		stackPane.getChildren().add(chart);
+
+		Label lblHints = new Label("Select icons in the legend to enable tooltips.\n" +
+			"Scroll to zoom in and out. Right click to reset zoom.");
+
+		HBox hBoxControls = new HBox();
+		ToggleGroup toggleGroupNumber = new ToggleGroup();
+		radPi.setToggleGroup(toggleGroupNumber);
+		radE.setToggleGroup(toggleGroupNumber);
+		radOther.setToggleGroup(toggleGroupNumber);
+		radPi.setSelected(true);
+		Button btnGraph = new Button("Graph");
+		hBoxControls.getChildren().addAll(radPi, radE, radOther, txtOther, btnGraph);
+		btnGraph.setOnAction(event -> graph());
+
+		VBox vBox = new VBox();
+		vBox.getChildren().addAll(lblHints, hBoxControls, stackPane);
 
 		//initializing chart - seems like css properties can't be read before this.
 		//has to be done before putting nodes on each series, since each node also needs
 		//to read the colour of the series it's on.
 		chart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("chart.css")).toExternalForm());
-		Scene scene = new Scene(stackPane, 800, 600);
+		Scene scene = new Scene(vBox, 800, 600);
 		stage.setScene(scene);
 		stage.show();
 
@@ -135,24 +164,36 @@ public class EstimateChart extends Application {
 
 	public void showEstimateNodeTooltip(Estimate estimate, SeriesWrapper seriesWrapper, MouseEvent event) {
 		//setting label text and colour
-		estimateNodeLabel.setText(estimate.toString());
-		if (seriesWrapper != null) estimateNodeLabel.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
+		lblEstimateNode.setText(estimate.toString());
+		if (seriesWrapper != null) lblEstimateNode.setStyle("-fx-border-color: " + seriesWrapper.getColour() + ";");
 
-		stackPane.getChildren().add(estimateNodeLabel);
+		stackPane.getChildren().add(lblEstimateNode);
 		stackPane.applyCss();	//make it calculate width and height, otherwise they'll be 0
 		stackPane.layout();
 
-		estimateNodeLabel.setLayoutX(event.getSceneX() - estimateNodeLabel.getWidth() / 2);
-		estimateNodeLabel.setLayoutY(event.getSceneY() - 1.2 * estimateNodeLabel.getHeight());
-		estimateNodeLabel.toFront();
+		lblEstimateNode.setLayoutX(event.getSceneX() - lblEstimateNode.getWidth() / 2);
+		lblEstimateNode.setLayoutY(event.getSceneY() - 1.2 * lblEstimateNode.getHeight());
+		lblEstimateNode.toFront();
 	}
 
 	public void graph() {
 		//clearing things
 		chart.getData().clear();
+		selectedNode = null;
 
 		//getting lists of estimate from the generator
-		EstimateGenerator.populate(MAX_DIGITS, Math.PI);
+		double referenceValue;
+		if (radPi.isSelected()) referenceValue = Math.PI;
+		else if (radE.isSelected()) referenceValue = Math.E;
+		else {
+			try {
+				referenceValue = Double.parseDouble(txtOther.getText());
+			}
+			catch (NumberFormatException e) {
+				return;
+			}
+		}
+		EstimateGenerator.populate(MAX_DIGITS, referenceValue);
 		Map<Integer, List<Estimate>> estimates = EstimateGenerator.get();
 
 		//graphing series
@@ -229,10 +270,12 @@ public class EstimateChart extends Application {
 		yLowerBound = ((NumberAxis) chart.getYAxis()).getLowerBound();
 		xUpperBound = ((NumberAxis) chart.getXAxis()).getUpperBound();
 		xLowerBound = ((NumberAxis) chart.getXAxis()).getLowerBound();
+
+		System.out.println(chart.getData().size());
 	}
 
 	public void hideEstimateNodeTooltip() {
-		stackPane.getChildren().remove(estimateNodeLabel);
+		stackPane.getChildren().remove(lblEstimateNode);
 	}
 
 	//set node to selected, set others to background
