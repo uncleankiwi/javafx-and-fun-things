@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+//TODO fix tooltip y.
 //TODO improve ui margins, padding
+//TODO readme
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.

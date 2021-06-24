@@ -52,18 +52,20 @@ Also gives the probability of rolling a desired result r.
 
 ### Pi Estimator
 This contains:
-1. a method for generating fractions that are decent estimates of pi,
-2. a 'closeness' grading system that grades how good those estimates are of pi,
+1. a method for generating fractions that are decent estimates of pi, e, or any other number in the 0 < n < 10 range,
+2. a 'closeness' grading system that grades how good those estimates are of that number,
 3. and an interactive GUI that graphs the estimates by their closeness.
 
-The number of digits refers to the total number of digits used in the fraction estimating pi. For
+The number of digits refers to the total number of digits used in the fraction estimating the number. For
 example:
 - 3 uses 1 digit
 - 4/1 uses 2 digits
 - 22/7 uses 3 digits
 
 The 'closeness' measure shows how many digits of that estimate are correct, and how close the first wrong digit is to being correct.
-Negative values are underestimates of pi, and positive values are overestimates.
+Negative values are underestimates of the number, and positive values are overestimates.
+
+Screenshots of an older version:
 
 ![Pi estimator preview 1](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator1.PNG)
 
