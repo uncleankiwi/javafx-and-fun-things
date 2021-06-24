@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO fix tooltip y.
 //TODO improve ui margins, padding
 //TODO readme
 
@@ -186,8 +185,11 @@ public class EstimateChart extends Application {
 		stackPane.applyCss();	//make it calculate width and height, otherwise they'll be 0
 		stackPane.layout();
 
-		lblEstimateNode.setLayoutX(event.getSceneX() - lblEstimateNode.getWidth() / 2);
-		lblEstimateNode.setLayoutY(event.getSceneY() - 1.2 * lblEstimateNode.getHeight());
+		Point2D lblEstimateNodePos = stackPane.sceneToLocal(new Point2D(event.getSceneX() - lblEstimateNode.getWidth() / 2,
+			event.getSceneY() - 1.2 * lblEstimateNode.getHeight()));
+
+		lblEstimateNode.setLayoutX(lblEstimateNodePos.getX());
+		lblEstimateNode.setLayoutY(lblEstimateNodePos.getY());
 		lblEstimateNode.toFront();
 	}
 
@@ -295,7 +297,7 @@ public class EstimateChart extends Application {
 	//set node to selected, set others to background
 	private void legendOnMouseEntered(Node node) {
 		SeriesWrapper seriesWrapper = nodeSeriesMap.get(node);
-		setOneToSelected(seriesWrapper);
+		setSeriesToSelected(seriesWrapper);
 	}
 
 	//if nothing is selected, set all to idle
@@ -306,7 +308,7 @@ public class EstimateChart extends Application {
 		}
 		else {
 			SeriesWrapper seriesWrapper = nodeSeriesMap.get(selectedNode);
-			setOneToSelected(seriesWrapper);
+			setSeriesToSelected(seriesWrapper);
 		}
 	}
 
@@ -323,7 +325,7 @@ public class EstimateChart extends Application {
 			else {
 				selectedNode = node;
 				SeriesWrapper seriesWrapper = nodeSeriesMap.get(node);
-				setOneToSelected(seriesWrapper);
+				setSeriesToSelected(seriesWrapper);
 			}
 		}
 	}
@@ -335,7 +337,7 @@ public class EstimateChart extends Application {
 	}
 
 	//sets one series to selected and the remaining to background
-	private void setOneToSelected(SeriesWrapper selectedWrapper) {
+	private void setSeriesToSelected(SeriesWrapper selectedWrapper) {
 		for (SeriesWrapper seriesWrapper : nodeSeriesMap.values()) {
 			if (seriesWrapper == selectedWrapper) seriesWrapper.setSelected();
 			else seriesWrapper.setBackground();
