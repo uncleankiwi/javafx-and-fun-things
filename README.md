@@ -65,8 +65,6 @@ example:
 The 'closeness' measure shows how many digits of that estimate are correct, and how close the first wrong digit is to being correct.
 Negative values are underestimates of the number, and positive values are overestimates.
 
-Screenshots of an older version:
-
 ![Pi estimator preview 1](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator1.PNG)
 
 ![Pi estimator preview 2](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator2.PNG)
