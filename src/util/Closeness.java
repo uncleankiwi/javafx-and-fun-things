@@ -82,8 +82,8 @@ public final class Closeness {
 	 * to which the two numbers agree, and can be considered the 'logarithmic
 	 * closeness' of the two numbers.</p>
 	 *
-	 * <p>The resulting number is also positive if the value is greater than</p>
-	 * the reference, or negative if smaller.
+	 * <p>The resulting number is positive if the value is greater than
+	 * or equal to the reference, or negative if smaller.</p>
 	 *
 	 * <p>e.g. 54100 (reference) and 54097 (value) give -47, while 54100 and
 	 * 54103 give 47.</p>
@@ -101,8 +101,8 @@ public final class Closeness {
 		//Return 0 if r < 0 < v or v < 0 < r.
 		if ((r < 0 && 0 < v) || (v < 0 && r < v)) return 0;
 
-		//Polarity of result: positive if v > r, negative if v < r
-		int polarity = (v > r) ? 1 : -1;
+		//Polarity of result: positive if v > r or v == r, negative if v < r
+		int polarity = (v >= r) ? 1 : -1;
 
 		//Padding right with zero so that both numbers have the same number of digits
 		//after the decimal point, then removing the decimal point if any.
@@ -157,16 +157,20 @@ public final class Closeness {
 
 		int largerLength = Math.max(referenceStr.length(), valueStr.length());
 
-		String disagreeingDigitDifference = String.valueOf(Math.abs(
-			Long.parseLong(referenceStr) - Long.parseLong(valueStr)));
-		int differenceLength = disagreeingDigitDifference.length();
+		int differenceLength = 0;
+		String disagreeingDigitDifference = "";
+		if (referenceStr.length() != 0 && valueStr.length() != 0) {
+			disagreeingDigitDifference = String.valueOf(Math.abs(
+				Long.parseLong(referenceStr) - Long.parseLong(valueStr)));
+			differenceLength = disagreeingDigitDifference.length();
+		}
 
 		int logarithmicCloseness = agreeingDigitLength + largerLength - differenceLength;
 
 		//arithmetic closeness
 		//= |10 - first digit of difference between disagreeing digits|
 		int arithmeticCloseness = 0;
-		if (disagreeingDigitDifference.length() > 0) {
+		if (differenceLength > 0) {
 			int firstDisagreeingDigit = Integer.parseInt(String.valueOf(disagreeingDigitDifference.charAt(0)));
 			arithmeticCloseness = 10 - firstDisagreeingDigit;
 		}

@@ -47,6 +47,10 @@ public class UtilTest {
 		System.out.println("0 vs 1 -> " + Closeness.get(0, 1));
 		System.out.println("10 vs 1 -> " + Closeness.get(10, 1));
 		System.out.println("45723.58 vs 45753.535236 -> " + Closeness.get(45723.58, 45751.535236));
+
+		System.out.println("\nExact matches:");
+		System.out.println("0 vs 0 -> " + Closeness.get(0, 0));
+		System.out.println("1.52 vs 1.52 -> " + Closeness.get(1.52, 1.52));
 	}
 
 	@SuppressWarnings("unused")
