@@ -2,6 +2,7 @@ package pi_estimator;
 
 import com.sun.javafx.charts.Legend;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -15,15 +16,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-//TODO improve ui margins, padding
-//TODO readme
 
 /*
 Draws estimates grouped by number of digits on a javafx chart.
@@ -39,7 +38,9 @@ that's outside it.
 
 EstimateChart
 	VBox
-		lblHints - application usage hints
+		hBoxHints
+			lblHintTitle
+			lblHints - application usage hints
 		hBoxRadioButtons
 			lblRadioButtons - number to estimate
 			radPi
@@ -69,9 +70,12 @@ public class EstimateChart extends Application {
 	final NumberAxis yAxis = new NumberAxis();
 	final LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
 
-	RadioButton radPi = new RadioButton("Pi");
-	RadioButton radE = new RadioButton("E");
-	RadioButton radOther = new RadioButton("Other");
+	final Insets INSETS = new Insets(2, 5, 2, 5);
+	final double SPACING = 2;
+
+	RadioButton radPi = new RadioButton("Pi\t");
+	RadioButton radE = new RadioButton("E\t");
+	RadioButton radOther = new RadioButton("Other\t");
 	TextField txtOther = new TextField();
 	Spinner<Integer> spnDigits = new Spinner<>(1, 9, 6);
 
@@ -95,28 +99,42 @@ public class EstimateChart extends Application {
 		xAxis.setLowerBound(X_LOWER_BOUND);
 		chart.setTitle("Closeness of estimates");
 		lblEstimateNode.getStyleClass().add("chart-legend");
+		chart.setMinHeight(500);
 		stackPane.getChildren().add(chart);
 
-		Label lblHints = new Label("Select icons in the legend to enable tooltips.\n" +
+		HBox hBoxHints = new HBox();
+		hBoxHints.setPadding(INSETS);
+		hBoxHints.setSpacing(SPACING);
+		Text lblHintTitle = new Text("Tips:");
+		Text lblHints = new Text("Select icons in the legend to enable tooltips.\n" +
 			"Scroll to zoom in and out. Right click to reset zoom.");
+		lblHints.autosize();
+		hBoxHints.getChildren().addAll(lblHintTitle, lblHints);
 
 		HBox hBoxRadioButtons = new HBox();
+		hBoxRadioButtons.setPadding(INSETS);
+		hBoxRadioButtons.setSpacing(SPACING);
 		ToggleGroup toggleGroupNumber = new ToggleGroup();
-		Label lblRadioButtons = new Label("Number to estimate");
+		Text lblRadioButtons = new Text("Number to estimate:");
 		radPi.setToggleGroup(toggleGroupNumber);
 		radE.setToggleGroup(toggleGroupNumber);
 		radOther.setToggleGroup(toggleGroupNumber);
 		radPi.setSelected(true);
-		Button btnGraph = new Button("Graph");
+		txtOther.setPromptText("Enter a number");
 		hBoxRadioButtons.getChildren().addAll(lblRadioButtons, radPi, radE, radOther, txtOther);
-		btnGraph.setOnAction(event -> graph());
 
 		HBox hBoxSpinner = new HBox();
-		Label lblSpinner = new Label("Max digits to use");
+		hBoxSpinner.setPadding(INSETS);
+		hBoxSpinner.setSpacing(SPACING);
+		Text lblSpinner = new Text("Max digits to use:");
+		Button btnGraph = new Button("Graph");
+		btnGraph.setOnAction(event -> graph());
 		hBoxSpinner.getChildren().addAll(lblSpinner, spnDigits, btnGraph);
 
 		VBox vBox = new VBox();
-		vBox.getChildren().addAll(lblHints, hBoxRadioButtons, hBoxSpinner, stackPane);
+		vBox.setPadding(INSETS);
+		vBox.setSpacing(SPACING);
+		vBox.getChildren().addAll(hBoxHints, hBoxRadioButtons, hBoxSpinner, stackPane);
 
 		//initializing chart - seems like css properties can't be read before this.
 		//has to be done before putting nodes on each series, since each node also needs
