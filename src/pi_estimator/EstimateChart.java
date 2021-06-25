@@ -87,20 +87,6 @@ public class EstimateChart extends Application {
 	public void start(Stage stage) {
 		//initialize controls
 		stage.setTitle("Irrational number estimator");
-		yAxis.setLabel("Closeness of estimate");
-		yAxis.setMinorTickVisible(false);
-		xAxis.setLabel("Denominator of fraction estimating the number");
-		xAxis.setTickMarkVisible(false);
-		xAxis.setTickLabelsVisible(false);
-		xAxis.setMinorTickVisible(false);
-		xAxis.setAutoRanging(false);
-		yAxis.setAutoRanging(false);
-		xAxis.setUpperBound(X_UPPER_BOUND);
-		xAxis.setLowerBound(X_LOWER_BOUND);
-		chart.setTitle("Closeness of estimates");
-		lblEstimateNode.getStyleClass().add("chart-legend");
-		chart.setMinHeight(500);
-		stackPane.getChildren().add(chart);
 
 		HBox hBoxHints = new HBox();
 		hBoxHints.setPadding(INSETS);
@@ -130,6 +116,21 @@ public class EstimateChart extends Application {
 		Button btnGraph = new Button("Graph");
 		btnGraph.setOnAction(event -> graph());
 		hBoxSpinner.getChildren().addAll(lblSpinner, spnDigits, btnGraph);
+
+		yAxis.setLabel("Closeness of estimate");
+		yAxis.setMinorTickVisible(false);
+		xAxis.setLabel("Denominator of fraction estimating the number");
+		xAxis.setTickMarkVisible(false);
+		xAxis.setTickLabelsVisible(false);
+		xAxis.setMinorTickVisible(false);
+		xAxis.setAutoRanging(false);
+		yAxis.setAutoRanging(false);
+		xAxis.setUpperBound(X_UPPER_BOUND);
+		xAxis.setLowerBound(X_LOWER_BOUND);
+		chart.setTitle("Closeness of estimates");
+		lblEstimateNode.getStyleClass().add("chart-legend");
+		chart.setMinHeight(500);
+		stackPane.getChildren().add(chart);
 
 		VBox vBox = new VBox();
 		vBox.setPadding(INSETS);
