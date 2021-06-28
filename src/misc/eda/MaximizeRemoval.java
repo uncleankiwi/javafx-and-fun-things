@@ -5,6 +5,25 @@ import java.util.List;
 
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
+
+Simplifying the problem, suppose we search the string for 'ab' and 'bc'.
+Questions:
+1. Is it always better to remove a larger number of string up front? A: no.
+	Consider 'aaa b abab c bbb'.
+	Removing the longer 'abab' -> 'aaa b c bbb' -> 'aaa bbb' (3 moves)
+	Removing the shorter 'bc' -> 'aaa b aba bbb' -> 'aaa bbb' -> ... (6 moves)
+
+2. Are there any situations in which only part of a contiguous repeating segment should be removed?
+	A: probably no?
+
+	Consider the above example:
+	... -> 'aaa b ab c bbb' -> 'aaa b a bbb' -> ... (6 moves)
+	but this is the same as removing 'bc' right from the start.
+
+	Consider 'b a bcbc'
+	Removing only one -> 'b a bc'  (3 moves)
+	Removing all -> 'ba' (2 moves)
+	Removing 'ab' instead -> 'b cbc' (3 moves)
  */
 public class MaximizeRemoval {
 	public static void main(String[] args) {
