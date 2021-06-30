@@ -109,8 +109,8 @@ public class MaximizeRemoval {
 
 	//wrapper for recursive remove()
 	public static Path remove(String s) {
-		List<Path> results = remove(s, new ArrayList<Path>());
-		Path bestPath;
+		List<Path> results = remove(s, new ArrayList<>());
+		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
 			if (path.getMoves() > greatestMoves) {
@@ -126,17 +126,34 @@ public class MaximizeRemoval {
 		//For every possible removal (contiguous sequences are counted as 1),
 		//do the removal(s), add to count, then call recursively on remainder.
 
-
+		pathList.add(new Path());
 
 		return pathList;
 
+	}
+
+	//Tries to find 1 or more contiguous searchString sequences from string s.
+	//Returns: number of sequences found.
+	private static int getOccurrencesAtHead(String s, String searchString) {
+		int found = 0;
+		int lookup = 0;
+		while (lookup + searchString.length() <= s.length()) {
+			if (s.startsWith(searchString, lookup)) {
+				lookup += searchString.length();
+				found++;
+			}
+			else {
+				break;
+			}
+		}
+		return found;
 	}
 
 	//The path that the algorithm has taken so far. Holds a list of strings, i.e.
 	//the steps taken, and the number of steps taken.
 	//The number of steps taken is needed because more than one removal may occur
 	//during a call of remove().
-	private class Path {
+	private static class Path {
 		private List<String> strings;
 		private int moves;
 
