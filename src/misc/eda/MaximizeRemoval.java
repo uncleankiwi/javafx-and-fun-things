@@ -1,6 +1,7 @@
 package misc.eda;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /*
@@ -35,11 +36,11 @@ public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
 	public static void main(String[] args) {
-		test("ghosteo");				//1
+//		test("ghosteo");				//1
 		test("ghostmosteo");			//2
-		test("ghteo");				//0
-		test("ghghostosteoeoost");	//3
-		test("");					//0
+//		test("ghteo");				//0
+//		test("ghghostosteoeoost");	//3
+//		test("");					//0
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
@@ -48,7 +49,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("eo");
 		}
-		test(sb.toString());			//200
+//		test(sb.toString());			//200
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 40; i++) {
@@ -60,7 +61,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 40; i++) {
 			sb.append("osteo");
 		}
-		test(sb.toString());			//180
+//		test(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 80; i++) {
@@ -75,7 +76,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 80; i++) {
 			sb.append("eo");
 		}
-		test(sb.toString());			//180
+//		test(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
@@ -84,7 +85,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("ost");
 		}
-		test(sb.toString());			//0
+//		test(sb.toString());			//0
 
 
 	}
@@ -95,10 +96,12 @@ public class MaximizeRemoval {
 			System.out.println(s.substring(0, 20) + "... (" + path.getMoves() + " moves)");
 		}
 		else {
-			StringBuilder sb = new StringBuilder(s);
+			StringBuilder sb = new StringBuilder();
 			for (String r : path.getStrings()) {
-				sb.append(" -> ")
-					.append(r);
+				if (sb.length() > 0) {
+					sb.append(" -> ");
+				}
+				sb.append(r);
 			}
 			sb.append(" (")
 				.append(path.getMoves())
@@ -143,7 +146,7 @@ public class MaximizeRemoval {
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
 					pathsToAdd = remove(remainder);
 					for (Path path : pathsToAdd) {
-						path.add(remainder, path.getMoves() + hsr.getHits());
+						path.add(s, path.getMoves() + hsr.getHits());
 					}
 					i += hsr.getResult().length();
 					break;
@@ -210,17 +213,18 @@ public class MaximizeRemoval {
 	//The number of steps taken is needed because more than one removal may occur
 	//during a call of remove().
 	private static class Path {
-		private final List<String> strings;
+		private final LinkedList<String> strings;
 		private int moves;
 
 		public Path(String string, int moves) {
-			this.strings = new ArrayList<>();
+			this.strings = new LinkedList<>();
 			this.strings.add(string);
 			this.moves = moves;
 		}
 
+		//adds a string to the FRONT of the list
 		public void add(String string, int moves) {
-			strings.add(string);
+			strings.addFirst(string);
 			this.moves += moves;
 		}
 
