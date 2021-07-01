@@ -92,7 +92,7 @@ public class MaximizeRemoval {
 	private static void test(String s) {
 		Path path = pickBestRemove(s);
 		if (s.length() > 20) {
-			System.out.println(s.substring(0, 20) + " (" + path.getMoves() + " moves)");
+			System.out.println(s.substring(0, 20) + "... (" + path.getMoves() + " moves)");
 		}
 		else {
 			StringBuilder sb = new StringBuilder(s);
@@ -113,7 +113,7 @@ public class MaximizeRemoval {
 		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
-			if (path.getMoves() > greatestMoves) {
+			if (path.getMoves() > greatestMoves || bestPath == null) {
 				bestPath = path;
 				greatestMoves = path.getMoves();
 			}
@@ -143,10 +143,13 @@ public class MaximizeRemoval {
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
 					pathsToAdd = remove(remainder);
 					for (Path path : pathsToAdd) {
-						path.add(hsr.getResult(), path.getMoves() + hsr.getHits());
+						path.add(remainder, path.getMoves() + hsr.getHits());
 					}
 					i += hsr.getResult().length();
 					break;
+				}
+				else {
+					i++;
 				}
 			}
 		}
