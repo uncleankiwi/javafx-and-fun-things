@@ -149,7 +149,7 @@ public class MaximizeRemoval {
 						path.add(s, hsr.getHits());
 
 					}
-					i += hsr.getResult().length();
+					i++; 	//i += hsr.getResult().length();
 					break;
 				}
 				else {
