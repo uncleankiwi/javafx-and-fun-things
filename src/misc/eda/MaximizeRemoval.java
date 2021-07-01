@@ -37,9 +37,9 @@ public class MaximizeRemoval {
 
 	public static void main(String[] args) {
 //		test("ghosteo");				//1
-		test("ghostmosteo");			//2
+//		test("ghostmosteo");			//2
 //		test("ghteo");				//0
-//		test("ghghostosteoeoost");	//3
+		test("ghghostosteoeoost");	//3
 //		test("");					//0
 
 		StringBuilder sb = new StringBuilder();
@@ -146,8 +146,8 @@ public class MaximizeRemoval {
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
 					pathsToAdd = remove(remainder);
 					for (Path path : pathsToAdd) {
-						path.add(s, path.getMoves() + hsr.getHits());
-						System.out.println(path.getMoves() + " " + path.getStrings());
+						path.add(s, hsr.getHits());
+
 					}
 					i += hsr.getResult().length();
 					break;
