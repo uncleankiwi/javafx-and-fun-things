@@ -128,7 +128,15 @@ public class MaximizeRemoval {
 		int differentRemovals = 0;
 		int i = 0;
 		while (i < s.length()) {
+			for (String searchWord : WORDS) {
+				HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
+				if (hsr.getHits() > 0) {
+					differentRemovals++;
+					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
 
+					break;
+				}
+			}
 		}
 
 		pathList.add(new Path());
