@@ -90,7 +90,7 @@ public class MaximizeRemoval {
 	}
 
 	private static void test(String s) {
-		Path path = remove(s);
+		Path path = pickBestRemove(s);
 		if (s.length() > 20) {
 			System.out.println(s.substring(0, 20) + " (" + path.getMoves() + " moves)");
 		}
@@ -108,8 +108,8 @@ public class MaximizeRemoval {
 	}
 
 	//wrapper for recursive remove()
-	public static Path remove(String s) {
-		List<Path> results = remove(s, new ArrayList<>());
+	public static Path pickBestRemove(String s) {
+		List<Path> results = remove(s);
 		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
@@ -121,10 +121,18 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
-	private static List<Path> remove(String s, List<Path> pathList) {
+	private static List<Path> remove(String s) {
 		//Given a string, if there are no removals, return.
 		//For every possible removal (contiguous sequences are counted as 1),
 		//do the removal(s), add to count, then call recursively on remainder.
+
+		//a b c
+		//		bc
+		//			c
+		//			b
+		//		ac
+		//		ab
+		List<Path> pathsToAdd = new ArrayList<>();
 		int differentRemovals = 0;
 		int i = 0;
 		while (i < s.length()) {
@@ -133,15 +141,20 @@ public class MaximizeRemoval {
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-
+					pathsToAdd = remove(remainder);
+					for (Path path : pathsToAdd) {
+						path.add(hsr.getResult(), path.getMoves() + hsr.getHits());
+					}
+					i += hsr.getResult().length();
 					break;
 				}
 			}
 		}
 
-		pathList.add(new Path());
-
-		return pathList;
+		if (differentRemovals == 0) {
+			pathsToAdd.add(new Path(s, 0));
+		}
+		return pathsToAdd;
 
 	}
 
@@ -194,10 +207,13 @@ public class MaximizeRemoval {
 	//The number of steps taken is needed because more than one removal may occur
 	//during a call of remove().
 	private static class Path {
-		private List<String> strings;
+		private final List<String> strings;
 		private int moves;
 
-		public Path() {
+		public Path(String string, int moves) {
+			this.strings = new ArrayList<>();
+			this.strings.add(string);
+			this.moves = moves;
 		}
 
 		public void add(String string, int moves) {
