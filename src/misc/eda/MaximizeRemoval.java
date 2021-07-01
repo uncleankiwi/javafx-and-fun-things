@@ -125,6 +125,11 @@ public class MaximizeRemoval {
 		//Given a string, if there are no removals, return.
 		//For every possible removal (contiguous sequences are counted as 1),
 		//do the removal(s), add to count, then call recursively on remainder.
+		int differentRemovals = 0;
+		int i = 0;
+		while (i < s.length()) {
+
+		}
 
 		pathList.add(new Path());
 
@@ -134,7 +139,7 @@ public class MaximizeRemoval {
 
 	//Tries to find 1 or more contiguous searchString sequences from string s.
 	//Returns: number of sequences found.
-	private static int getOccurrencesAtHead(String s, String searchString) {
+	private static HeadSearchResult getOccurrencesAtHead(String s, String searchString) {
 		int found = 0;
 		int lookup = 0;
 		while (lookup + searchString.length() <= s.length()) {
@@ -146,7 +151,34 @@ public class MaximizeRemoval {
 				break;
 			}
 		}
-		return found;
+		if (found > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 1; i <= found; i++) {
+				sb.append(searchString);
+			}
+			return new HeadSearchResult(found, sb.toString());
+		}
+		else return new HeadSearchResult(found, null);
+	}
+
+	//Stores the result from getOccurrencesAtHead.
+	//Just stores the string result and number of hits.
+	private static class HeadSearchResult {
+		private final int hits;
+		private final String result;
+
+		public HeadSearchResult(int hits, String result) {
+			this.hits = hits;
+			this.result = result;
+		}
+
+		public int getHits() {
+			return hits;
+		}
+
+		public String getResult() {
+			return result;
+		}
 	}
 
 	//The path that the algorithm has taken so far. Holds a list of strings, i.e.
