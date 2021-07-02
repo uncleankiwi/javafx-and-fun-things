@@ -36,11 +36,11 @@ public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
 	public static void main(String[] args) {
-//		test("ghosteo");				//1
-//		test("ghostmosteo");			//2
-//		test("ghteo");				//0
+		test("ghosteo");				//1
+		test("ghostmosteo");			//2
+		test("ghteo");				//0
 		test("ghghostosteoeoost");	//3
-//		test("");					//0
+		test("");					//0
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
@@ -49,7 +49,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("eo");
 		}
-//		test(sb.toString());			//200
+		test(sb.toString());			//200
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 40; i++) {
@@ -61,7 +61,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 40; i++) {
 			sb.append("osteo");
 		}
-//		test(sb.toString());			//180
+		test(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 80; i++) {
@@ -85,9 +85,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("ost");
 		}
-//		test(sb.toString());			//0
-
-
+		test(sb.toString());			//0
 	}
 
 	private static void test(String s) {
@@ -137,9 +135,9 @@ public class MaximizeRemoval {
 		//		ab
 		List<Path> pathsToAdd = new ArrayList<>();
 		int differentRemovals = 0;
-		int i = 0;
-		while (i < s.length()) {
-			for (String searchWord : WORDS) {
+		for (String searchWord : WORDS) {
+			int i = 0;
+			while (i < s.length()) {
 				HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
@@ -147,10 +145,8 @@ public class MaximizeRemoval {
 					pathsToAdd = remove(remainder);
 					for (Path path : pathsToAdd) {
 						path.add(s, hsr.getHits());
-						System.out.println(s + " : " + hsr.getHits() + "+" + path.getStrings()); //TODO
 					}
-					i++; 	//i += hsr.getResult().length();
-					break;
+					i += hsr.getResult().length();
 				}
 				else {
 					i++;
