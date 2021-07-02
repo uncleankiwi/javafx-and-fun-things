@@ -147,7 +147,7 @@ public class MaximizeRemoval {
 					pathsToAdd = remove(remainder);
 					for (Path path : pathsToAdd) {
 						path.add(s, hsr.getHits());
-
+						System.out.println(s + " : " + hsr.getHits() + "+" + path.getStrings()); //TODO
 					}
 					i++; 	//i += hsr.getResult().length();
 					break;
