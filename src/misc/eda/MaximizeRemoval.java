@@ -15,7 +15,7 @@ Questions:
 	Removing the shorter 'bc' -> 'aaa b aba bbb' -> 'aaa bbb' -> ... (6 moves)
 
 2. Are there any situations in which only part of a contiguous repeating segment should be removed?
-	A: probably not, unless more strings can be removed.
+	A: probably not, unless more strings not in the form of 'ab' and 'bc' are added.
 
 	Consider the above example:
 	... -> 'aaa b ab c bbb' -> 'aaa b a bbb' -> ... (6 moves)
@@ -36,77 +36,77 @@ public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
 	public static void main(String[] args) {
-//		test("ghosteo");				//1
-//		test("ghostmosteo");			//2
-//		test("ghteo");				//0
-//		test("ghghostosteoeoost");	//3
-//		test("");					//0
-//		test("ghghostost");		//2
-//		test("ostosteoeo");		//2
-//		test("ghghostosteoeoostost");		//4
-//		test("ostostghghostosteoeo");	//4	todo
-//		test("ghghostosteoeoostost");	//4
-		test("ostghosteo");	//2
+		test("ghosteo");					//1
+		test("ghostmosteo");				//2
+		test("ghteo");					//0
+		test("ghghostosteoeoost");		//3
+		test("");						//0
+		test("ghghostost");				//2
+		test("ostosteoeo");				//2
+		test("ghghostosteoeoostost");	//4
+		test("ostostghghostosteoeo");	//4
+		test("ghghostosteoeoostost");	//4
+		test("ostghosteo");				//2
 
 		StringBuilder sb = new StringBuilder();
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("eo");
-//		}
-//		test(sb.toString());			//200
-//
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 40; i++) {
-//			sb.append("osteo");
-//		}
-//		for (int i = 0; i < 100; i++) {
-//			sb.append("ghost");
-//		}
-//		for (int i = 0; i < 40; i++) {
-//			sb.append("osteo");
-//		}
-//		test(sb.toString());			//180
+		for (int i = 0; i < 200; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 200; i++) {
+			sb.append("eo");
+		}
+		test(sb.toString());			//200
 
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("gh");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("eo");
-//		}
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("ost");
-//		}
-//		test(sb.toString());			//18. slow.
+		sb = new StringBuilder();
+		for (int i = 0; i < 40; i++) {
+			sb.append("osteo");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("ghost");
+		}
+		for (int i = 0; i < 40; i++) {
+			sb.append("osteo");
+		}
+		test(sb.toString());			//180
 
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("gh");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("eo");
-//		}
-//		test(sb.toString());			//18	todo wrong output: 10
+		sb = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			sb.append("gh");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("eo");
+		}
+		for (int i = 0; i < 8; i++) {
+			sb.append("ost");
+		}
+		test(sb.toString());			//18. slow.
 
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("eo");
-//		}
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("ost");
-//		}
-//		test(sb.toString());			//0
+		sb = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("gh");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 8; i++) {
+			sb.append("eo");
+		}
+		test(sb.toString());			//18. too slow when multiplied by 10.
+
+		sb = new StringBuilder();
+		for (int i = 0; i < 200; i++) {
+			sb.append("eo");
+		}
+		for (int i = 0; i < 200; i++) {
+			sb.append("ost");
+		}
+		test(sb.toString());			//0
 	}
 
 	private static void test(String s) {
@@ -158,36 +158,29 @@ public class MaximizeRemoval {
 		int differentRemovals = 0;
 		for (String searchWord : WORDS) {
 			int i = 0;
+			List<Path> pathsToAddPerWord = new ArrayList<>();
 			while (i < s.length()) {
 				HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-					pathsToAdd = remove(remainder);
+					pathsToAddPerWord.addAll(remove(remainder));
 
-					for (Path path : pathsToAdd) {
+					for (Path path : pathsToAddPerWord) {
 						path.add(s, hsr.getHits());
 					}
 					i += hsr.getResult().length();
-
-//					System.out.println("inside "+pathsToAdd + "||" + differentRemovals);
 				}
 				else {
 					i++;
 				}
 			}
-
-			System.out.println("inside "+pathsToAdd + "||" + differentRemovals);
+			pathsToAdd.addAll(pathsToAddPerWord);
 		}
-
-		System.out.println(pathsToAdd + "||" + differentRemovals);
 
 		if (differentRemovals == 0) {
 			pathsToAdd.add(new Path(s, 0));
 		}
-
-//		System.out.println(pathsToAdd + "||" + differentRemovals);
-
 		return pathsToAdd;
 
 	}
