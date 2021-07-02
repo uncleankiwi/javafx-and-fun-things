@@ -60,10 +60,10 @@ public class KeySortTranspositionCipher {
 	}
 
 	public static String encrypt(String message, String key) {
-
+		return null;
 	}
 
 	public static String decrypt(String message, String key) {
-
+		return null;
 	}
 }

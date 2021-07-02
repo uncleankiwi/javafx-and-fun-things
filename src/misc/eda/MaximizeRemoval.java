@@ -82,7 +82,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 8; i++) {
 			sb.append("ost");
 		}
-		test(sb.toString());			//18. slow.
+		test(sb.toString());			//18. slow when multiplied by factor of 10.
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -97,7 +97,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 8; i++) {
 			sb.append("eo");
 		}
-		test(sb.toString());			//18. too slow when multiplied by 10.
+		test(sb.toString());			//18. too slow when multiplied by factor of 10.
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
@@ -158,24 +158,23 @@ public class MaximizeRemoval {
 		int differentRemovals = 0;
 		for (String searchWord : WORDS) {
 			int i = 0;
-			List<Path> pathsToAddPerWord = new ArrayList<>();
 			while (i < s.length()) {
 				HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-					pathsToAddPerWord.addAll(remove(remainder));
+					List<Path> localRemoval = remove(remainder);
 
-					for (Path path : pathsToAddPerWord) {
+					for (Path path : localRemoval) {
 						path.add(s, hsr.getHits());
 					}
 					i += hsr.getResult().length();
+					pathsToAdd.addAll(localRemoval);
 				}
 				else {
 					i++;
 				}
 			}
-			pathsToAdd.addAll(pathsToAddPerWord);
 		}
 
 		if (differentRemovals == 0) {
