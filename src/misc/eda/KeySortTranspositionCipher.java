@@ -81,6 +81,7 @@ public class KeySortTranspositionCipher {
 		System.out.println("--------------------");
 	}
 
+	@SuppressWarnings("DuplicatedCode")
 	public static String encrypt(String message, String key) {
 		//padding until message length is multiple of key's length
 		int hangingLength = message.length() % key.length();
@@ -97,7 +98,7 @@ public class KeySortTranspositionCipher {
 		for (char[] array = key.toCharArray(); i < array.length; i++) {
 			KeyTree.add(new KeyCharacter(array[i], i));
 		}
-		int newIndex = 0;	//todo does this fetch key characters alphabetically?
+		int newIndex = 0;	//interestingly this fetches the correct indices in a Set
 		char[] encryptedArray = new char[message.length()];
 		for (Iterator<KeyCharacter> iter = KeyTree.iterator(); iter.hasNext(); newIndex++) {
 			int oldIndex = iter.next().oldIndex;
@@ -108,8 +109,31 @@ public class KeySortTranspositionCipher {
 		return String.valueOf(encryptedArray);
 	}
 
+	@SuppressWarnings("DuplicatedCode")
 	public static String decrypt(String message, String key) {
-		return null;
+		if (message.length() % key.length() != 0) {
+			return "Key does not match encrypted message.";
+		}
+
+		char[] messageArray = message.toCharArray();
+
+		//Generating a Set containing indices of key's character after sorting.
+		//Characters appearing more than once in the key will be assign new indices
+		//in increasing order.
+		Set<KeyCharacter> KeyTree = new TreeSet<>();
+		int i = 0;
+		for (char[] array = key.toCharArray(); i < array.length; i++) {
+			KeyTree.add(new KeyCharacter(array[i], i));
+		}
+		int newIndex = 0;
+		char[] encryptedArray = new char[message.length()];
+		for (Iterator<KeyCharacter> iter = KeyTree.iterator(); iter.hasNext(); newIndex++) {
+			int oldIndex = iter.next().oldIndex;
+			for (int j = 0; j < message.length() / key.length(); j++) {
+				encryptedArray[oldIndex + key.length() * j] = messageArray[newIndex + key.length() * j];
+			}
+		}
+		return String.valueOf(encryptedArray);
 	}
 
 	private static class KeyCharacter implements Comparable<KeyCharacter>{
