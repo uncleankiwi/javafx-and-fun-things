@@ -31,8 +31,8 @@ public class JfxClock extends Application {
 }
 
 class ClockWrapper extends VBox {
-	public AnalogPane analog = new AnalogPane();
-	public DigitalPane digital = new DigitalPane();
+	public final AnalogPane analog = new AnalogPane();
+	public final DigitalPane digital = new DigitalPane();
 	ClockWrapper(){
 		this.setStyle("-fx-background-color: #eeeeee");
 		this.getChildren().addAll(analog, digital);
@@ -46,7 +46,7 @@ abstract class Clock extends Pane {
 	protected double second;
 	protected double millisecond;
 	private final KeyFrame timerKeyframe = new KeyFrame(Duration.millis(100), event -> updateClock());
-	protected Timeline timer = new Timeline(timerKeyframe);
+	final protected Timeline timer = new Timeline(timerKeyframe);
 
 	Clock(){
 		timer.setCycleCount(Timeline.INDEFINITE);

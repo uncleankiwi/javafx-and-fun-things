@@ -228,14 +228,14 @@ public class RichTextGradient extends Application {
 }
 
 class RtgUI extends HBox {
-	TextArea txtInput = new TextArea();
-	HTMLEditor txtOutput = new HTMLEditor();
-	ColourList colourList = new ColourList();
-	RadioButton radRGB = new RadioButton("RGB");
-	RadioButton radHSB = new RadioButton("HSB");
-	RadioButton radCMYK = new RadioButton("CMYK");
-	ToggleGroup toggleGroup = new ToggleGroup();
-	Button btnColour = new Button("Colour!");
+	final TextArea txtInput = new TextArea();
+	final HTMLEditor txtOutput = new HTMLEditor();
+	final ColourList colourList = new ColourList();
+	final RadioButton radRGB = new RadioButton("RGB");
+	final RadioButton radHSB = new RadioButton("HSB");
+	final RadioButton radCMYK = new RadioButton("CMYK");
+	final ToggleGroup toggleGroup = new ToggleGroup();
+	final Button btnColour = new Button("Colour!");
 	private static final Insets INSETS = new Insets(5);
 	private static final String CSS =
 			"-fx-padding: 5px;" +
@@ -288,7 +288,7 @@ class RtgUI extends HBox {
 }
 
 class ColourList extends VBox {
-	List<ColourItem> colourItems;
+	final List<ColourItem> colourItems;
 
 	ColourList() {
 		colourItems = new ArrayList<>();
@@ -335,10 +335,10 @@ class ColourList extends VBox {
 }
 
 class ColourItem extends HBox {
-	Button btnAddColour = new Button("+");
-	Button btnRemoveColour = new Button("-");
-	ColorPicker colourPicker = new ColorPicker();
-	ColourList parent;
+	final Button btnAddColour = new Button("+");
+	final Button btnRemoveColour = new Button("-");
+	final ColorPicker colourPicker = new ColorPicker();
+	final ColourList parent;
 	Color colour;
 	int index;
 

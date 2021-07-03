@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 @SuppressWarnings("InfiniteLoopStatement")
 public class Mastermind {
-	public static int[] ans = new int[4];
+	public final static int[] ans = new int[4];
 	public static final int COLOUR_LOWER_BOUND = 1;
 	public static final int COLOUR_UPPER_BOUND = 4;
 	public static final int MAX_GUESSES = 10;
@@ -17,8 +17,8 @@ public class Mastermind {
 	public static final String QUIT = "q";
 	public static final String ANS = "a";
 	public static final String NEWGAME = "n";
-	public static Random rand = new Random();
-	public static Scanner scan = new Scanner(System.in);
+	public static final Random rand = new Random();
+	public final static Scanner scan = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		newgame();

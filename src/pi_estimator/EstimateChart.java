@@ -73,11 +73,11 @@ public class EstimateChart extends Application {
 	final Insets INSETS = new Insets(2, 5, 2, 5);
 	final double SPACING = 2;
 
-	RadioButton radPi = new RadioButton("Pi\t");
-	RadioButton radE = new RadioButton("E\t");
-	RadioButton radOther = new RadioButton("Other\t");
-	TextField txtOther = new TextField();
-	Spinner<Integer> spnDigits = new Spinner<>(1, 9, 6);
+	final RadioButton radPi = new RadioButton("Pi\t");
+	final RadioButton radE = new RadioButton("E\t");
+	final RadioButton radOther = new RadioButton("Other\t");
+	final TextField txtOther = new TextField();
+	final Spinner<Integer> spnDigits = new Spinner<>(1, 9, 6);
 
 	public static void main(String[] args) {
 		launch();
