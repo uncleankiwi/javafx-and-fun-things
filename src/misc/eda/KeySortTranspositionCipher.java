@@ -1,4 +1,7 @@
 package misc.eda;
+
+import util.Padder;
+
 /*
 Given a message and a key, encrypt or decrypt it.
 
@@ -60,6 +63,15 @@ public class KeySortTranspositionCipher {
 	}
 
 	public static String encrypt(String message, String key) {
+		//padding until message length is multiple of key's length
+		message += Padder.bar(' ', message.length() % key.length());
+
+		//Generating an array containing indices of key's character after sorting
+		//Characters appearing more than once in the key will be assign new indices
+		//in increasing order.
+		int[] posAfterSort = new int[key.length()];
+
+
 		return null;
 	}
 
