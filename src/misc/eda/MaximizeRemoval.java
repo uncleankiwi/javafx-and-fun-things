@@ -33,7 +33,7 @@ Questions:
 public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
-	static int differentPathsCounter = 0;	//the number of different paths TODO
+	static int differentPathsCounter = 0;	//the number of different paths
 
 	public static void main(String[] args) {
 		test("ghosteo");					//1
@@ -133,7 +133,7 @@ public class MaximizeRemoval {
 	public static Path pickBestRemove(String s) {
 		Set<Path> results = remove(s);
 
-		System.out.println("Highest number of paths:" + differentPathsCounter + " Result size:" + results.size()); //todo
+		System.out.println("Highest number of paths:" + differentPathsCounter + " Result size:" + results.size());
 		differentPathsCounter = 0;
 
 		Path bestPath = null;
@@ -203,7 +203,7 @@ public class MaximizeRemoval {
 		}
 
 		if (pathsToAdd.size() > differentPathsCounter) {
-			differentPathsCounter = pathsToAdd.size();	//todo
+			differentPathsCounter = pathsToAdd.size();
 		}
 
 

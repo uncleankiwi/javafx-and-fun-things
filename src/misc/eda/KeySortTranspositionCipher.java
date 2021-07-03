@@ -29,6 +29,18 @@ Encryption steps:
 
 	l hbal hbalkcbahpese
 
+For the step where we arrange the key alphabetically to get new indices,
+there are a few ways of achieving this:
+
+	1. (Simple) Use Arrays.sort, then manually match old elements to new
+	while recording down the new positions. When encountering a filled index,
+	it moves forward until an empty one is found.
+
+	2. (Ok) Implement a KeyCharacter class that holds the old index and is
+	also comparable, then sorting a List of these.
+
+	3. (Overkill) Implement a KeyCharacter class...
+
  */
 public class KeySortTranspositionCipher {
 	public static void main(String[] args) {
@@ -70,6 +82,7 @@ public class KeySortTranspositionCipher {
 		//Characters appearing more than once in the key will be assign new indices
 		//in increasing order.
 		int[] posAfterSort = new int[key.length()];
+
 
 
 		return null;
