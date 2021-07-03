@@ -33,41 +33,41 @@ Questions:
 public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
-	static int counter = 0;	//TODO
+	static int differentPathsCounter = 0;	//the number of different paths TODO
 
 	public static void main(String[] args) {
-//		test("ghosteo");					//1
-//		test("ghostmosteo");				//2
-//		test("ghteo");					//0
-//		test("ghghostosteoeoost");		//3
-//		test("");						//0
-//		test("ghghostost");				//2
-//		test("ostosteoeo");				//2
-//		test("ghghostosteoeoostost");	//4
-//		test("ostostghghostosteoeo");	//4
-//		test("ghghostosteoeoostost");	//4
-//		test("ostghosteo");				//2
+		test("ghosteo");					//1
+		test("ghostmosteo");				//2
+		test("ghteo");					//0
+		test("ghghostosteoeoost");		//3
+		test("");						//0
+		test("ghghostost");				//2
+		test("ostosteoeo");				//2
+		test("ghghostosteoeoostost");	//4
+		test("ostostghghostosteoeo");	//4
+		test("ghghostosteoeoostost");	//4
+		test("ostghosteo");				//2
 
 		StringBuilder sb = new StringBuilder();
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("eo");
-//		}
-//		test(sb.toString());			//200
-//
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 40; i++) {
-//			sb.append("osteo");
-//		}
-//		for (int i = 0; i < 100; i++) {
-//			sb.append("ghost");
-//		}
-//		for (int i = 0; i < 40; i++) {
-//			sb.append("osteo");
-//		}
-//		test(sb.toString());			//180
+		for (int i = 0; i < 200; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 200; i++) {
+			sb.append("eo");
+		}
+		test(sb.toString());			//200
+
+		sb = new StringBuilder();
+		for (int i = 0; i < 40; i++) {
+			sb.append("osteo");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("ghost");
+		}
+		for (int i = 0; i < 40; i++) {
+			sb.append("osteo");
+		}
+		test(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -84,29 +84,29 @@ public class MaximizeRemoval {
 		}
 		test(sb.toString());			//18. slow when multiplied by factor of 10.
 
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("gh");
-//		}
-//		for (int i = 0; i < 10; i++) {
-//			sb.append("ost");
-//		}
-//		for (int i = 0; i < 8; i++) {
-//			sb.append("eo");
-//		}
-//		test(sb.toString());			//18. too slow when multiplied by factor of 10.
+		sb = new StringBuilder();
+		for (int i = 0; i < 8; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("gh");
+		}
+		for (int i = 0; i < 10; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 8; i++) {
+			sb.append("eo");
+		}
+		test(sb.toString());			//18. too slow when multiplied by factor of 10.
 //
-//		sb = new StringBuilder();
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("eo");
-//		}
-//		for (int i = 0; i < 200; i++) {
-//			sb.append("ost");
-//		}
-//		test(sb.toString());			//0
+		sb = new StringBuilder();
+		for (int i = 0; i < 200; i++) {
+			sb.append("eo");
+		}
+		for (int i = 0; i < 200; i++) {
+			sb.append("ost");
+		}
+		test(sb.toString());			//0
 	}
 
 	private static void test(String s) {
@@ -132,6 +132,10 @@ public class MaximizeRemoval {
 	//wrapper for recursive remove()
 	public static Path pickBestRemove(String s) {
 		Set<Path> results = remove(s);
+
+		System.out.println("Highest number of paths:" + differentPathsCounter + " Result size:" + results.size()); //todo
+		differentPathsCounter = 0;
+
 		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
@@ -198,8 +202,10 @@ public class MaximizeRemoval {
 			pathsToAdd.add(new Path(s, 0));
 		}
 
-		if (pathsToAdd.size() > counter) counter = pathsToAdd.size();	//todo
-		System.out.println(counter);
+		if (pathsToAdd.size() > differentPathsCounter) {
+			differentPathsCounter = pathsToAdd.size();	//todo
+		}
+
 
 		return pathsToAdd;
 
