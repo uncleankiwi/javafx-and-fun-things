@@ -1,8 +1,6 @@
 package misc.eda;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
@@ -35,39 +33,41 @@ Questions:
 public class MaximizeRemoval {
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
+	static int counter = 0;	//TODO
+
 	public static void main(String[] args) {
-		test("ghosteo");					//1
-		test("ghostmosteo");				//2
-		test("ghteo");					//0
-		test("ghghostosteoeoost");		//3
-		test("");						//0
-		test("ghghostost");				//2
-		test("ostosteoeo");				//2
-		test("ghghostosteoeoostost");	//4
-		test("ostostghghostosteoeo");	//4
-		test("ghghostosteoeoostost");	//4
-		test("ostghosteo");				//2
+//		test("ghosteo");					//1
+//		test("ghostmosteo");				//2
+//		test("ghteo");					//0
+//		test("ghghostosteoeoost");		//3
+//		test("");						//0
+//		test("ghghostost");				//2
+//		test("ostosteoeo");				//2
+//		test("ghghostosteoeoostost");	//4
+//		test("ostostghghostosteoeo");	//4
+//		test("ghghostosteoeoostost");	//4
+//		test("ostghosteo");				//2
 
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 200; i++) {
-			sb.append("ost");
-		}
-		for (int i = 0; i < 200; i++) {
-			sb.append("eo");
-		}
-		test(sb.toString());			//200
-
-		sb = new StringBuilder();
-		for (int i = 0; i < 40; i++) {
-			sb.append("osteo");
-		}
-		for (int i = 0; i < 100; i++) {
-			sb.append("ghost");
-		}
-		for (int i = 0; i < 40; i++) {
-			sb.append("osteo");
-		}
-		test(sb.toString());			//180
+//		for (int i = 0; i < 200; i++) {
+//			sb.append("ost");
+//		}
+//		for (int i = 0; i < 200; i++) {
+//			sb.append("eo");
+//		}
+//		test(sb.toString());			//200
+//
+//		sb = new StringBuilder();
+//		for (int i = 0; i < 40; i++) {
+//			sb.append("osteo");
+//		}
+//		for (int i = 0; i < 100; i++) {
+//			sb.append("ghost");
+//		}
+//		for (int i = 0; i < 40; i++) {
+//			sb.append("osteo");
+//		}
+//		test(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -84,29 +84,29 @@ public class MaximizeRemoval {
 		}
 		test(sb.toString());			//18. slow when multiplied by factor of 10.
 
-		sb = new StringBuilder();
-		for (int i = 0; i < 8; i++) {
-			sb.append("ost");
-		}
-		for (int i = 0; i < 10; i++) {
-			sb.append("gh");
-		}
-		for (int i = 0; i < 10; i++) {
-			sb.append("ost");
-		}
-		for (int i = 0; i < 8; i++) {
-			sb.append("eo");
-		}
-		test(sb.toString());			//18. too slow when multiplied by factor of 10.
-
-		sb = new StringBuilder();
-		for (int i = 0; i < 200; i++) {
-			sb.append("eo");
-		}
-		for (int i = 0; i < 200; i++) {
-			sb.append("ost");
-		}
-		test(sb.toString());			//0
+//		sb = new StringBuilder();
+//		for (int i = 0; i < 8; i++) {
+//			sb.append("ost");
+//		}
+//		for (int i = 0; i < 10; i++) {
+//			sb.append("gh");
+//		}
+//		for (int i = 0; i < 10; i++) {
+//			sb.append("ost");
+//		}
+//		for (int i = 0; i < 8; i++) {
+//			sb.append("eo");
+//		}
+//		test(sb.toString());			//18. too slow when multiplied by factor of 10.
+//
+//		sb = new StringBuilder();
+//		for (int i = 0; i < 200; i++) {
+//			sb.append("eo");
+//		}
+//		for (int i = 0; i < 200; i++) {
+//			sb.append("ost");
+//		}
+//		test(sb.toString());			//0
 	}
 
 	private static void test(String s) {
@@ -131,7 +131,7 @@ public class MaximizeRemoval {
 
 	//wrapper for recursive remove()
 	public static Path pickBestRemove(String s) {
-		List<Path> results = remove(s);
+		Set<Path> results = remove(s);
 		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
@@ -143,7 +143,7 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
-	private static List<Path> remove(String s) {
+	private static Set<Path> remove(String s) {
 		//Given a string, if there are no removals, return.
 		//For every possible removal (contiguous sequences are counted as 1),
 		//do the removal(s), add to count, then call recursively on remainder.
@@ -154,7 +154,7 @@ public class MaximizeRemoval {
 		//			b
 		//		ac
 		//		ab
-		List<Path> pathsToAdd = new ArrayList<>();
+		Set<Path> pathsToAdd = new HashSet<>();
 		int differentRemovals = 0;
 		for (String searchWord : WORDS) {
 			int i = 0;
@@ -163,13 +163,30 @@ public class MaximizeRemoval {
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-					List<Path> localRemoval = remove(remainder);
+					Set<Path> localRemoval = remove(remainder);
 
 					for (Path path : localRemoval) {
 						path.add(s, hsr.getHits());
 					}
 					i += hsr.getResult().length();
-					pathsToAdd.addAll(localRemoval);
+
+					//Checking pathsToAdd to see if a Path already exists in it,
+					//and (redundantly) checking to see if the new Path has a greater
+					//number of moves, and replacing it if so.
+					for (Path path : localRemoval) {
+						Optional<Path> existingPathOptional = pathsToAdd.stream().filter(x -> x.equals(path)).findFirst();
+						if (existingPathOptional.isPresent()) {
+							Path existingPath = existingPathOptional.get();
+							if (path.getMoves() > existingPath.getMoves()) {
+								pathsToAdd.add(path);
+							}
+						}
+						else {
+							pathsToAdd.add(path);
+						}
+					}
+//					pathsToAdd.addAll(localRemoval);
+
 				}
 				else {
 					i++;
@@ -180,6 +197,10 @@ public class MaximizeRemoval {
 		if (differentRemovals == 0) {
 			pathsToAdd.add(new Path(s, 0));
 		}
+
+		if (pathsToAdd.size() > counter) counter = pathsToAdd.size();	//todo
+		System.out.println(counter);
+
 		return pathsToAdd;
 
 	}
@@ -232,6 +253,12 @@ public class MaximizeRemoval {
 	//the steps taken, and the number of steps taken.
 	//The number of steps taken is needed because more than one removal may occur
 	//during a call of remove().
+	//The equals() and therefore hashCode() depend on the current state of the
+	//string. (i.e. the last item in the list)
+	//For this problem, we *could* assume that given the same string state,
+	//the number of removals is always the same, but we're not. Thus when we check
+	//a Set<Path> and find that a Path is already in it, we will also check to see
+	//if the new Path's number of moves is greater than the current's.
 	private static class Path {
 		private final LinkedList<String> strings;
 		private int moves;
@@ -254,6 +281,20 @@ public class MaximizeRemoval {
 
 		public List<String> getStrings() {
 			return strings;
+		}
+
+		//unused.
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Path path = (Path) o;
+			return strings.getLast().equals(path.strings.getLast());
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(strings.getLast());
 		}
 
 		@Override
