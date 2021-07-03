@@ -18,7 +18,8 @@ Encryption steps:
 	b l a h
 	b l a h
 	b l a c k
-	s h e e p
+	  s h e e
+	p
 
 2. Sort the key and every corresponding message letter along with it.
 
@@ -27,11 +28,12 @@ Encryption steps:
 	l   h b a
 	l   h b a
 	l k c b a
-	h p e s e
+	s e e   h
+	      p
 
 3. Put it back together.
 
-	l hbal hbalkcbahpese
+	l hbal hbalkcbasee h   p
 
 For the step where we arrange the key alphabetically to get new indices,
 there are a few ways of achieving this:
@@ -81,7 +83,10 @@ public class KeySortTranspositionCipher {
 
 	public static String encrypt(String message, String key) {
 		//padding until message length is multiple of key's length
-		message += Padder.bar(' ', message.length() % key.length());
+		int hangingLength = message.length() % key.length();
+		if (hangingLength != 0) {
+			message += Padder.bar(' ', key.length() - hangingLength);
+		}
 		char[] messageArray = message.toCharArray();
 
 		//Generating a Set containing indices of key's character after sorting.
@@ -97,10 +102,9 @@ public class KeySortTranspositionCipher {
 		for (Iterator<KeyCharacter> iter = KeyTree.iterator(); iter.hasNext(); newIndex++) {
 			int oldIndex = iter.next().oldIndex;
 			for (int j = 0; j < message.length() / key.length(); j++) {
-				encryptedArray[newIndex + message.length() * j] = messageArray[oldIndex + message.length() * j];
+				encryptedArray[newIndex + key.length() * j] = messageArray[oldIndex + key.length() * j];
 			}
 		}
-
 		return String.valueOf(encryptedArray);
 	}
 
