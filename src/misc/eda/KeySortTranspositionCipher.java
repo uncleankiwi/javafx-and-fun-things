@@ -2,6 +2,10 @@ package misc.eda;
 
 import util.Padder;
 
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 /*
 Given a message and a key, encrypt or decrypt it.
 
@@ -39,7 +43,8 @@ there are a few ways of achieving this:
 	2. (Ok) Implement a KeyCharacter class that holds the old index and is
 	also comparable, then sorting a List of these.
 
-	3. (Overkill) Implement a KeyCharacter class...
+	3. (Overkill) Implement a KeyCharacter class... then put it into a TreeSet
+	to automatically sort it.
 
  */
 public class KeySortTranspositionCipher {
@@ -77,18 +82,46 @@ public class KeySortTranspositionCipher {
 	public static String encrypt(String message, String key) {
 		//padding until message length is multiple of key's length
 		message += Padder.bar(' ', message.length() % key.length());
+		char[] messageArray = message.toCharArray();
 
-		//Generating an array containing indices of key's character after sorting
+		//Generating a Set containing indices of key's character after sorting.
 		//Characters appearing more than once in the key will be assign new indices
 		//in increasing order.
-		int[] posAfterSort = new int[key.length()];
+		Set<KeyCharacter> KeyTree = new TreeSet<>();
+		int i = 0;
+		for (char[] array = key.toCharArray(); i < array.length; i++) {
+			KeyTree.add(new KeyCharacter(array[i], i));
+		}
+		int newIndex = 0;	//todo does this fetch key characters alphabetically?
+		char[] encryptedArray = new char[message.length()];
+		for (Iterator<KeyCharacter> iter = KeyTree.iterator(); iter.hasNext(); newIndex++) {
+			int oldIndex = iter.next().oldIndex;
+			for (int j = 0; j < message.length() / key.length(); j++) {
+				encryptedArray[newIndex + message.length() * j] = messageArray[oldIndex + message.length() * j];
+			}
+		}
 
-
-
-		return null;
+		return String.valueOf(encryptedArray);
 	}
 
 	public static String decrypt(String message, String key) {
 		return null;
+	}
+
+	private static class KeyCharacter implements Comparable<KeyCharacter>{
+		private final char c;
+		final int oldIndex;
+
+		KeyCharacter(char c, int oldIndex) {
+			this.c = c;
+			this.oldIndex = oldIndex;
+		}
+
+		@Override
+		public int compareTo(KeyCharacter o) {
+			int result = Character.compare(this.c, o.c);
+			if (result == 0) result = Integer.compare(this.oldIndex, o.oldIndex);
+			return result;
+		}
 	}
 }
