@@ -56,7 +56,7 @@ public class KeySortTranspositionCipher {
 		test("O may no wintry season, bare and hoary,\n" +
 			"See it half finish'd: but let Autumn bold,\n" +
 			"With universal tinge of sober gold,\n" +
-			"Be all about me when I make an end. ", "Endymion");
+			"Be all about me when I make an end.", "Endymion");
 
 		test("Four Seasons fill the measure of the year;\n" +
 			"There are four seasons in the mind of man:\n" +
@@ -74,11 +74,11 @@ public class KeySortTranspositionCipher {
 			"Or else he would forego his mortal nature.", "The Human Seasons");
 	}
 	private static void test(String message, String key) {
-		System.out.println("Msg:" + message + " Key:" + key);
+		System.out.println("Msg:\n" + message + "\nKey:" + key);
 		String encrypted = encrypt(message, key);
-		System.out.println("Encrypted:" + encrypted);
-		System.out.println("Decrypted:" + decrypt(encrypted, key));
-		System.out.println();
+		System.out.println("\nEncrypted:\n" + encrypted);
+		System.out.println("\nDecrypted:\n" + decrypt(encrypted, key));
+		System.out.println("--------------------");
 	}
 
 	public static String encrypt(String message, String key) {
