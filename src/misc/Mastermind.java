@@ -57,6 +57,8 @@ public class Mastermind {
 	}
 
 	private static void eval(String input) {
+		guesses++;
+
 		boolean correct = false;
 		int RCRP = 0;
 		int RC = 0;
@@ -112,7 +114,6 @@ public class Mastermind {
 				//wrong but not lost
 				System.out.printf("Correct colour and placement: %s. Correct colour: %s. Remaining guesses: %s%n",
 						RCRP, RC, MAX_GUESSES - guesses);
-				guesses++;
 			}
 			else {
 				//lose
