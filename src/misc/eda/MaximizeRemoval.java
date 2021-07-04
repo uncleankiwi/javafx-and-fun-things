@@ -36,8 +36,6 @@ public class MaximizeRemoval {
 
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
-	static int differentPathsCounter = 0;	//the number of different paths
-
 	public static void main(String[] args) {
 		init();
 	}
@@ -148,6 +146,10 @@ public class MaximizeRemoval {
 		slowTests.add(sb.toString());			//18. too slow when multiplied by factor of 10.
 	}
 
+	private static void testSlow() {
+		fastTests.stream().forEach(s -> slowRemove(s));
+	}
+
 	private static void test(String s) {
 		Path path = pickBestRemove(s);
 		if (s.length() > 20) {
@@ -169,12 +171,7 @@ public class MaximizeRemoval {
 	}
 
 	//wrapper for recursive remove()
-	public static Path pickBestRemove(String s) {
-		Set<Path> results = slowRemove(s);
-
-		System.out.println("Highest number of paths:" + differentPathsCounter + " Result size:" + results.size());
-		differentPathsCounter = 0;
-
+	public static Path pickBestRemove(Set<Path> results) {
 		Path bestPath = null;
 		int greatestMoves = 0;
 		for (Path path : results) {
@@ -184,6 +181,11 @@ public class MaximizeRemoval {
 			}
 		}
 		return bestPath;
+	}
+
+	//Second version of remove().
+	private static Set<Path> fastRemove(String s) {
+
 	}
 
 	//First version of remove().
@@ -237,16 +239,9 @@ public class MaximizeRemoval {
 				}
 			}
 		}
-
 		if (differentRemovals == 0) {
 			pathsToAdd.add(new Path(s, 0));
 		}
-
-		if (pathsToAdd.size() > differentPathsCounter) {
-			differentPathsCounter = pathsToAdd.size();
-		}
-
-
 		return pathsToAdd;
 
 	}
