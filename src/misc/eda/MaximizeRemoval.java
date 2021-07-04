@@ -187,12 +187,17 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
-	//Second version of remove().
+	//Second version of remove(). Non-recursive.
 	private static Set<Path> fastRemove(String s) {
+		Set<Path> pendingPaths = new HashSet<>();
+		Set<Path> donePaths = new HashSet<>();
+		pendingPaths.add(new Path(s, 0));
+
+
 		return null;
 	}
 
-	//First version of remove().
+	//First version of remove(). Recursive.
 	private static Set<Path> slowRemove(String s) {
 		//Given a string, if there are no removals, return.
 		//For every possible removal (contiguous sequences are counted as 1),
@@ -220,23 +225,10 @@ public class MaximizeRemoval {
 					}
 					i += hsr.getResult().length();
 
-					//Checking pathsToAdd to see if a Path already exists in it,
-					//and (redundantly) checking to see if the new Path has a greater
-					//number of moves, and replacing it if so.
+					//Replace path in set if this new path has a greater number of moves.
 					for (Path path : localRemoval) {
-						Optional<Path> existingPathOptional = pathsToAdd.stream().filter(x -> x.equals(path)).findFirst();
-						if (existingPathOptional.isPresent()) {
-							Path existingPath = existingPathOptional.get();
-							if (path.getMoves() > existingPath.getMoves()) {
-								pathsToAdd.add(path);
-							}
-						}
-						else {
-							pathsToAdd.add(path);
-						}
+						replacePathIfGreater(path, pathsToAdd);
 					}
-//					pathsToAdd.addAll(localRemoval);
-
 				}
 				else {
 					i++;
@@ -247,6 +239,24 @@ public class MaximizeRemoval {
 			pathsToAdd.add(new Path(s, 0));
 		}
 		return pathsToAdd;
+
+	}
+
+	//Checks a Set to see if a Path already exists in it.
+	//If it doesn't adds it.
+	//If it does, checks if new Path has a greater number of moves,
+	//and if so, replaces it.
+	private static void replacePathIfGreater(Path path, Set<Path> set) {
+		Optional<Path> existingPathOptional = set.stream().filter(x -> x.equals(path)).findFirst();
+		if (existingPathOptional.isPresent()) {
+			Path existingPath = existingPathOptional.get();
+			if (path.getMoves() > existingPath.getMoves()) {
+				set.add(path);
+			}
+		}
+		else {
+			set.add(path);
+		}
 
 	}
 
