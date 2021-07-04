@@ -31,22 +31,30 @@ Questions:
 		if more words are added.
  */
 public class MaximizeRemoval {
+	private static List<String> fastTests;
+	private static List<String> slowTests;
+
 	static final String[] WORDS = new String[] {"ghost", "osteo"};
 
 	static int differentPathsCounter = 0;	//the number of different paths
 
 	public static void main(String[] args) {
-		test("ghosteo");					//1
-		test("ghostmosteo");				//2
-		test("ghteo");					//0
-		test("ghghostosteoeoost");		//3
-		test("");						//0
-		test("ghghostost");				//2
-		test("ostosteoeo");				//2
-		test("ghghostosteoeoostost");	//4
-		test("ostostghghostosteoeo");	//4
-		test("ghghostosteoeoostost");	//4
-		test("ostghosteo");				//2
+		init();
+	}
+
+	private static void init() {
+		fastTests = new ArrayList<>();
+		fastTests.add("ghosteo");					//1
+		fastTests.add("ghostmosteo");				//2
+		fastTests.add("ghteo");					//0
+		fastTests.add("ghghostosteoeoost");		//3
+		fastTests.add("");						//0
+		fastTests.add("ghghostost");				//2
+		fastTests.add("ostosteoeo");				//2
+		fastTests.add("ghghostosteoeoostost");	//4
+		fastTests.add("ostostghghostosteoeo");	//4
+		fastTests.add("ghghostosteoeoostost");	//4
+		fastTests.add("ostghosteo");				//2
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
@@ -55,7 +63,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("eo");
 		}
-		test(sb.toString());			//200
+		fastTests.add(sb.toString());			//200
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 40; i++) {
@@ -67,7 +75,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 40; i++) {
 			sb.append("osteo");
 		}
-		test(sb.toString());			//180
+		fastTests.add(sb.toString());			//180
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -82,7 +90,7 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 8; i++) {
 			sb.append("ost");
 		}
-		test(sb.toString());			//18. slow when multiplied by factor of 10.
+		fastTests.add(sb.toString());			//18. slow when multiplied by factor of 10.
 
 		sb = new StringBuilder();
 		for (int i = 0; i < 8; i++) {
@@ -97,8 +105,8 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 8; i++) {
 			sb.append("eo");
 		}
-		test(sb.toString());			//18. too slow when multiplied by factor of 10.
-//
+		fastTests.add(sb.toString());			//18. too slow when multiplied by factor of 10.
+
 		sb = new StringBuilder();
 		for (int i = 0; i < 200; i++) {
 			sb.append("eo");
@@ -106,7 +114,38 @@ public class MaximizeRemoval {
 		for (int i = 0; i < 200; i++) {
 			sb.append("ost");
 		}
-		test(sb.toString());			//0
+		fastTests.add(sb.toString());			//0
+
+		slowTests = new ArrayList<>();
+		sb = new StringBuilder();
+		for (int i = 0; i < 80; i++) {
+			sb.append("gh");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("eo");
+		}
+		for (int i = 0; i < 80; i++) {
+			sb.append("ost");
+		}
+		slowTests.add(sb.toString());			//18. slow when multiplied by factor of 10.
+
+		sb = new StringBuilder();
+		for (int i = 0; i < 80; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("gh");
+		}
+		for (int i = 0; i < 100; i++) {
+			sb.append("ost");
+		}
+		for (int i = 0; i < 80; i++) {
+			sb.append("eo");
+		}
+		slowTests.add(sb.toString());			//18. too slow when multiplied by factor of 10.
 	}
 
 	private static void test(String s) {
@@ -131,7 +170,7 @@ public class MaximizeRemoval {
 
 	//wrapper for recursive remove()
 	public static Path pickBestRemove(String s) {
-		Set<Path> results = remove(s);
+		Set<Path> results = slowRemove(s);
 
 		System.out.println("Highest number of paths:" + differentPathsCounter + " Result size:" + results.size());
 		differentPathsCounter = 0;
@@ -147,7 +186,8 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
-	private static Set<Path> remove(String s) {
+	//First version of remove().
+	private static Set<Path> slowRemove(String s) {
 		//Given a string, if there are no removals, return.
 		//For every possible removal (contiguous sequences are counted as 1),
 		//do the removal(s), add to count, then call recursively on remainder.
@@ -167,7 +207,7 @@ public class MaximizeRemoval {
 				if (hsr.getHits() > 0) {
 					differentRemovals++;
 					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-					Set<Path> localRemoval = remove(remainder);
+					Set<Path> localRemoval = slowRemove(remainder);
 
 					for (Path path : localRemoval) {
 						path.add(s, hsr.getHits());
