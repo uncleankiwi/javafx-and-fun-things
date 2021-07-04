@@ -1,6 +1,7 @@
 package misc.eda;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
@@ -38,6 +39,7 @@ public class MaximizeRemoval {
 
 	public static void main(String[] args) {
 		init();
+		slowRemoveFastTests();
 	}
 
 	private static void init() {
@@ -146,12 +148,15 @@ public class MaximizeRemoval {
 		slowTests.add(sb.toString());			//18. too slow when multiplied by factor of 10.
 	}
 
-	private static void testSlow() {
-		fastTests.stream().forEach(s -> slowRemove(s));
+	private static void slowRemoveFastTests() {
+		fastTests.stream()
+			.map(MaximizeRemoval::slowRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
 	}
 
-	private static void test(String s) {
-		Path path = pickBestRemove(s);
+	private static void printResult(Path path) {
+		String s = path.getStrings().get(0);
 		if (s.length() > 20) {
 			System.out.println(s.substring(0, 20) + "... (" + path.getMoves() + " moves)");
 		}
@@ -170,7 +175,6 @@ public class MaximizeRemoval {
 		}
 	}
 
-	//wrapper for recursive remove()
 	public static Path pickBestRemove(Set<Path> results) {
 		Path bestPath = null;
 		int greatestMoves = 0;
@@ -185,7 +189,7 @@ public class MaximizeRemoval {
 
 	//Second version of remove().
 	private static Set<Path> fastRemove(String s) {
-
+		return null;
 	}
 
 	//First version of remove().
