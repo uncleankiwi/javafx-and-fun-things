@@ -1,5 +1,7 @@
 package misc.eda;
 
+import util.Stopwatch;
+
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -149,10 +151,12 @@ public class MaximizeRemoval {
 	}
 
 	private static void slowRemoveFastTests() {
+		Stopwatch sw = new Stopwatch("slowRemoveFastTests");
 		fastTests.stream()
 			.map(MaximizeRemoval::slowRemove)
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
 	}
 
 	private static void printResult(Path path) {
@@ -189,12 +193,50 @@ public class MaximizeRemoval {
 
 	//Second version of remove(). Non-recursive.
 	private static Set<Path> fastRemove(String s) {
-		Set<Path> pendingPaths = new HashSet<>();
-		Set<Path> donePaths = new HashSet<>();
-		pendingPaths.add(new Path(s, 0));
+		Set<Path> activePaths = new HashSet<>();	//paths to step in current loop
+		Set<Path> pendingPaths = new HashSet<>();	//paths to step next loop
+		Set<Path> donePaths = new HashSet<>();		//paths that are done stepping
+		activePaths.add(new Path(s, 0));
+
+		while (activePaths.size() != 0) {
+
+			for (Path path : activePaths) {
+				int differentRemovals = 0;
+				for (String searchWord : WORDS) {
+					int i = 0;
+					while (i < s.length()) {
+						HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
+						if (hsr.getHits() > 0) {
+							differentRemovals++;
+							String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
+							Set<Path> localRemoval = slowRemove(remainder);
+
+							for (Path path : localRemoval) {
+								path.add(s, hsr.getHits());
+							}
+							i += hsr.getResult().length();
+
+							//Replace path in set if this new path has a greater number of moves.
+							for (Path path : localRemoval) {
+								replacePathIfGreater(path, pathsToAdd);
+							}
+						}
+						else {
+							i++;
+						}
+					}
+				}
+				if (differentRemovals == 0) {
+					replacePathIfGreater(path, donePaths);
+					pathsToAdd.add(new Path(s, 0));
+				}
+			}
 
 
-		return null;
+		}
+
+
+		return donePaths;
 	}
 
 	//First version of remove(). Recursive.

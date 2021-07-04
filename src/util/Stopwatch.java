@@ -6,24 +6,28 @@ package util;
  */
 public class Stopwatch {
 	private final long timeStart;
+	private final String processName;
 
 	/**
 	 * Creates and starts a stopwatch instance.
+	 * @param processName the method name to display in the output.
 	 */
-	public Stopwatch() {
+	public Stopwatch(String processName) {
 		this.timeStart = System.currentTimeMillis();
+		this.processName = processName;
+		System.out.println("\nStarting stopwatch for " + processName + ".");
 	}
 
 	/**
 	 * Stops the stopwatch.
-	 * @param processName the method name to display in the output.
 	 */
-	public void stop(String processName) {
+	public void stop() {
 		long timeEnd = System.currentTimeMillis();
 		StringBuilder sb = new StringBuilder("Run time for ");
 		sb.append(processName)
 			.append(":")
 			.append(timeEnd - timeStart)
 			.append("ms.");
+		System.out.println(sb);
 	}
 }
