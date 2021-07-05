@@ -42,6 +42,7 @@ public class MaximizeRemoval {
 		init();
 		slowRemoveFastTests();
 		fastRemoveFastTests();
+		fastRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -162,6 +163,15 @@ public class MaximizeRemoval {
 	private static void fastRemoveFastTests() {
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests");
 		fastTests.stream()
+			.map(MaximizeRemoval::fastRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
+	private static void fastRemoveSlowTests() {
+		Stopwatch sw = new Stopwatch("fastRemoveFastTests");
+		slowTests.stream()
 			.map(MaximizeRemoval::fastRemove)
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
