@@ -215,22 +215,17 @@ public class MaximizeRemoval {
 				int differentRemovals = 0;
 				for (String searchWord : WORDS) {
 					int i = 0;
-					while (i < s.length()) {
-						HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
+					String currentActivePathString = currentActivePath.getStrings().get(0);
+					while (i < currentActivePathString.length()) {
+						HeadSearchResult hsr = getOccurrencesAtHead(currentActivePathString.substring(i), searchWord);
 						if (hsr.getHits() > 0) {
 							differentRemovals++;
-							String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
-							Set<Path> localRemoval = slowRemove(remainder);
+							String remainder = currentActivePathString.substring(0, i) + currentActivePathString.substring(i + hsr.getResult().length());
 
-							for (Path path : localRemoval) {
-								path.add(s, hsr.getHits());
-							}
+							Path branch = new Path(currentActivePath);
+							branch.add(remainder, hsr.getHits());
+							replacePathIfGreater(branch, pendingPaths);
 							i += hsr.getResult().length();
-
-							//Replace path in set if this new path has a greater number of moves.
-							for (Path path : localRemoval) {
-								replacePathIfGreater(path, pendingPaths);
-							}
 						}
 						else {
 							i++;
@@ -375,6 +370,12 @@ public class MaximizeRemoval {
 			this.strings = new LinkedList<>();
 			this.strings.add(string);
 			this.moves = moves;
+		}
+
+		//for cloning
+		private Path(Path originalPath) {
+			this.strings = new LinkedList<>(originalPath.getStrings());
+			this.moves = originalPath.getMoves();
 		}
 
 		//adds a string to the FRONT of the list
