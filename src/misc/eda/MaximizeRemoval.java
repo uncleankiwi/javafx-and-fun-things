@@ -50,10 +50,10 @@ slowRemove()
 
 fastRemove()
 	fast tests, without pruning		90ms
-	fast tests, with pruning		30ms
+	fast tests, with pruning		30ms, WRONG RESULTS
 
 	slow tests, without pruning		1802ms
-	slow tests, with pruning		150ms
+	slow tests, with pruning		150ms, WRONG RESULTS
  */
 public class MaximizeRemoval {
 	private static List<String> fastTests;
@@ -63,9 +63,9 @@ public class MaximizeRemoval {
 
 	public static void main(String[] args) {
 		init();
-		slowRemoveFastTests();
-		fastRemoveFastTests(false);
-		fastRemoveSlowTests(false);
+//		slowRemoveFastTests();
+//		fastRemoveFastTests(false);
+//		fastRemoveSlowTests(false);
 		fastRemoveFastTests(true);
 		fastRemoveSlowTests(true);
 	}
@@ -189,7 +189,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
 		fastTests.stream()
-			.map(string -> fastRemove(string, prune))
+			.map(string -> fastWrongRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -199,7 +199,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
-			.map(string -> fastRemove(string, prune))
+			.map(string -> fastWrongRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -239,8 +239,9 @@ public class MaximizeRemoval {
 
 	//Second version of remove(). Non-recursive.
 	//When prune is set to true, it will attempt to always maintain 5 of the top-performing paths,
-	//discarding any other paths
-	private static Set<Path> fastRemove(String s, boolean prune) {
+	//discarding any other paths.
+	//Gives wrong results in some cases though.
+	private static Set<Path> fastWrongRemove(String s, boolean prune) {
 		Set<Path> activePaths = new HashSet<>();	//paths to step in current loop
 		Set<Path> pendingPaths = new HashSet<>();	//paths to step next loop
 		Set<Path> donePaths = new HashSet<>();		//paths that are done stepping
@@ -264,10 +265,8 @@ public class MaximizeRemoval {
 							Path branch = new Path(currentActivePath);
 							branch.addLast(remainder, hsr.getHits());
 
-							if (prune) replacePathWithPruning(branch, pendingPaths);
+							if (prune) replacePathAndPruneWorst(branch, pendingPaths);
 							else replacePathIfGreater(branch, pendingPaths);
-
-//							replacePathIfGreater(branch, pendingPaths);
 
 							i += hsr.getResult().length();
 						}
@@ -277,10 +276,7 @@ public class MaximizeRemoval {
 					}
 				}
 				if (differentRemovals == 0) {
-					if (prune) replacePathWithPruning(currentActivePath, donePaths);
-					else replacePathIfGreater(currentActivePath, donePaths);
-
-//					replacePathIfGreater(currentActivePath, donePaths);
+					replacePathIfGreater(currentActivePath, donePaths);
 
 					iterator.remove();
 				}
@@ -361,7 +357,7 @@ public class MaximizeRemoval {
 	//If there are more than 5 paths, check if it outperforms the worst path. If so, replace it.
 	//If it does, checks if new Path has a greater number of moves,
 	//and if so, replaces it.
-	private static void replacePathWithPruning(Path path, Set<Path> set) {
+	private static void replacePathAndPruneWorst(Path path, Set<Path> set) {
 		final int MAX_SET_SIZE = 5;
 		Optional<Path> existingPathOptional = set.stream().filter(x -> x.equals(path)).findFirst();
 		if (existingPathOptional.isPresent()) {
@@ -385,6 +381,44 @@ public class MaximizeRemoval {
 				}
 				if (worstMoves < path.getMoves()) {
 					set.remove(worstPath);
+					set.add(path);
+				}
+			}
+		}
+	}
+
+	//Checks a Set to see if a Path already exists in it.
+	//If it doesn't, adds it if there are fewer than 5 paths.
+	//If there are more than 5 paths, check if it is BETTER than the BEST path. If so, replace it.
+	//(Better, not worse, since the idea here is that better paths early on lead to worse paths later.)
+	//(That idea is probably false.)
+	//If it does exist, checks if new Path has a greater number of moves,
+	//and if so, replaces it.
+	@SuppressWarnings("unused")
+	private static void replacePathAndPruneBest(Path path, Set<Path> set) {
+		final int MAX_SET_SIZE = 5;
+		Optional<Path> existingPathOptional = set.stream().filter(x -> x.equals(path)).findFirst();
+		if (existingPathOptional.isPresent()) {
+			Path existingPath = existingPathOptional.get();
+			if (path.getMoves() > existingPath.getMoves()) {
+				set.add(path);
+			}
+		}
+		else {
+			if (set.size() < MAX_SET_SIZE) {
+				set.add(path);
+			}
+			else {
+				int bestMoves = 0;
+				Path bestPath = null;
+				for (Path setPath : set) {
+					if (setPath.getMoves() > bestMoves) {
+						bestMoves = setPath.getMoves();
+						bestPath = setPath;
+					}
+				}
+				if (bestMoves > path.getMoves()) {
+					set.remove(bestPath);
 					set.add(path);
 				}
 			}
