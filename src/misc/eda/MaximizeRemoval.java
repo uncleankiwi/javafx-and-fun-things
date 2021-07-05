@@ -215,7 +215,7 @@ public class MaximizeRemoval {
 				int differentRemovals = 0;
 				for (String searchWord : WORDS) {
 					int i = 0;
-					String currentActivePathString = currentActivePath.getStrings().get(0);
+					String currentActivePathString = currentActivePath.getStrings().get(currentActivePath.getStrings().size() - 1);
 					while (i < currentActivePathString.length()) {
 						HeadSearchResult hsr = getOccurrencesAtHead(currentActivePathString.substring(i), searchWord);
 						if (hsr.getHits() > 0) {
@@ -223,7 +223,7 @@ public class MaximizeRemoval {
 							String remainder = currentActivePathString.substring(0, i) + currentActivePathString.substring(i + hsr.getResult().length());
 
 							Path branch = new Path(currentActivePath);
-							branch.add(remainder, hsr.getHits());
+							branch.addLast(remainder, hsr.getHits());
 							replacePathIfGreater(branch, pendingPaths);
 							i += hsr.getResult().length();
 						}
@@ -269,7 +269,7 @@ public class MaximizeRemoval {
 					Set<Path> localRemoval = slowRemove(remainder);
 
 					for (Path path : localRemoval) {
-						path.add(s, hsr.getHits());
+						path.addFirst(s, hsr.getHits());
 					}
 					i += hsr.getResult().length();
 
@@ -379,8 +379,13 @@ public class MaximizeRemoval {
 		}
 
 		//adds a string to the FRONT of the list
-		public void add(String string, int moves) {
+		public void addFirst(String string, int moves) {
 			strings.addFirst(string);
+			this.moves += moves;
+		}
+
+		public void addLast(String string, int moves) {
+			strings.addLast(string);
 			this.moves += moves;
 		}
 
