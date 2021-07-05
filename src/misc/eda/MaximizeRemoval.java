@@ -3,7 +3,6 @@ package misc.eda;
 import util.Stopwatch;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
@@ -42,6 +41,7 @@ public class MaximizeRemoval {
 	public static void main(String[] args) {
 		init();
 		slowRemoveFastTests();
+		fastRemoveFastTests();
 	}
 
 	private static void init() {
@@ -159,6 +159,15 @@ public class MaximizeRemoval {
 		sw.stop();
 	}
 
+	private static void fastRemoveFastTests() {
+		Stopwatch sw = new Stopwatch("fastRemoveFastTests");
+		fastTests.stream()
+			.map(MaximizeRemoval::fastRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
 	private static void printResult(Path path) {
 		String s = path.getStrings().get(0);
 		if (s.length() > 20) {
@@ -199,8 +208,10 @@ public class MaximizeRemoval {
 		activePaths.add(new Path(s, 0));
 
 		while (activePaths.size() != 0) {
-
-			for (Path path : activePaths) {
+			//Step each path in activePaths. If a path has reached a dead end, remove it and put it in donePaths.
+			//Otherwise, put it in pendingPaths. At the end, replace activePaths with pendingPaths
+			for (Iterator<Path> iterator = activePaths.iterator(); iterator.hasNext();) {
+				Path currentActivePath = iterator.next();
 				int differentRemovals = 0;
 				for (String searchWord : WORDS) {
 					int i = 0;
@@ -218,7 +229,7 @@ public class MaximizeRemoval {
 
 							//Replace path in set if this new path has a greater number of moves.
 							for (Path path : localRemoval) {
-								replacePathIfGreater(path, pathsToAdd);
+								replacePathIfGreater(path, pendingPaths);
 							}
 						}
 						else {
@@ -227,12 +238,12 @@ public class MaximizeRemoval {
 					}
 				}
 				if (differentRemovals == 0) {
-					replacePathIfGreater(path, donePaths);
-					pathsToAdd.add(new Path(s, 0));
+					replacePathIfGreater(currentActivePath, donePaths);
+					iterator.remove();
 				}
 			}
-
-
+			activePaths = pendingPaths;
+			pendingPaths = new HashSet<>();
 		}
 
 
