@@ -31,6 +31,18 @@ Questions:
 	Removing one 'bc' -> 'c a bc' -> 'cc' (3 moves)
 	=> Removing only part of the repeated sequence can result in more overall removals
 		if more words are added.
+
+Results:
+slowRemove()
+	fast tests						210ms
+	slow tests						freezes...
+
+fastRemove()
+	fast tests, without pruning		90ms
+	fast tests, with pruning		30ms
+
+	slow tests, without pruning		1802ms
+	slow tests, with pruning		150ms
  */
 public class MaximizeRemoval {
 	private static List<String> fastTests;
@@ -41,8 +53,10 @@ public class MaximizeRemoval {
 	public static void main(String[] args) {
 		init();
 		slowRemoveFastTests();
-		fastRemoveFastTests();
-		fastRemoveSlowTests();
+		fastRemoveFastTests(false);
+		fastRemoveSlowTests(false);
+		fastRemoveFastTests(true);
+		fastRemoveSlowTests(true);
 	}
 
 	private static void init() {
@@ -160,19 +174,21 @@ public class MaximizeRemoval {
 		sw.stop();
 	}
 
-	private static void fastRemoveFastTests() {
-		Stopwatch sw = new Stopwatch("fastRemoveFastTests");
+	private static void fastRemoveFastTests(boolean prune) {
+		String pruneString = (prune) ? "with prune" : "without prune";
+		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
 		fastTests.stream()
-			.map(MaximizeRemoval::fastRemove)
+			.map(string -> fastRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
 	}
 
-	private static void fastRemoveSlowTests() {
-		Stopwatch sw = new Stopwatch("fastRemoveFastTests");
+	private static void fastRemoveSlowTests(boolean prune) {
+		String pruneString = (prune) ? "with prune" : "without prune";
+		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
-			.map(MaximizeRemoval::fastRemove)
+			.map(string -> fastRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -211,7 +227,9 @@ public class MaximizeRemoval {
 	}
 
 	//Second version of remove(). Non-recursive.
-	private static Set<Path> fastRemove(String s) {
+	//When prune is set to true, it will attempt to always maintain 5 of the top-performing paths,
+	//discarding any other paths
+	private static Set<Path> fastRemove(String s, boolean prune) {
 		Set<Path> activePaths = new HashSet<>();	//paths to step in current loop
 		Set<Path> pendingPaths = new HashSet<>();	//paths to step next loop
 		Set<Path> donePaths = new HashSet<>();		//paths that are done stepping
@@ -234,7 +252,12 @@ public class MaximizeRemoval {
 
 							Path branch = new Path(currentActivePath);
 							branch.addLast(remainder, hsr.getHits());
-							replacePathIfGreater(branch, pendingPaths);
+
+							if (prune) replacePathWithPruning(branch, pendingPaths);
+							else replacePathIfGreater(branch, pendingPaths);
+
+//							replacePathIfGreater(branch, pendingPaths);
+
 							i += hsr.getResult().length();
 						}
 						else {
@@ -243,10 +266,15 @@ public class MaximizeRemoval {
 					}
 				}
 				if (differentRemovals == 0) {
-					replacePathIfGreater(currentActivePath, donePaths);
+					if (prune) replacePathWithPruning(currentActivePath, donePaths);
+					else replacePathIfGreater(currentActivePath, donePaths);
+
+//					replacePathIfGreater(currentActivePath, donePaths);
+
 					iterator.remove();
 				}
 			}
+
 			activePaths = pendingPaths;
 			pendingPaths = new HashSet<>();
 		}
@@ -315,7 +343,41 @@ public class MaximizeRemoval {
 		else {
 			set.add(path);
 		}
+	}
 
+	//Checks a Set to see if a Path already exists in it.
+	//If it doesn't, adds it if there are fewer than 5 paths.
+	//If there are more than 5 paths, check if it outperforms the worst path. If so, replace it.
+	//If it does, checks if new Path has a greater number of moves,
+	//and if so, replaces it.
+	private static void replacePathWithPruning(Path path, Set<Path> set) {
+		final int MAX_SET_SIZE = 5;
+		Optional<Path> existingPathOptional = set.stream().filter(x -> x.equals(path)).findFirst();
+		if (existingPathOptional.isPresent()) {
+			Path existingPath = existingPathOptional.get();
+			if (path.getMoves() > existingPath.getMoves()) {
+				set.add(path);
+			}
+		}
+		else {
+			if (set.size() < MAX_SET_SIZE) {
+				set.add(path);
+			}
+			else {
+				int worstMoves = Integer.MAX_VALUE;
+				Path worstPath = null;
+				for (Path setPath : set) {
+					if (setPath.getMoves() < worstMoves) {
+						worstMoves = setPath.getMoves();
+						worstPath = setPath;
+					}
+				}
+				if (worstMoves < path.getMoves()) {
+					set.remove(worstPath);
+					set.add(path);
+				}
+			}
+		}
 	}
 
 	//Tries to find 1 or more contiguous searchString sequences from string s.
