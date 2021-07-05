@@ -7,6 +7,17 @@ import java.util.*;
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
 
+There are two algorithms here. The slowRemove() is recursive and branches every time it hits a possible
+removal.
+
+fastRemove() isn't recursive, and always check to see if an equivalent path already exists before
+adding it (i.e. unlike slowRemove, it does memoization of results to reduce duplication of work).
+
+fastRemove() also has a prune option, which instructs it to ignore all different paths except for
+the top 5 performers, making it run even faster. This may or may not result in inadvertent selection
+of better-performing paths early on that end up performing poorly later. It produces the same results
+in the given test cases though.
+
 Simplifying the problem, suppose we search the string for 'ab' and 'bc'.
 Questions:
 1. Is it always better to remove a larger number of string up front? A: no.
