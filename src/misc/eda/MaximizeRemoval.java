@@ -7,17 +7,6 @@ import java.util.*;
 /*
 Maximize the number of times the strings "ghost" and "osteo" can be removed from an input string.
 
-There are two algorithms here. The slowRemove() is recursive and branches every time it hits a possible
-removal.
-
-fastRemove() isn't recursive, and always check to see if an equivalent path already exists before
-adding it (i.e. unlike slowRemove, it does memoization of results to reduce duplication of work).
-
-fastRemove() also has a prune option, which instructs it to ignore all different paths except for
-the top 5 performers, making it run even faster. This may or may not result in inadvertent selection
-of better-performing paths early on that end up performing poorly later. It produces the same results
-in the given test cases though.
-
 Simplifying the problem, suppose we search the string for 'ab' and 'bc'.
 Questions:
 1. Is it always better to remove a larger number of string up front? A: no.
@@ -43,12 +32,22 @@ Questions:
 	=> Removing only part of the repeated sequence can result in more overall removals
 		if more words are added.
 
+There are two algorithms here. The slowRemove() is recursive and branches every time it hits a possible
+removal.
+
+fastPruningRemove() isn't recursive, and always check to see if an equivalent path already exists before
+adding it (i.e. unlike slowRemove, it does memoization of results to reduce duplication of work).
+
+fastPruningRemove() also has a prune option, which instructs it to ignore all different paths except for
+the top 5 performers, making it run even faster. This produces WRONG results in some cases, but it's
+fast. This functionality has been kept for posterity.
+
 Results:
 slowRemove()
 	fast tests						210ms
 	slow tests						freezes...
 
-fastRemove()
+fastPruningRemove()
 	fast tests, without pruning		90ms
 	fast tests, with pruning		30ms, WRONG RESULTS
 
@@ -176,6 +175,7 @@ public class MaximizeRemoval {
 		slowTests.add(sb.toString());			//18. too slow when multiplied by factor of 10.
 	}
 
+	@SuppressWarnings("unused")
 	private static void slowRemoveFastTests() {
 		Stopwatch sw = new Stopwatch("slowRemoveFastTests");
 		fastTests.stream()
@@ -189,7 +189,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
 		fastTests.stream()
-			.map(string -> fastWrongRemove(string, prune))
+			.map(string -> fastPruningRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -199,7 +199,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
-			.map(string -> fastWrongRemove(string, prune))
+			.map(string -> fastPruningRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -237,11 +237,25 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
+	/*Third version of remove(). Non-recursive.
+	At the start, it creates one path per word in the remove list, then assigns the word as the path's bias.
+	There are also one pendingPaths set per word; whenever a biased path removes the word it's biased for,
+	the result gets moved into the corresponding biased pool.
+	When a biased path removes a word it's not biased for, or when an unbiased path removes anything,
+	the result is moved into an unbiased pendingPath pool.
+	When the biased path cannot remove its word, it retains the bias, and all results get added into the
+	biased pendingPath pool.
+	All paths get moved into the donePaths pool when they are done.
+	 */
+	private static Set<Path> fastBiasedRemove(String s) {
+		return null; //todo
+	}
+
 	//Second version of remove(). Non-recursive.
 	//When prune is set to true, it will attempt to always maintain 5 of the top-performing paths,
 	//discarding any other paths.
 	//Gives wrong results in some cases though.
-	private static Set<Path> fastWrongRemove(String s, boolean prune) {
+	private static Set<Path> fastPruningRemove(String s, boolean prune) {
 		Set<Path> activePaths = new HashSet<>();	//paths to step in current loop
 		Set<Path> pendingPaths = new HashSet<>();	//paths to step next loop
 		Set<Path> donePaths = new HashSet<>();		//paths that are done stepping
