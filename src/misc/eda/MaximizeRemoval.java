@@ -65,8 +65,10 @@ public class MaximizeRemoval {
 //		slowRemoveFastTests();
 //		fastRemoveFastTests(false);
 //		fastRemoveSlowTests(false);
-		fastRemoveFastTests(true);
-		fastRemoveSlowTests(true);
+//		fastRemoveFastTests(true);
+//		fastRemoveSlowTests(true);
+		biasedRemoveFastTests();
+		biasedRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -185,6 +187,7 @@ public class MaximizeRemoval {
 		sw.stop();
 	}
 
+	@SuppressWarnings("unused")
 	private static void fastRemoveFastTests(boolean prune) {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
@@ -195,11 +198,32 @@ public class MaximizeRemoval {
 		sw.stop();
 	}
 
+	@SuppressWarnings("unused")
 	private static void fastRemoveSlowTests(boolean prune) {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
 			.map(string -> fastPruningRemove(string, prune))
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
+	@SuppressWarnings("unused")
+	private static void biasedRemoveFastTests() {
+		Stopwatch sw = new Stopwatch("biasedRemoveFastTests");
+		fastTests.stream()
+			.map(MaximizeRemoval::fastBiasedRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
+	@SuppressWarnings("unused")
+	private static void biasedRemoveSlowTests() {
+		Stopwatch sw = new Stopwatch("biasedRemoveSlowTests");
+		slowTests.stream()
+			.map(MaximizeRemoval::fastBiasedRemove)
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
