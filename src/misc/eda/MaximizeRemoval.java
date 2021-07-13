@@ -63,10 +63,10 @@ public class MaximizeRemoval {
 	public static void main(String[] args) {
 		init();
 //		slowRemoveFastTests();
-		fastRemoveFastTests(false);
-		fastRemoveSlowTests(false);
-		fastRemoveFastTests(true);
-		fastRemoveSlowTests(true);
+//		fastRemoveFastTests(false);
+//		fastRemoveSlowTests(false);
+//		fastRemoveFastTests(true);
+//		fastRemoveSlowTests(true);
 //		biasedRemoveFastTests();
 //		biasedRemoveSlowTests();
 	}
@@ -192,7 +192,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
 		fastTests.stream()
-			.map(string -> fastPruningRemove(string, prune))
+			.map(string -> fastRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -203,7 +203,7 @@ public class MaximizeRemoval {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
-			.map(string -> fastPruningRemove(string, prune))
+			.map(string -> fastRemove(string, prune))
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -213,7 +213,7 @@ public class MaximizeRemoval {
 	private static void biasedRemoveFastTests() {
 		Stopwatch sw = new Stopwatch("biasedRemoveFastTests");
 		fastTests.stream()
-			.map(MaximizeRemoval::fastBiasedRemove)
+			.map(MaximizeRemoval::biasedRemove)
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -223,7 +223,7 @@ public class MaximizeRemoval {
 	private static void biasedRemoveSlowTests() {
 		Stopwatch sw = new Stopwatch("biasedRemoveSlowTests");
 		slowTests.stream()
-			.map(MaximizeRemoval::fastBiasedRemove)
+			.map(MaximizeRemoval::biasedRemove)
 			.map(MaximizeRemoval::pickBestRemove)
 			.forEach(MaximizeRemoval::printResult);
 		sw.stop();
@@ -263,23 +263,40 @@ public class MaximizeRemoval {
 
 	/*Third version of remove(). Non-recursive.
 	At the start, it creates one path per word in the remove list, then assigns the word as the path's bias.
-	There are also one pendingPaths set per word; whenever a biased path removes the word it's biased for,
-	the result gets moved into the corresponding biased pool.
+	There are also one pendingPath per word; whenever a biased path removes the word it's biased for,
+	it results in a biased path.
 	When a biased path removes a word it's not biased for, or when an unbiased path removes anything,
-	the result is moved into an unbiased pendingPath pool.
-	When the biased path cannot remove its word, it retains the bias, and all results get added into the
-	biased pendingPath pool.
+	it results in an unbiased path.
+	When the biased path cannot remove its word, it retains the bias, and all results are deemed biased.
+	The best biased path for every word and best unbiased path are picked every loop, then it repeats.
 	All paths get moved into the donePaths pool when they are done.
+	Biased path -> biased, unbiased		or 		done
+	Unbiased path -> unbiased			or		done
 	 */
-	private static Set<Path> fastBiasedRemove(String s) {
+	private static Set<Path> biasedRemove(String s) {
+		Map<String, Path> activePaths = new HashMap<>();
+		Set<Path> donePaths = new HashSet<>();
 		return null; //todo
 	}
+
+	private static class BiasedRemoveResult {
+		final Map<String, Path> activePaths;
+		final Path donePath;
+
+		public BiasedRemoveResult(Map<String, Path> activePaths, Path donePath) {
+			this.activePaths = activePaths;
+			this.donePath = donePath;
+		}
+	}
+
 
 	//Second version of remove(). Non-recursive.
 	//When prune is set to true, it will attempt to always maintain 5 of the top-performing paths,
 	//discarding any other paths.
+	//Every path produced is checked against the pool it is going into to see if there is an
+	//equivalent path in it already.
 	//Gives wrong results in some cases though.
-	private static Set<Path> fastPruningRemove(String s, boolean prune) {
+	private static Set<Path> fastRemove(String s, boolean prune) {
 		Set<Path> activePaths = new HashSet<>();	//paths to step in current loop
 		Set<Path> pendingPaths = new HashSet<>();	//paths to step next loop
 		Set<Path> donePaths = new HashSet<>();		//paths that are done stepping
@@ -291,7 +308,7 @@ public class MaximizeRemoval {
 			for (Iterator<Path> iterator = activePaths.iterator(); iterator.hasNext();) {
 				Path currentActivePath = iterator.next();
 				FastRemoveResult fastRemoveResult = fastRemoveStep(currentActivePath);
-				if (fastRemoveResult.donePaths.size() > 0) {
+				if (fastRemoveResult.donePath != null) {
 					replacePathIfGreater(currentActivePath, donePaths);
 					iterator.remove();
 				}
@@ -313,7 +330,7 @@ public class MaximizeRemoval {
 	//returns all possible paths from a given path. Used by fastRemove
 	private static FastRemoveResult fastRemoveStep(Path path) {
 		Set<Path> pendingPaths = new HashSet<>();
-		Set<Path> donePaths = new HashSet<>();
+		Path donePath = null;
 		int differentRemovals = 0;
 		for (String searchWord : WORDS) {
 			int i = 0;
@@ -337,26 +354,19 @@ public class MaximizeRemoval {
 			}
 		}
 		if (differentRemovals == 0) {
-			donePaths.add(path);
+			donePath = path;
 		}
-		return new FastRemoveResult(donePaths, pendingPaths);
+		return new FastRemoveResult(donePath, pendingPaths);
 	}
 
+	//
 	private static class FastRemoveResult {
-		Set<Path> donePaths;
-		Set<Path> pendingPaths;
+		final Path donePath;
+		final Set<Path> pendingPaths;
 
-		public FastRemoveResult(Set<Path> donePaths, Set<Path> pendingPaths) {
-			this.donePaths = donePaths;
+		public FastRemoveResult(Path donePath, Set<Path> pendingPaths) {
+			this.donePath = donePath;
 			this.pendingPaths = pendingPaths;
-		}
-
-		public Set<Path> getDonePaths() {
-			return donePaths;
-		}
-
-		public Set<Path> getPendingPaths() {
-			return pendingPaths;
 		}
 	}
 
@@ -552,6 +562,12 @@ public class MaximizeRemoval {
 	private static class Path {
 		private final LinkedList<String> strings;
 		private int moves;
+		String bias = null;
+
+		public Path(String string, int moves, String bias) {
+			this(string, moves);
+			this.bias = bias;
+		}
 
 		public Path(String string, int moves) {
 			this.strings = new LinkedList<>();
@@ -563,6 +579,7 @@ public class MaximizeRemoval {
 		private Path(Path originalPath) {
 			this.strings = new LinkedList<>(originalPath.getStrings());
 			this.moves = originalPath.getMoves();
+			this.bias = null;
 		}
 
 		//adds a string to the FRONT of the list
