@@ -276,7 +276,33 @@ public class MaximizeRemoval {
 	private static Set<Path> biasedRemove(String s) {
 		Map<String, Path> activePaths = new HashMap<>();
 		Set<Path> donePaths = new HashSet<>();
-		return null; //todo
+
+		for (String searchWord : WORDS) {
+			activePaths.put(searchWord, new Path(s, 0, searchWord));
+		}
+
+		while (activePaths.size() != 0) {
+			for (Iterator<Map.Entry<String, Path>> iterator = activePaths.entrySet().iterator(); iterator.hasNext();) {
+				Map.Entry<String, Path> entry = iterator.next();
+				Path currentActivePath = entry.getValue();
+				FastRemoveResult fastRemoveResult = fastRemoveStep(currentActivePath);
+				if (fastRemoveResult.donePath != null) {
+					replacePathIfGreater(currentActivePath, donePaths);
+					iterator.remove();
+				}
+				else {
+					for (Path pendingPath : fastRemoveResult.pendingPaths) {
+						if (prune) replacePathAndPruneWorst(pendingPath, pendingPaths);
+						else replacePathIfGreater(pendingPath, pendingPaths);
+					}
+				}
+			}
+			activePaths = pendingPaths;
+			pendingPaths = new HashSet<>();
+		}
+
+
+		return donePaths;
 	}
 
 	private static class BiasedRemoveResult {
