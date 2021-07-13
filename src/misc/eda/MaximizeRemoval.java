@@ -63,12 +63,12 @@ public class MaximizeRemoval {
 	public static void main(String[] args) {
 		init();
 //		slowRemoveFastTests();
-//		fastRemoveFastTests(false);
-//		fastRemoveSlowTests(false);
-//		fastRemoveFastTests(true);
-//		fastRemoveSlowTests(true);
-		biasedRemoveFastTests();
-		biasedRemoveSlowTests();
+		fastRemoveFastTests(false);
+		fastRemoveSlowTests(false);
+		fastRemoveFastTests(true);
+		fastRemoveSlowTests(true);
+//		biasedRemoveFastTests();
+//		biasedRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -290,42 +290,74 @@ public class MaximizeRemoval {
 			//Otherwise, put it in pendingPaths. At the end, replace activePaths with pendingPaths
 			for (Iterator<Path> iterator = activePaths.iterator(); iterator.hasNext();) {
 				Path currentActivePath = iterator.next();
-				int differentRemovals = 0;
-				for (String searchWord : WORDS) {
-					int i = 0;
-					String currentActivePathString = currentActivePath.getStrings().get(currentActivePath.getStrings().size() - 1);
-					while (i < currentActivePathString.length()) {
-						HeadSearchResult hsr = getOccurrencesAtHead(currentActivePathString.substring(i), searchWord);
-						if (hsr.getHits() > 0) {
-							differentRemovals++;
-							String remainder = currentActivePathString.substring(0, i) + currentActivePathString.substring(i + hsr.getResult().length());
-
-							Path branch = new Path(currentActivePath);
-							branch.addLast(remainder, hsr.getHits());
-
-							if (prune) replacePathAndPruneWorst(branch, pendingPaths);
-							else replacePathIfGreater(branch, pendingPaths);
-
-							i += hsr.getResult().length();
-						}
-						else {
-							i++;
-						}
-					}
-				}
-				if (differentRemovals == 0) {
+				FastRemoveResult fastRemoveResult = fastRemoveStep(currentActivePath);
+				if (fastRemoveResult.donePaths.size() > 0) {
 					replacePathIfGreater(currentActivePath, donePaths);
-
 					iterator.remove();
 				}
+				else {
+					for (Path pendingPath : fastRemoveResult.pendingPaths) {
+						if (prune) replacePathAndPruneWorst(pendingPath, pendingPaths);
+						else replacePathIfGreater(pendingPath, pendingPaths);
+					}
+				}
 			}
-
 			activePaths = pendingPaths;
 			pendingPaths = new HashSet<>();
 		}
 
 
 		return donePaths;
+	}
+
+	//returns all possible paths from a given path. Used by fastRemove
+	private static FastRemoveResult fastRemoveStep(Path path) {
+		Set<Path> pendingPaths = new HashSet<>();
+		Set<Path> donePaths = new HashSet<>();
+		int differentRemovals = 0;
+		for (String searchWord : WORDS) {
+			int i = 0;
+			String currentActivePathString = path.getStrings().get(path.getStrings().size() - 1);
+			while (i < currentActivePathString.length()) {
+				HeadSearchResult hsr = getOccurrencesAtHead(currentActivePathString.substring(i), searchWord);
+				if (hsr.getHits() > 0) {
+					differentRemovals++;
+					String remainder = currentActivePathString.substring(0, i) + currentActivePathString.substring(i + hsr.getResult().length());
+
+					Path branch = new Path(path);
+					branch.addLast(remainder, hsr.getHits());
+
+					pendingPaths.add(branch);
+
+					i += hsr.getResult().length();
+				}
+				else {
+					i++;
+				}
+			}
+		}
+		if (differentRemovals == 0) {
+			donePaths.add(path);
+		}
+		return new FastRemoveResult(donePaths, pendingPaths);
+	}
+
+	private static class FastRemoveResult {
+		Set<Path> donePaths;
+		Set<Path> pendingPaths;
+
+		public FastRemoveResult(Set<Path> donePaths, Set<Path> pendingPaths) {
+			this.donePaths = donePaths;
+			this.pendingPaths = pendingPaths;
+		}
+
+		public Set<Path> getDonePaths() {
+			return donePaths;
+		}
+
+		public Set<Path> getPendingPaths() {
+			return pendingPaths;
+		}
 	}
 
 	//First version of remove(). Recursive.
