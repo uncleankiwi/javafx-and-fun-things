@@ -65,10 +65,10 @@ public class MaximizeRemoval {
 //		slowRemoveFastTests();
 //		fastRemoveFastTests(false);
 //		fastRemoveSlowTests(false);
-//		fastRemoveFastTests(true);
-//		fastRemoveSlowTests(true);
-//		biasedRemoveFastTests();
-//		biasedRemoveSlowTests();
+		fastRemoveFastTests(true);
+		fastRemoveSlowTests(true);
+		biasedRemoveFastTests();
+		biasedRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -188,7 +188,7 @@ public class MaximizeRemoval {
 	}
 
 	@SuppressWarnings("unused")
-	private static void fastRemoveFastTests(boolean prune) {
+	private static void fastRemoveFastTests(@SuppressWarnings("SameParameterValue") boolean prune) {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveFastTests " + pruneString);
 		fastTests.stream()
@@ -199,7 +199,7 @@ public class MaximizeRemoval {
 	}
 
 	@SuppressWarnings("unused")
-	private static void fastRemoveSlowTests(boolean prune) {
+	private static void fastRemoveSlowTests(@SuppressWarnings("SameParameterValue") boolean prune) {
 		String pruneString = (prune) ? "with prune" : "without prune";
 		Stopwatch sw = new Stopwatch("fastRemoveSlowTests " + pruneString);
 		slowTests.stream()
@@ -261,6 +261,19 @@ public class MaximizeRemoval {
 		return bestPath;
 	}
 
+	//basically pickBestRemove() but also compares one other path out of the given set
+	public static Path pickBestRemove(Set<Path> results, Path comparator) {
+		if (comparator == null) {
+			return pickBestRemove(results);
+		}
+		else {
+			Set<Path> set = new HashSet<>(results);
+			set.add(comparator);
+			return pickBestRemove(set);
+		}
+
+	}
+
 	/*Third version of remove(). Non-recursive.
 	At the start, it creates one path per word in the remove list, then assigns the word as the path's bias.
 	There are also one pendingPath per word; whenever a biased path removes the word it's biased for,
@@ -277,6 +290,7 @@ public class MaximizeRemoval {
 	 */
 	private static Set<Path> biasedRemove(String s) {
 		Map<String, Path> activePaths = new HashMap<>();
+		Map<String, Path> pendingPaths = new HashMap<>();
 		Set<Path> donePaths = new HashSet<>();
 
 		for (String searchWord : WORDS) {
@@ -289,21 +303,23 @@ public class MaximizeRemoval {
 				Map.Entry<String, Path> entry = iterator.next();
 				Path currentActivePath = entry.getValue();
 				BiasedRemoveResult biasedRemoveResult = biasedRemoveStep(currentActivePath);
-				if (fastRemoveResult.donePath != null) {
+				if (biasedRemoveResult.donePath != null) {
 					replacePathIfGreater(currentActivePath, donePaths);
 					iterator.remove();
 				}
 				else {
-					for (Path pendingPath : fastRemoveResult.pendingPaths) {
-						if (prune) replacePathAndPruneWorst(pendingPath, pendingPaths);
-						else replacePathIfGreater(pendingPath, pendingPaths);
+					//try to replace the unbiased and biased activePaths if they are better
+					pendingPaths.put(null, pickBestRemove(biasedRemoveResult.pendingUnbiasedPaths, activePaths.get(null)));
+					if (biasedRemoveResult.bias != null) {
+						pendingPaths.put(
+							biasedRemoveResult.bias,
+							pickBestRemove(biasedRemoveResult.pendingBiasedPaths, activePaths.get(biasedRemoveResult.bias)));
 					}
 				}
 			}
 			activePaths = pendingPaths;
-			pendingPaths = new HashSet<>();
+			pendingPaths = new HashMap<>();
 		}
-
 
 		return donePaths;
 	}
@@ -350,18 +366,20 @@ public class MaximizeRemoval {
 				p.bias = path.bias;
 			}
 		}
-		return new BiasedRemoveResult(pendingBiasedPaths, pendingUnbiasedPath, donePath);
+		return new BiasedRemoveResult(pendingBiasedPaths, pendingUnbiasedPath, donePath, path.bias);
 	}
 
 	private static class BiasedRemoveResult {
 		final Set<Path> pendingBiasedPaths;
 		final Set<Path> pendingUnbiasedPaths;
 		final Path donePath;
+		final String bias;
 
-		public BiasedRemoveResult(Set<Path> pendingBiasedPaths, Set<Path> pendingUnbiasedPaths, Path donePath) {
+		public BiasedRemoveResult(Set<Path> pendingBiasedPaths, Set<Path> pendingUnbiasedPaths, Path donePath, String bias) {
 			this.pendingBiasedPaths = pendingBiasedPaths;
 			this.pendingUnbiasedPaths = pendingUnbiasedPaths;
 			this.donePath = donePath;
+			this.bias = bias;
 		}
 	}
 
