@@ -270,8 +270,10 @@ public class MaximizeRemoval {
 	When the biased path cannot remove its word, it retains the bias, and all results are deemed biased.
 	The best biased path for every word and best unbiased path are picked every loop, then it repeats.
 	All paths get moved into the donePaths pool when they are done.
-	Biased path -> biased, unbiased		or 		done
-	Unbiased path -> unbiased			or		done
+	i.e.:
+		No removals -> done
+		Biased path -> biased (and maybe unbiased) 	or biased (if biased is empty)
+		Unbiased path -> unbiased
 	 */
 	private static Set<Path> biasedRemove(String s) {
 		Map<String, Path> activePaths = new HashMap<>();
@@ -280,12 +282,13 @@ public class MaximizeRemoval {
 		for (String searchWord : WORDS) {
 			activePaths.put(searchWord, new Path(s, 0, searchWord));
 		}
+		activePaths.put(null, new Path(s, 0));	//an unbiased path put in just for comparison
 
 		while (activePaths.size() != 0) {
 			for (Iterator<Map.Entry<String, Path>> iterator = activePaths.entrySet().iterator(); iterator.hasNext();) {
 				Map.Entry<String, Path> entry = iterator.next();
 				Path currentActivePath = entry.getValue();
-				FastRemoveResult fastRemoveResult = fastRemoveStep(currentActivePath);
+				BiasedRemoveResult biasedRemoveResult = biasedRemoveStep(currentActivePath);
 				if (fastRemoveResult.donePath != null) {
 					replacePathIfGreater(currentActivePath, donePaths);
 					iterator.remove();
@@ -305,12 +308,59 @@ public class MaximizeRemoval {
 		return donePaths;
 	}
 
+	private static BiasedRemoveResult biasedRemoveStep(Path path) {
+		Set<Path> pendingBiasedPaths = new HashSet<>();
+		Set<Path> pendingUnbiasedPath = new HashSet<>();
+		Path donePath = null;
+		int differentRemovals = 0;
+		for (String searchWord : WORDS) {
+			int i = 0;
+			String currentActivePathString = path.getStrings().get(path.getStrings().size() - 1);
+			while (i < currentActivePathString.length()) {
+				HeadSearchResult hsr = getOccurrencesAtHead(currentActivePathString.substring(i), searchWord);
+				if (hsr.getHits() > 0) {
+					differentRemovals++;
+					String remainder = currentActivePathString.substring(0, i) + currentActivePathString.substring(i + hsr.getResult().length());
+
+					Path branch = new Path(path);
+					branch.addLast(remainder, hsr.getHits());
+
+					if (path.isBias(searchWord)) pendingBiasedPaths.add(branch);
+					else pendingUnbiasedPath.add(branch);
+
+					i += hsr.getResult().length();
+				}
+				else {
+					i++;
+				}
+			}
+		}
+		if (differentRemovals == 0) {
+			donePath = path;
+		}
+		else {
+			if (pendingBiasedPaths.size() == 0) {
+				//biased paths are empty, so make all unbiased paths biased
+				pendingBiasedPaths.addAll(pendingUnbiasedPath);
+				pendingUnbiasedPath.clear();
+			}
+
+			//setting each path with their proper biases
+			for (Path p : pendingBiasedPaths) {
+				p.bias = path.bias;
+			}
+		}
+		return new BiasedRemoveResult(pendingBiasedPaths, pendingUnbiasedPath, donePath);
+	}
+
 	private static class BiasedRemoveResult {
-		final Map<String, Path> activePaths;
+		final Set<Path> pendingBiasedPaths;
+		final Set<Path> pendingUnbiasedPaths;
 		final Path donePath;
 
-		public BiasedRemoveResult(Map<String, Path> activePaths, Path donePath) {
-			this.activePaths = activePaths;
+		public BiasedRemoveResult(Set<Path> pendingBiasedPaths, Set<Path> pendingUnbiasedPaths, Path donePath) {
+			this.pendingBiasedPaths = pendingBiasedPaths;
+			this.pendingUnbiasedPaths = pendingUnbiasedPaths;
 			this.donePath = donePath;
 		}
 	}
@@ -599,6 +649,11 @@ public class MaximizeRemoval {
 			this.strings = new LinkedList<>();
 			this.strings.add(string);
 			this.moves = moves;
+		}
+
+		public boolean isBias(String o) {
+			if (this.bias == null) return false;
+			else return this.bias.equals(o);
 		}
 
 		//for cloning
