@@ -357,8 +357,8 @@ public class MaximizeRemoval {
 			donePath = path;
 		}
 		else {
-			if (pendingBiasedPaths.size() == 0) {
-				//biased paths are empty, so make all unbiased paths biased
+			if (pendingBiasedPaths.size() == 0 && path.bias != null) {
+				//biased paths are empty even though given path was biased, so make all unbiased paths biased
 				pendingBiasedPaths.addAll(pendingUnbiasedPath);
 				pendingUnbiasedPath.clear();
 			}
