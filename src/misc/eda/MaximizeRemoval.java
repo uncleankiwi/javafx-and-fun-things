@@ -53,6 +53,10 @@ fastPruningRemove()
 
 	slow tests, without pruning		1802ms
 	slow tests, with pruning		150ms, WRONG RESULTS
+
+biasedRemove()
+	fast tests						80ms
+	slow tests						130ms
  */
 public class MaximizeRemoval {
 	private static List<String> fastTests;
@@ -62,13 +66,13 @@ public class MaximizeRemoval {
 
 	public static void main(String[] args) {
 		init();
-//		slowRemoveFastTests();
-//		fastRemoveFastTests(false);
-//		fastRemoveSlowTests(false);
-//		fastRemoveFastTests(true);
-//		fastRemoveSlowTests(true);
+		slowRemoveFastTests();
+		fastRemoveFastTests(false);
+		fastRemoveSlowTests(false);
+		fastRemoveFastTests(true);
+		fastRemoveSlowTests(true);
 		biasedRemoveFastTests();
-//		biasedRemoveSlowTests();
+		biasedRemoveSlowTests();
 	}
 
 	private static void init() {
