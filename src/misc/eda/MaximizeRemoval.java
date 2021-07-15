@@ -32,7 +32,7 @@ Questions:
 	=> Removing only part of the repeated sequence can result in more overall removals
 		if more words are added.
 
-There are two algorithms here. The slowRemove() is recursive and branches every time it hits a possible
+There are three algorithms here. The slowRemove() is recursive and branches every time it hits a possible
 removal.
 
 fastPruningRemove() isn't recursive, and always check to see if an equivalent path already exists before
@@ -41,6 +41,11 @@ adding it (i.e. unlike slowRemove, it does memoization of results to reduce dupl
 fastPruningRemove() also has a prune option, which instructs it to ignore all different paths except for
 the top 5 performers, making it run even faster. This produces WRONG results in some cases, but it's
 fast. This functionality has been kept for posterity.
+
+biasedRemove() isn't recursive, and starts off with 2 paths (to be precise, there are the same number of paths
+as the number of words), each biased for a different word. Each of these biased path will produce a biased
+path when they remove the word they're biased for, and an unbiased path when they remove a word they're not
+biased for. At every step, the code only retains one biased path per word (i.e. 2) plus one unbiased path.
 
 Results:
 slowRemove()
@@ -275,7 +280,6 @@ public class MaximizeRemoval {
 			set.add(comparator);
 			return pickBestRemove(set);
 		}
-
 	}
 
 	/*Third version of remove(). Non-recursive.
