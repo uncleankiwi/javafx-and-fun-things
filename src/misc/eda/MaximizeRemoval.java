@@ -65,10 +65,10 @@ public class MaximizeRemoval {
 //		slowRemoveFastTests();
 //		fastRemoveFastTests(false);
 //		fastRemoveSlowTests(false);
-		fastRemoveFastTests(true);
-		fastRemoveSlowTests(true);
+//		fastRemoveFastTests(true);
+//		fastRemoveSlowTests(true);
 		biasedRemoveFastTests();
-		biasedRemoveSlowTests();
+//		biasedRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -296,7 +296,6 @@ public class MaximizeRemoval {
 		for (String searchWord : WORDS) {
 			activePaths.put(searchWord, new Path(s, 0, searchWord));
 		}
-		activePaths.put(null, new Path(s, 0));	//an unbiased path put in just for comparison
 
 		while (activePaths.size() != 0) {
 			for (Iterator<Map.Entry<String, Path>> iterator = activePaths.entrySet().iterator(); iterator.hasNext();) {
@@ -309,7 +308,10 @@ public class MaximizeRemoval {
 				}
 				else {
 					//try to replace the unbiased and biased activePaths if they are better
-					pendingPaths.put(null, pickBestRemove(biasedRemoveResult.pendingUnbiasedPaths, activePaths.get(null)));
+					Path bestUnbiasedPath = pickBestRemove(biasedRemoveResult.pendingUnbiasedPaths, activePaths.get(null));
+					if (bestUnbiasedPath != null) {
+						pendingPaths.put(null, pickBestRemove(biasedRemoveResult.pendingUnbiasedPaths, activePaths.get(null)));
+					}
 					if (biasedRemoveResult.bias != null) {
 						pendingPaths.put(
 							biasedRemoveResult.bias,
