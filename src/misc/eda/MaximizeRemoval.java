@@ -54,9 +54,9 @@ slowRemove()
 
 fastPruningRemove()
 	fast tests, without pruning		90ms
-	fast tests, with pruning		30ms, WRONG RESULTS
-
 	slow tests, without pruning		1802ms
+
+	fast tests, with pruning		30ms, WRONG RESULTS
 	slow tests, with pruning		150ms, WRONG RESULTS
 
 biasedRemove()
