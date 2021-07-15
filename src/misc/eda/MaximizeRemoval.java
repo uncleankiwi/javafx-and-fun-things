@@ -10,9 +10,9 @@ Maximize the number of times the strings "ghost" and "osteo" can be removed from
 Simplifying the problem, suppose we search the string for 'ab' and 'bc'.
 Questions:
 1. Is it always better to remove a larger number of string up front? A: no.
-	Consider 'aaa b abab c bbb'.
-	Removing the longer 'abab' -> 'aaa b c bbb' -> 'aaa bbb' (3 moves)
-	Removing the shorter 'bc' -> 'aaa b aba bbb' -> 'aaa bbb' -> ... (6 moves)
+	Consider 'aa abab c bbb'.
+	Removing the longer 'abab' -> 'aa c bbb' -> 'aa bbb' (2 moves)
+	Removing the shorter 'bc' -> 'aa aba bbb' -> 'aa bb' -> ... (5 moves)
 
 2. Are there any situations in which only part of a contiguous repeating segment should be removed?
 	A: probably not, unless more strings not in the form of 'ab' and 'bc' are added.
