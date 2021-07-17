@@ -28,7 +28,7 @@ public class CentrifugeBalancer {
 		test(2,1, false);
 		test(59,59, true);
 		test(11,4, false);
-		test(21,20, false);
+		test(21,10, false);
 		test(24, 13, true);
 
 	}
