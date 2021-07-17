@@ -1,5 +1,9 @@
 package misc.eda;
 
+import util.Maths;
+
+import java.util.Set;
+
 /*
 Given h number of holes in a centrifuge, return if it is possible to place t
 tubes in it such that the centrifuge is balanced.
@@ -46,9 +50,27 @@ public class CentrifugeBalancer {
 		else if (t <= 1) return false;
 		else if (t > h) return false;
 		else if (h == t) return true;
-
 		else {
-			return true;	//todo
+			Set<Long> primeFactors = Maths.primeFactorsOf(h);
+			//if t is equal to one of the prime factors of h, then h - t must also have t as a prime factor
+			//i.e. this case is balanced.
+			//	t = f, where f is a prime factor of h
+			//	h = xt = xf, where x is some other multiplier
+			// 	So: h - t = xf - f = f(x - 1), which has f as a prime factor.
+			if (primeFactors.contains((long) t)) return true;
+
+			//Is it possible to create t by adding together some combination (with repetition) of prime factors of h?
+			//If not, this cannot be balanced.
+			if (!canCreateBySumming(t, primeFactors)) return false;
+
+			//Is it also possible to create h - t with the same method?
+			//If it is, then this can be balanced.
+			return canCreateBySumming(h - t, primeFactors);
 		}
+	}
+
+	//returns if it is possible to create x by summing up some combination of numbers in the factors set
+	private static boolean canCreateBySumming(int x, Set<Long> factors) {
+		return false;
 	}
 }
