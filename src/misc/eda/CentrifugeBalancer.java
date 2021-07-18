@@ -36,13 +36,16 @@ public class CentrifugeBalancer {
 		test(11,4, false);
 		test(21,10, false);
 		test(24, 13, true);
-
+		test(2354, 126, null);	//unsurprisingly true, since both are positive
+		test(2354, 123, null);	//surprisingly true
 	}
 
-	private static void test(long h, long t, boolean expectedOutput) {
+	private static void test(long h, long t, Boolean expectedOutput) {
 		boolean actualOutput = tryPlace(h, t);
-		String str = h + "\t" + t + "\t->\t" + actualOutput;
-		if (actualOutput != expectedOutput) str += " (TEST FAILED)";
+		String str = h + "\t\t" + t + "\t->\t" + actualOutput;
+		if (expectedOutput != null) {
+			if (actualOutput != expectedOutput) str += " (TEST FAILED)";
+		}
 		System.out.println(str);
 	}
 
@@ -94,12 +97,17 @@ public class CentrifugeBalancer {
 			}
 			else {
 				for (Long f : factors) {
-
+					if (x - f > 0) {
+						if (canCreateBySumming(x - f, factors, canSum, cannotSum)) {
+							canSum.add(x);
+							return true;
+						}
+					}
 				}
 			}
 
 		}
-
+		cannotSum.add(x);
 		return false;
 	}
 

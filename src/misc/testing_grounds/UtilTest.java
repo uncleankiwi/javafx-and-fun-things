@@ -2,12 +2,19 @@ package misc.testing_grounds;
 
 import pi_estimator.EstimateGenerator;
 import util.Closeness;
+import util.Maths;
 import util.NumberToString;
 import util.Padder;
 
 public class UtilTest {
 	public static void main(String[] args) {
-		testCloseness();
+		testPrimeFactors();
+	}
+
+	@SuppressWarnings("unused")
+	private static void testPrimeFactors() {
+		System.out.println(Maths.primeFactorsOf(2354));	//h
+		System.out.println(2231 % 107);	//h - t
 	}
 
 	@SuppressWarnings("unused")
