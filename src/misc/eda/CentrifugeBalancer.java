@@ -2,6 +2,8 @@ package misc.eda;
 
 import util.Maths;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /*
@@ -37,14 +39,14 @@ public class CentrifugeBalancer {
 
 	}
 
-	private static void test(int h, int t, boolean expectedOutput) {
+	private static void test(long h, long t, boolean expectedOutput) {
 		boolean actualOutput = tryPlace(h, t);
 		String str = h + "\t" + t + "\t->\t" + actualOutput;
 		if (actualOutput != expectedOutput) str += " (TEST FAILED)";
 		System.out.println(str);
 	}
 
-	public static boolean tryPlace(int h, int t) {
+	public static boolean tryPlace(long h, long t) {
 		//weed out obvious answers
 		if (h <= 1) return false;
 		else if (t <= 1) return false;
@@ -57,7 +59,7 @@ public class CentrifugeBalancer {
 			//	t = f, where f is a prime factor of h
 			//	h = xt = xf, where x is some other multiplier
 			// 	So: h - t = xf - f = f(x - 1), which has f as a prime factor.
-			if (primeFactors.contains((long) t)) return true;
+			if (primeFactors.contains(t)) return true;
 
 			//Is it possible to create t by adding together some combination (with repetition) of prime factors of h?
 			//If not, this cannot be balanced.
@@ -70,7 +72,36 @@ public class CentrifugeBalancer {
 	}
 
 	//returns if it is possible to create x by summing up some combination of numbers in the factors set
-	private static boolean canCreateBySumming(int x, Set<Long> factors) {
+	//wrapper for recursive function
+	private static boolean canCreateBySumming(long x, Set<Long> factors) {
+		return canCreateBySumming(x, factors, new HashSet<>(), new HashSet<>());
+	}
+
+	private static boolean canCreateBySumming(long x, Set<Long> factors, Set<Long> canSum, Set<Long> cannotSum) {
+		//base cases
+		if (canSum.contains(x)) return true;
+		else if (cannotSum.contains(x)) return false;
+		else if (factors.contains(x)) {
+			canSum.add(x);
+			return true;
+		}
+		else {
+			//another base case: if x is smaller than any of the numbers in factors, return false
+			Optional<Long> anySmallerFactor = factors.stream().filter(f -> f < x).findFirst();
+			if (!anySmallerFactor.isPresent()) {
+				cannotSum.add(x);
+				return false;
+			}
+			else {
+				for (Long f : factors) {
+
+				}
+			}
+
+		}
+
 		return false;
 	}
+
+
 }
