@@ -32,7 +32,7 @@ Questions:
 	=> Removing only part of the repeated sequence can result in more overall removals
 		if more words are added.
 
-There are three algorithms here. The slowRemove() is recursive and branches every time it hits a possible
+There are four algorithms here. The slowRemove() is recursive and branches every time it hits a possible
 removal.
 
 fastPruningRemove() isn't recursive, and always check to see if an equivalent path already exists before
@@ -46,6 +46,10 @@ biasedRemove() isn't recursive, and starts off with 2 paths (to be precise, ther
 as the number of words), each biased for a different word. Each of these biased path will produce a biased
 path when they remove the word they're biased for, and an unbiased path when they remove a word they're not
 biased for. At every step, the code only retains one biased path per word (i.e. 2) plus one unbiased path.
+
+memoRemove() is recursive and very similar to slowRemove(), except it uses memoization to avoid strings that
+have already been handled by another Path. It is also able to run the slow tests. However, it still runs too
+slow, taking as much time as fastPruningRemove().
 
 Results:
 slowRemove()
@@ -62,6 +66,10 @@ fastPruningRemove()
 biasedRemove()
 	fast tests						80ms
 	slow tests						130ms
+
+memoRemove()
+	fast tests						150ms
+	slow tests						1730ms
  */
 public class MaximizeRemoval {
 	private static List<String> fastTests;
@@ -78,6 +86,8 @@ public class MaximizeRemoval {
 		fastRemoveSlowTests(true);
 		biasedRemoveFastTests();
 		biasedRemoveSlowTests();
+		memoRemoveFastTests();
+		memoRemoveSlowTests();
 	}
 
 	private static void init() {
@@ -238,7 +248,32 @@ public class MaximizeRemoval {
 		sw.stop();
 	}
 
+	@SuppressWarnings("unused")
+	private static void memoRemoveFastTests() {
+		Stopwatch sw = new Stopwatch("memoRemoveFastTests");
+		fastTests.stream()
+			.map(MaximizeRemoval::memoRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
+	@SuppressWarnings("unused")
+	private static void memoRemoveSlowTests() {
+		Stopwatch sw = new Stopwatch("memoRemoveSlowTests");
+		slowTests.stream()
+			.map(MaximizeRemoval::memoRemove)
+			.map(MaximizeRemoval::pickBestRemove)
+			.forEach(MaximizeRemoval::printResult);
+		sw.stop();
+	}
+
 	private static void printResult(Path path) {
+		if (path == null) {
+			System.out.println("No best path exists.");
+			return;
+		}
+
 		String s = path.getStrings().get(0);
 		if (s.length() > 20) {
 			System.out.println(s.substring(0, 20) + "... (" + path.getMoves() + " moves)");
@@ -280,6 +315,58 @@ public class MaximizeRemoval {
 			set.add(comparator);
 			return pickBestRemove(set);
 		}
+	}
+
+	//wrapper for version 4 of remove().
+	private static Set<Path> memoRemove(String s) {
+		return memoRemove(s, new HashSet<>());
+	}
+
+	/*
+	Fourth version of remove(). Recursive. Uses memoization; a path goes down a route only
+	if it hasn't been taken already.
+	 */
+	private static Set<Path> memoRemove(String s, Set<String> memo) {
+		Set<Path> pathsToAdd = new HashSet<>();
+		int differentRemovals = 0;
+		for (String searchWord : WORDS) {
+			int i = 0;
+			while (i < s.length()) {
+				HeadSearchResult hsr = getOccurrencesAtHead(s.substring(i), searchWord);
+				if (hsr.getHits() > 0) {
+
+					String remainder = s.substring(0, i) + s.substring(i + hsr.getResult().length());
+
+					if (!memo.contains(remainder)) {
+						memo.add(remainder);
+						differentRemovals++;
+
+						Set<Path> localRemoval = memoRemove(remainder, memo);
+
+						for (Path path : localRemoval) {
+							path.addFirst(s, hsr.getHits());
+						}
+						i += hsr.getResult().length();
+
+						//Replace path in set if this new path has a greater number of moves.
+						for (Path path : localRemoval) {
+							replacePathIfGreater(path, pathsToAdd);
+						}
+					}
+					else {
+						i++;
+					}
+				}
+				else {
+					i++;
+				}
+			}
+		}
+		if (differentRemovals == 0) {
+			pathsToAdd.add(new Path(s, 0));
+		}
+		return pathsToAdd;
+
 	}
 
 	/*Third version of remove(). Non-recursive.
