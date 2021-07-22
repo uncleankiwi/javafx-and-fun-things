@@ -1,8 +1,6 @@
 package misc.eda;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /*
 Given a number n, convert it into a new number containing the number of contiguous
@@ -53,11 +51,29 @@ public class LookAndSaySequence {
 	public static List<Long> lookAndSay(long n, long l) {
 		List<Long> result = new LinkedList<>();
 		result.add(n);
+		String nStr = String.valueOf(n);
 
 		for (int i = 2; i < l; i++) {
-
-
-
+			//for every step of the look-and-say sequence
+			Character lastChar = null;
+			List<Map.Entry<Long, Long>> numbers = new LinkedList<>();
+			for (char c : nStr.toCharArray()) {
+				if (lastChar == null || c != lastChar) {
+					numbers.add(new AbstractMap.SimpleEntry<>(Long.getLong(String.valueOf(c)), 1L));
+					lastChar = c;
+				}
+				else {
+					Map.Entry<Long, Long> lastEntry = numbers.get(numbers.size() - 1);
+					lastEntry.setValue(lastEntry.getValue() + 1);
+				}
+			}
+			StringBuilder stringBuilder = new StringBuilder();
+			for (Map.Entry<Long, Long> entry : numbers) {
+				stringBuilder.append(entry.getKey())
+					.append(entry.getValue());
+			}
+			nStr = stringBuilder.toString();
+			result.add(Long.getLong(nStr));
 		}
 
 		return result;
