@@ -21,7 +21,6 @@ public class LookAndSaySequence {
 		test(144, 4, asList(144, 1124, 211214, 1221121114));
 		test(11111111, 3, asList(11111111, 81, 1811));
 		test(0, 4, asList(0, 10, 1110, 3110));
-
 	}
 
 	private static void test(long n, long l, List<Long> expectedResult) {
@@ -53,13 +52,13 @@ public class LookAndSaySequence {
 		result.add(n);
 		String nStr = String.valueOf(n);
 
-		for (int i = 2; i < l; i++) {
+		for (int i = 2; i <= l; i++) {
 			//for every step of the look-and-say sequence
 			Character lastChar = null;
 			List<Map.Entry<Long, Long>> numbers = new LinkedList<>();
 			for (char c : nStr.toCharArray()) {
-				if (lastChar == null || c != lastChar) {
-					numbers.add(new AbstractMap.SimpleEntry<>(Long.getLong(String.valueOf(c)), 1L));
+				if (lastChar == null || !lastChar.equals(c)) {
+					numbers.add(new AbstractMap.SimpleEntry<>(Long.parseLong(String.valueOf(c)), 1L));
 					lastChar = c;
 				}
 				else {
@@ -69,11 +68,11 @@ public class LookAndSaySequence {
 			}
 			StringBuilder stringBuilder = new StringBuilder();
 			for (Map.Entry<Long, Long> entry : numbers) {
-				stringBuilder.append(entry.getKey())
-					.append(entry.getValue());
+				stringBuilder.append(entry.getValue())
+					.append(entry.getKey());
 			}
 			nStr = stringBuilder.toString();
-			result.add(Long.getLong(nStr));
+			result.add(Long.parseLong(nStr));
 		}
 
 		return result;
