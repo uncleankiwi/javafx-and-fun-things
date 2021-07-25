@@ -8,7 +8,14 @@ import util.Padder;
 
 public class UtilTest {
 	public static void main(String[] args) {
-		testPrimeFactors();
+		testIsPrime();
+	}
+
+	@SuppressWarnings("unused")
+	private static void testIsPrime() {
+		for (int i = 0; i <= 10; i++) {
+			System.out.println("Is " + i + " prime? " + Maths.isPrime(i));
+		}
 	}
 
 	@SuppressWarnings("unused")
