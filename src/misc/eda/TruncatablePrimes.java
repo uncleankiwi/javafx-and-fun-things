@@ -93,9 +93,7 @@ public class TruncatablePrimes {
 	//won't check if n itself is prime, since that check should have been done already.
 	private static boolean isRightTruncatable(int n) {
 		String nStr = String.valueOf(n);
-		if (nStr.length() <= 1) return true;
-
-		for (int i = nStr.length() - 1; i >= 0; i--) {
+		for (int i = nStr.length() - 1; i > 0; i--) {
 			String subNStr = nStr.substring(0, i);
 			if (!Maths.isPrime(Integer.parseInt(subNStr))) return false;
 		}
