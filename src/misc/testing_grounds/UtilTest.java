@@ -8,7 +8,7 @@ import util.Padder;
 
 public class UtilTest {
 	public static void main(String[] args) {
-		testIsPrime();
+		testPrimeFactors();
 	}
 
 	@SuppressWarnings("unused")
@@ -20,8 +20,7 @@ public class UtilTest {
 
 	@SuppressWarnings("unused")
 	private static void testPrimeFactors() {
-		System.out.println(Maths.primeFactorsOf(2354));	//h
-		System.out.println(2231 % 107);	//h - t
+		System.out.println(Maths.primeFactorsOf(349));
 	}
 
 	@SuppressWarnings("unused")
