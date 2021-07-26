@@ -1,7 +1,6 @@
 package misc.eda;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /*
 Receives a String containing a number of digits and converts them into an array
@@ -28,6 +27,36 @@ public class SevenSegmentService {
 
 	public static String[][] instructionsFor(String string) {
 
+	}
+
+	//A single set of instruction for flipping the bits between displaying
+	//prev and next.
+	//prev can be null; in this case, the display is treated as empty.
+	private static String[] singleInstruction(String prev, String next) {
+		if (prev == null) return getBitmap(next);
+		else {
+			String[] oldOn = getBitmap(prev);
+			String[] newOn = getBitmap(next);
+			//Characters only in old set: lower case
+			//Characters only in new set: upper case
+			List<String> toOff = getUnique(oldOn, newOn);
+			List<String> toOn = getUnique(newOn, oldOn);
+			String[] result = new String[toOff.size() + toOn.size()];
+
+
+			return result;
+		}
+	}
+
+	//gets the unique strings that are in list that aren't in comparison
+	private static List<String> getUnique(String[] list, String[] comparison) {
+		List<String> result = new ArrayList<>();
+		for (String str : list) {
+			if (Arrays.stream(comparison).noneMatch(x -> x.equals(str))) {
+				result.add(str);
+			}
+		}
+		return result;
 	}
 
 	public static String[] getBitmap(String character) {
