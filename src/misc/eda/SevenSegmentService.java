@@ -22,10 +22,24 @@ letters are for turning the corresponding bit on; lower case turns the bit off.
 	   	d
  */
 public class SevenSegmentService {
+	public static void main(String[] args) {
+		System.out.println(Arrays.deepToString(instructionsFor("08555")));
+	}
+
 	private static Map<String, String[]> BIT_MAP;
 
 	public static String[][] instructionsFor(String string) {
+		String[][] allInstructions = new String[string.length()][];
+		char[] stringArr = string.toCharArray();
+		for (int i = 0; i < stringArr.length; i++) {
+			String previous;
+			if (i == 0) previous = null;
+			else previous = String.valueOf(stringArr[i - 1]);
+			String next = String.valueOf(stringArr[i]);
+			allInstructions[i] = singleInstruction(previous, next);
+		}
 
+		return allInstructions;
 	}
 
 	//A single set of instruction for flipping the bits between displaying
