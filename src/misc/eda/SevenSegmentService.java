@@ -24,7 +24,6 @@ letters are for turning the corresponding bit on; lower case turns the bit off.
 public class SevenSegmentService {
 	private static Map<String, String[]> BIT_MAP;
 
-
 	public static String[][] instructionsFor(String string) {
 
 	}
@@ -43,6 +42,33 @@ public class SevenSegmentService {
 			List<String> toOn = getUnique(newOn, oldOn);
 			String[] result = new String[toOff.size() + toOn.size()];
 
+			int resultIndex = 0;
+			int toOffIndex = 0;
+			int toOnIndex = 0;
+
+			//Putting bits into an instructions, sorted by alphabetical order.
+			//Bits to be turned on are also capitalized before putting them in.
+			while (toOffIndex < toOff.size() && toOnIndex < toOn.size()) {
+				if (toOff.get(toOffIndex).compareTo(toOn.get(toOnIndex)) > 0) {
+					result[resultIndex] = toOff.get(toOffIndex);
+					toOffIndex++;
+				}
+				else {
+					result[resultIndex] = toOn.get(toOnIndex).toUpperCase();
+					toOnIndex++;
+				}
+				resultIndex++;
+			}
+			while(toOffIndex < toOff.size()) {
+				result[resultIndex] = toOff.get(toOffIndex);
+				toOffIndex++;
+				resultIndex++;
+			}
+			while(toOnIndex < toOn.size()) {
+				result[resultIndex] = toOn.get(toOnIndex).toUpperCase();
+				toOnIndex++;
+				resultIndex++;
+			}
 
 			return result;
 		}
