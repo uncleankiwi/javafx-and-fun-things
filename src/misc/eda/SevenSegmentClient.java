@@ -23,7 +23,7 @@ public class SevenSegmentClient {
 	private static final boolean[] DEFAULT_STATE = initSevenSegmentDefaultState();
 
 	public static void main(String[] args) {
-		drawCharacters("284665");
+		drawCharacters("13");
 	}
 
 	public static void drawCharacters(String input) {
@@ -31,7 +31,8 @@ public class SevenSegmentClient {
 
 		boolean[] displayState = DEFAULT_STATE;
 
-		String[] output = new String[displayState.length];
+		String[] output = new String[5];
+		Arrays.fill(output, "");
 		for (String[] instruction : instructions) {
 			getSevenSegmentNextState(displayState, instruction);
 			String[] nextDisplay = drawSevenSegmentSingleCharacter(displayState);
@@ -57,7 +58,6 @@ public class SevenSegmentClient {
 	//determine one display state from the previous.
 	//should throw exceptions when trying to flip a bit on if it's already on, and vice versa.
 	//matches lower case instructions to ASCII characters 97 - 103
-	//todo need to return state?
 	private static void getSevenSegmentNextState(boolean[] previousState, String[] singleInstruction) {
 		for (String bitStr : singleInstruction) {
 			//getting which bit to flip. 'a' to 'g' correspond to 97 - 103
@@ -68,9 +68,11 @@ public class SevenSegmentClient {
 			char instructionChar = bitStr.toCharArray()[0];
 			boolean turnOn = (instructionLowerCaseChar == instructionChar);
 
+			System.out.println(instructionChar + "->" + instructionLowerCaseChar);	//todo
+
 			//throw exceptions if turning a bit on when it's already on, and vice versa
 			if (previousState[bitIndex] == turnOn) {
-				throw new InvalidBitOperation(bitIndex, turnOn);
+//				throw new InvalidBitOperation(bitIndex, turnOn);
 			}
 
 			previousState[bitIndex] = turnOn;
@@ -86,7 +88,7 @@ public class SevenSegmentClient {
 	//concatenates the seven segment displays together into one giant String[] display
 	private static void appendDisplay(String[] output, String[] nextDisplay) {
 		for (int i = 0; i < output.length; i++) {
-			output[i] += nextDisplay[i] + " ";
+			output[i] += nextDisplay[i] + "   ";
 		}
 	}
 

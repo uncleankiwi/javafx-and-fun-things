@@ -46,7 +46,13 @@ public class SevenSegmentService {
 	//prev and next.
 	//prev can be null; in this case, the display is treated as empty.
 	private static String[] singleInstruction(String prev, String next) {
-		if (prev == null) return getBitmap(next);
+		if (prev == null) {
+			String[] allOn = getBitmap(next);
+			for (int i = 0; i < allOn.length; i++) {
+				allOn[i] = allOn[i].toUpperCase();
+			}
+			return allOn;
+		}
 		else {
 			String[] oldOn = getBitmap(prev);
 			String[] newOn = getBitmap(next);
