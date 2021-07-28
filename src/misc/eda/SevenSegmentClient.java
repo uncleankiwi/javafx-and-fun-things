@@ -33,7 +33,7 @@ public class SevenSegmentClient {
 
 		String[] output = new String[displayState.length];
 		for (String[] instruction : instructions) {
-			displayState = getSevenSegmentNextState(displayState, instruction);
+			getSevenSegmentNextState(displayState, instruction);
 			String[] nextDisplay = drawSevenSegmentSingleCharacter(displayState);
 			appendDisplay(output, nextDisplay);
 		}
@@ -56,8 +56,25 @@ public class SevenSegmentClient {
 
 	//determine one display state from the previous.
 	//should throw exceptions when trying to flip a bit on if it's already on, and vice versa.
-	private static boolean[] getSevenSegmentNextState(boolean[] previousState, String[] singleInstruction) {
-		//todo
+	//matches lower case instructions to ASCII characters 97 - 103
+	//todo need to return state?
+	private static void getSevenSegmentNextState(boolean[] previousState, String[] singleInstruction) {
+		for (String bitStr : singleInstruction) {
+			//getting which bit to flip. 'a' to 'g' correspond to 97 - 103
+			char instructionLowerCaseChar = bitStr.toLowerCase().toCharArray()[0];
+			int bitIndex = instructionLowerCaseChar - 'a';
+
+			//getting whether to turn it on or off
+			char instructionChar = bitStr.toCharArray()[0];
+			boolean turnOn = (instructionLowerCaseChar == instructionChar);
+
+			//throw exceptions if turning a bit on when it's already on, and vice versa
+			if (previousState[bitIndex] == turnOn) {
+				throw new InvalidBitOperation(bitIndex, turnOn);
+			}
+
+			previousState[bitIndex] = turnOn;
+		}
 	}
 
 	//draws one bit using the given symbol if the bit is on. Inserts a space otherwise.
@@ -77,5 +94,11 @@ public class SevenSegmentClient {
 		boolean[] defaultState = new boolean[7];
 		Arrays.fill(defaultState, false);
 		return defaultState;
+	}
+
+	public static class InvalidBitOperation extends RuntimeException {
+		InvalidBitOperation(int bitIndex, boolean on) {
+			super("Cannot flip bit " + bitIndex + " as it is already " + (on ? "on" : "off"));
+		}
 	}
 }
