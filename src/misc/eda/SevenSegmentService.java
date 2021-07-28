@@ -14,7 +14,7 @@ The first instruction flips the bits on to display the first digit, and the seco
 onwards are for transforming the previous display into the current display. Capital
 letters are for turning the corresponding bit on; lower case turns the bit off.
 		a
-		_
+		-
 	f  | |  b
 	g	-
 	e  | |  c
