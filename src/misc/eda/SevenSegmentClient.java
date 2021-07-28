@@ -66,13 +66,11 @@ public class SevenSegmentClient {
 
 			//getting whether to turn it on or off
 			char instructionChar = bitStr.toCharArray()[0];
-			boolean turnOn = (instructionLowerCaseChar == instructionChar);
-
-			System.out.println(instructionChar + "->" + instructionLowerCaseChar);	//todo
+			boolean turnOn = (instructionLowerCaseChar != instructionChar);
 
 			//throw exceptions if turning a bit on when it's already on, and vice versa
 			if (previousState[bitIndex] == turnOn) {
-//				throw new InvalidBitOperation(bitIndex, turnOn);
+				throw new InvalidBitOperation(bitIndex, turnOn);
 			}
 
 			previousState[bitIndex] = turnOn;
