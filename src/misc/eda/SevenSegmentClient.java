@@ -19,17 +19,15 @@ a String[] display.
 	   	d
  */
 public class SevenSegmentClient {
-	//whether any of the bits are on to begin with
-	private static final boolean[] DEFAULT_STATE = initSevenSegmentDefaultState();
-
 	public static void main(String[] args) {
 		drawCharacters("13");
+		drawCharacters("668172224");
 	}
 
 	public static void drawCharacters(String input) {
 		String[][] instructions = SevenSegmentService.instructionsFor(input);
 
-		boolean[] displayState = DEFAULT_STATE;
+		boolean[] displayState = getSevenSegmentDefaultState();
 
 		String[] output = new String[5];
 		Arrays.fill(output, "");
@@ -46,12 +44,14 @@ public class SevenSegmentClient {
 
 	//draws a single character given the state of each bit. Each row is a string.
 	private static String[] drawSevenSegmentSingleCharacter(boolean[] state) {
+		final String PIPE = "|";
+		final String BAR = "_";
 		String[] output = new String[5];
-		output[0] = " " + conditionalBitDraw(state[0], "-") + " ";
-		output[1] = conditionalBitDraw(state[5], "|") + " " + conditionalBitDraw(state[1], "|");
-		output[2] = " " + conditionalBitDraw(state[6], "-") + " ";
-		output[3] = conditionalBitDraw(state[4], "|") + " " + conditionalBitDraw(state[2], "|");
-		output[4] = " " + conditionalBitDraw(state[3], "-") + " ";
+		output[0] = " " + conditionalBitDraw(state[0], BAR) + " ";
+		output[1] = conditionalBitDraw(state[5], PIPE) + " " + conditionalBitDraw(state[1], PIPE);
+		output[2] = " " + conditionalBitDraw(state[6], BAR) + " ";
+		output[3] = conditionalBitDraw(state[4], PIPE) + " " + conditionalBitDraw(state[2], PIPE);
+		output[4] = " " + conditionalBitDraw(state[3], BAR) + " ";
 		return output;
 	}
 
@@ -90,7 +90,8 @@ public class SevenSegmentClient {
 		}
 	}
 
-	private static boolean[] initSevenSegmentDefaultState() {
+	//Whether any of the bits are on to begin with
+	private static boolean[] getSevenSegmentDefaultState() {
 		boolean[] defaultState = new boolean[7];
 		Arrays.fill(defaultState, false);
 		return defaultState;
