@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /*
-Draws estimates grouped by number of digits on a javafx chart.
+Draw estimates grouped by number of digits on a javafx chart.
 Probably not ideal because it's too resource-intensive when fed
 a high digit number; every estimate is a separate node.
 

@@ -28,7 +28,7 @@ public class Containerize {
 		return null; //todo
 	}
 
-	//splits the given items into containerCount groups of equal size
+	//splits the given items into containerCount groups of equal size (totalSize/containerCount)
 	//returns null if it can't be split.
 	public static List<List<Integer>> split(List<Integer> items, int containerCount) {
 		ParseResult parseResult = new ParseResult(items);

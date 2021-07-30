@@ -52,7 +52,7 @@ Also gives the probability of rolling a desired result r.
 
 ### Pi Estimator
 This contains:
-1. a method for generating fractions that are decent estimates of pi, e, or any other number in the 0 < n < 10 range,
+1. a method for generating fractions that are decent estimates of pi, e, or any other number in the 1 < n < 10 range,
 2. a 'closeness' grading system that grades how good those estimates are of that number,
 3. and an interactive GUI that graphs the estimates by their closeness.
 
