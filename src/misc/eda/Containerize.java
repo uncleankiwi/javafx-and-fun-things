@@ -20,8 +20,10 @@ public class Containerize {
 	//tries to fit the given items into containerCount containers of containerSize.
 	//returns null if it can't be fit.
 	public static List<List<Integer>> fit(List<Integer> items, int containerSize, int containerCount) {
-		ParseResult parseResult = new ParseResult(items);
+		TallyResult parseResult = new TallyResult(items);
 		if (parseResult.totalSize > containerSize * containerCount) return null;
+			//won't work if largest item is bigger than group size
+		else if (parseResult.largestSize > containerSize) return null;
 		else {
 
 		}
@@ -31,25 +33,31 @@ public class Containerize {
 	//splits the given items into containerCount groups of equal size (totalSize/containerCount)
 	//returns null if it can't be split.
 	public static List<List<Integer>> split(List<Integer> items, int containerCount) {
-		ParseResult parseResult = new ParseResult(items);
+		TallyResult parseResult = new TallyResult(items);
 		if (parseResult.totalSize % containerCount != 0) return null;
+		//won't work if largest item is bigger than group size
+		else if (parseResult.largestSize > parseResult.totalSize / containerCount) return null;
 		else {
 
 		}
 		return null; //todo
 	}
 
-	private static class ParseResult {
+	private static class TallyResult {
 		final int totalSize;
 		final Map<Integer,Integer> tally;
+		final int largestSize;
 
-		ParseResult(List<Integer> items) {
+		TallyResult(List<Integer> items) {
 			Map<Integer,Integer> tally = new HashMap<>();
 			int totalSize = 0;
+			int largestSize = Integer.MIN_VALUE;
 			for (int item : items) {
 				totalSize += item;
+				if (item > largestSize) largestSize = item;
 				addToTally(tally, item);
 			}
+			this.largestSize = largestSize;
 			this.totalSize = totalSize;
 			this.tally = tally;
 		}
