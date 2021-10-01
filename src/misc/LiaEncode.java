@@ -1,8 +1,6 @@
 package misc;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /*
 * Converts alphabetical characters in a string into numbers, with 'A' and 'a' both being 0, and 'Z' and 'z' being 25.
@@ -14,16 +12,17 @@ public class LiaEncode {
 	private static final int DEFAULT_OUTPUT_LIMIT = 10;
 
 	public static void main(String[] args) {
-		testEncode("Happy Birthday to You!");
-		testEncode("bbbb");
-		testEncode("ll");
-		System.out.println("--------------");
-		testDecode("70151524 18171973024 1914 241420!");
-		testDecode("1111");
-		testDecode("1111", 5);
-		testDecode("1111", 3);
-		testDecode("1111", 1);
-		testDecode("1111", 0);
+//		testEncode("Happy Birthday to You!");
+//		testEncode("bbbb");
+//		testEncode("ll");
+//		System.out.println("--------------");
+//		testDecode("1111");
+//		testDecode("1111", 5);
+//		testDecode("1111", 3);
+//		testDecode("1111", 1);
+//		testDecode("1111", 0);
+//		System.out.println("--------------");
+		testSplittingDecode("70151524 18171973024 1914 241420!", 10);
 	}
 
 	private static void testEncode(String input) {
@@ -42,6 +41,19 @@ public class LiaEncode {
 
 	private static void testDecode(String input) {
 		testDecode(input, DEFAULT_OUTPUT_LIMIT);
+	}
+
+	private static void testSplittingDecode(String input, int outputLimit) {
+		System.out.println("Decoding " + input + ":");
+		List<Set<String>> output = splittingDecode(input, outputLimit);
+		for (Set<String> set : output) {
+			StringBuilder builder = new StringBuilder();
+			for (String str : set) {
+				builder.append(str).append("\t");
+			}
+			System.out.println(builder);
+		}
+
 	}
 
 	public static String encode(String input) {
@@ -87,6 +99,32 @@ public class LiaEncode {
 			stringOutputs.add(output.getOutput());
 		}
 		return stringOutputs;
+	}
+
+	/*
+	 * Sees every contiguous group of digits as a 'word'.
+	 * Splits each word, decodes them separately, then returns one set of possibilities per word, all contained
+	 * in a parent list.
+	 * Non-numerical characters are seen as a word. Every such character will have a set to itself.
+	 */
+	public static List<Set<String>> splittingDecode(String input, int outputLimit) {
+		List<Set<String>> output = new ArrayList<>();
+		char[] inputArr = input.toCharArray();
+		int left = 0;
+		int right = 1;
+		for (int i = 0; i < input.length(); i++) {
+			char c = inputArr[0];
+			if (c >= '0' && c <= '9') {
+				right++;
+			}
+			else {
+				output.add(decode(input.substring(left, right), outputLimit));
+				left = i;
+				right = i + 1;
+			}
+		}
+
+		return output;
 	}
 
 	static class PossibleOutput {
