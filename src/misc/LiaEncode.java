@@ -42,6 +42,7 @@ public class LiaEncode {
 		System.out.println();
 	}
 
+	@SuppressWarnings("SameParameterValue")
 	private static void testDecode(String input) {
 		testDecode(input, DEFAULT_OUTPUT_LIMIT);
 	}
