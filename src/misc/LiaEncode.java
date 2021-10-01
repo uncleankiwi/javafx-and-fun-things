@@ -12,21 +12,20 @@ public class LiaEncode {
 	private static final int DEFAULT_OUTPUT_LIMIT = 10;
 
 	public static void main(String[] args) {
-//		testEncode("Labore et dolore magna aliqua.");
-//		testEncode("bbbb");
-//		testEncode("ll");
-//		testEncode("!!some_tag??");
-//		System.out.println("--------------");
-//		testDecode("70151524 18171973024 1914 241420!", 3);
-//		testDecode("1111");
-//		testDecode("1111", 5);
-//		testDecode("1111", 3);
-//		testDecode("1111", 1);
-//		testDecode("1111", 0);
-//		System.out.println("--------------");
-//		testSplittingDecode("...", 3);
-//		testSplittingDecode("!!1814124_1906??", 20);
-		testSplittingDecode("70151524 18171973024 1914 241420!", 20);
+		testEncode("Labore et dolore magna aliqua.");
+		testEncode("bbbb");
+		testEncode("ll");
+		testEncode("!!some_tag??");
+		System.out.println("--------------");
+		testDecode("1111");
+		testDecode("1111", 5);
+		testDecode("1111", 3);
+		testDecode("1111", 1);
+		testDecode("1111", 0);
+		System.out.println("--------------");
+		testSplittingDecode("110114174 419 3141114174 1206130 011816200.", 20);
+		testSplittingDecode("...", 3);
+		testSplittingDecode("!!1814124_1906??", 20);
 	}
 
 	private static void testEncode(String input) {
@@ -125,7 +124,7 @@ public class LiaEncode {
 			if (!(c >= '0' && c <= '9')) {
 				//this character is not a digit. decode previous word if any and current character.
 				if (left >= 0) {
-					output.add(decode(input.substring(left, i)));
+					output.add(decode(input.substring(left, i), outputLimit));
 				}
 				output.add(decode(input.substring(i, i + 1), outputLimit));
 				left = -1;
@@ -138,22 +137,6 @@ public class LiaEncode {
 			else {
 				if (left < 0) left = i;
 			}
-
-//			if (i + 1 >= input.length()) {
-//				//wrap up because end of string reached
-//				output.add(decode(input.substring(left, i + 1), outputLimit));
-//			}
-//			else if (!(c >= '0' && c <= '9')) {
-//				//next character is not digit. decode current word.
-//				output.add(decode(input.substring(left, i + 1), outputLimit));
-//			}
-//
-//			if (!(c >= '0' && c <= '9' && i < inputArr.length - 1)) {
-//				System.out.println(c + ": left" + left + " right" + right + " subsstr" + input.substring(left, right));
-//				output.add(decode(input.substring(left, right - 1), outputLimit));
-//				left = i + 1;
-//			}
-//			right++;
 		}
 
 		return output;
