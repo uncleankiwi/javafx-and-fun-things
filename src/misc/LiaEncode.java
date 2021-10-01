@@ -12,29 +12,33 @@ public class LiaEncode {
 	private static final int DEFAULT_OUTPUT_LIMIT = 10;
 
 	public static void main(String[] args) {
-//		testEncode("Happy Birthday to You!");
+//		testEncode("Labore et dolore magna aliqua.");
 //		testEncode("bbbb");
 //		testEncode("ll");
+//		testEncode("!!some_tag??");
 //		System.out.println("--------------");
+//		testDecode("70151524 18171973024 1914 241420!", 3);
 //		testDecode("1111");
 //		testDecode("1111", 5);
 //		testDecode("1111", 3);
 //		testDecode("1111", 1);
 //		testDecode("1111", 0);
 //		System.out.println("--------------");
-		testSplittingDecode("70151524 18171973024 1914 241420!", 10);
+//		testSplittingDecode("...", 3);
+//		testSplittingDecode("!!1814124_1906??", 20);
+		testSplittingDecode("70151524 18171973024 1914 241420!", 20);
 	}
 
 	private static void testEncode(String input) {
 		System.out.println("Encoding " + input + ":");
-		System.out.println("\t" + encode(input) + "\n");
+		System.out.println("\t>" + encode(input) + "\n");
 	}
 
 	private static void testDecode(String input, int outputLimit) {
 		System.out.println("Decoding " + input + ":");
 		Set<String> output = decode(input, outputLimit);
 		for (String s : output) {
-			System.out.println("\t" + s);
+			System.out.println("\t>" + s);
 		}
 		System.out.println();
 	}
@@ -48,12 +52,15 @@ public class LiaEncode {
 		List<Set<String>> output = splittingDecode(input, outputLimit);
 		for (Set<String> set : output) {
 			StringBuilder builder = new StringBuilder();
+			boolean first = true;
 			for (String str : set) {
-				builder.append(str).append("\t");
+				if (first) first = false;
+				else builder.append(" ");
+				builder.append(str);
 			}
-			System.out.println(builder);
+			System.out.println("\t>" + builder);
 		}
-
+		System.out.println();
 	}
 
 	public static String encode(String input) {
@@ -110,18 +117,43 @@ public class LiaEncode {
 	public static List<Set<String>> splittingDecode(String input, int outputLimit) {
 		List<Set<String>> output = new ArrayList<>();
 		char[] inputArr = input.toCharArray();
-		int left = 0;
-		int right = 1;
-		for (int i = 0; i < input.length(); i++) {
-			char c = inputArr[0];
-			if (c >= '0' && c <= '9') {
-				right++;
+		int left = -1;
+//		int right = -1;
+		for (int i = 0; i < inputArr.length; i++) {
+			char c = inputArr[i];
+
+			if (!(c >= '0' && c <= '9')) {
+				//this character is not a digit. decode previous word if any and current character.
+				if (left >= 0) {
+					output.add(decode(input.substring(left, i)));
+				}
+				output.add(decode(input.substring(i, i + 1), outputLimit));
+				left = -1;
+			}
+			else if (i + 1 >= input.length()) {
+				//wrap up because end of string reached
+				if (left < 0) left = i;
+				output.add(decode(input.substring(left, i + 1), outputLimit));
 			}
 			else {
-				output.add(decode(input.substring(left, right), outputLimit));
-				left = i;
-				right = i + 1;
+				if (left < 0) left = i;
 			}
+
+//			if (i + 1 >= input.length()) {
+//				//wrap up because end of string reached
+//				output.add(decode(input.substring(left, i + 1), outputLimit));
+//			}
+//			else if (!(c >= '0' && c <= '9')) {
+//				//next character is not digit. decode current word.
+//				output.add(decode(input.substring(left, i + 1), outputLimit));
+//			}
+//
+//			if (!(c >= '0' && c <= '9' && i < inputArr.length - 1)) {
+//				System.out.println(c + ": left" + left + " right" + right + " subsstr" + input.substring(left, right));
+//				output.add(decode(input.substring(left, right - 1), outputLimit));
+//				left = i + 1;
+//			}
+//			right++;
 		}
 
 		return output;
