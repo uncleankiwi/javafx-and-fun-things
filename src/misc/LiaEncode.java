@@ -70,13 +70,16 @@ public class LiaEncode {
 	//Possible outputs beyond that count are simply discarded.
 	public static Set<String> decode(String input, int outputLimit) {
 		Set<PossibleOutput> outputs = new HashSet<>();
-		outputs.add(new PossibleOutput(input, outputs, outputLimit));
+		Set<PossibleOutput> newOutputs = new HashSet<>();
+		outputs.add(new PossibleOutput(input, outputs, newOutputs, outputLimit));
 		boolean done = false;
 		while (!done) {
 			done = true;
 			for (PossibleOutput output : outputs) {
 				if (!output.step()) done = false;
 			}
+			outputs.addAll(newOutputs);
+			newOutputs.clear();
 		}
 
 		Set<String> stringOutputs = new HashSet<>();
@@ -90,17 +93,19 @@ public class LiaEncode {
 		private String output;
 		private String input;
 		private final Set<PossibleOutput> outputs;
+		private final Set<PossibleOutput> newOutputs;
 		private final int outputLimit;
 
-		PossibleOutput(String input, Set<PossibleOutput> outputs, int outputLimit, String output) {
+		PossibleOutput(String input, Set<PossibleOutput> outputs, Set<PossibleOutput> newOutputs, int outputLimit, String output) {
+			this.newOutputs = newOutputs;
 			this.output = output;
 			this.input = input;
 			this.outputLimit = outputLimit;
 			this.outputs = outputs;
 		}
 
-		PossibleOutput(String input, Set<PossibleOutput> outputs, int outputLimit) {
-			this(input, outputs, outputLimit, "");
+		PossibleOutput(String input, Set<PossibleOutput> outputs, Set<PossibleOutput> newOutputs, int outputLimit) {
+			this(input, outputs, newOutputs, outputLimit, "");
 		}
 
 		String getOutput() {
@@ -111,15 +116,15 @@ public class LiaEncode {
 			if (input.length() == 0) return true;
 
 			//try to parse the first two characters as a pair
-			if (outputs.size() < outputLimit) {
+			if (outputs.size() + newOutputs.size() < outputLimit) {
 				if (input.length() >= 2) {
 					int twoDigits;
 					try {
 						twoDigits = Integer.parseInt(input.substring(0, 2));
 						if (twoDigits >= 0 && twoDigits <= 25) {
 							String remainder = input.substring(2);
-							String alternateOutput = output + (char) twoDigits;
-							outputs.add(new PossibleOutput(remainder, outputs, outputLimit, alternateOutput));
+							String alternateOutput = output + (twoDigits + 'a');
+							newOutputs.add(new PossibleOutput(remainder, outputs, newOutputs, outputLimit, alternateOutput));
 						}
 					}
 					catch (NumberFormatException ignored) {}
@@ -131,7 +136,7 @@ public class LiaEncode {
 			String oneLetter = input.substring(0, 1);
 			try {
 				oneDigit = Integer.parseInt(oneLetter);
-				output += (char) oneDigit;
+				output += (char) (oneDigit + 'a');
 			}
 			catch (NumberFormatException ignored) {
 				output += oneLetter;
