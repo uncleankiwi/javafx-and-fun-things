@@ -61,6 +61,7 @@ public class LiaEncode {
 		return stringBuilder.toString();
 	}
 
+	@SuppressWarnings("unused")
 	public static Set<String> decode(String input) {
 		return decode(input, DEFAULT_OUTPUT_LIMIT);
 	}
@@ -69,12 +70,12 @@ public class LiaEncode {
 	//Possible outputs beyond that count are simply discarded.
 	public static Set<String> decode(String input, int outputLimit) {
 		Set<PossibleOutput> outputs = new HashSet<>();
-		outputs.add(new PossibleOutput(input, outputLimit));
+		outputs.add(new PossibleOutput(input, outputs, outputLimit));
 		boolean done = false;
 		while (!done) {
 			done = true;
 			for (PossibleOutput output : outputs) {
-				if (!output.step(outputs)) done = false;
+				if (!output.step()) done = false;
 			}
 		}
 
@@ -88,21 +89,54 @@ public class LiaEncode {
 	static class PossibleOutput {
 		private String output;
 		private String input;
-		private int outputLimit;
+		private final Set<PossibleOutput> outputs;
+		private final int outputLimit;
 
-		PossibleOutput(String input, int outputLimit) {
+		PossibleOutput(String input, Set<PossibleOutput> outputs, int outputLimit, String output) {
+			this.output = output;
 			this.input = input;
 			this.outputLimit = outputLimit;
+			this.outputs = outputs;
+		}
+
+		PossibleOutput(String input, Set<PossibleOutput> outputs, int outputLimit) {
+			this(input, outputs, outputLimit, "");
 		}
 
 		String getOutput() {
 			return this.output;
 		}
 
-		public boolean step(Set<PossibleOutput> set) {
+		public boolean step() {
 			if (input.length() == 0) return true;
 
+			//try to parse the first two characters as a pair
+			if (outputs.size() < outputLimit) {
+				if (input.length() >= 2) {
+					int twoDigits;
+					try {
+						twoDigits = Integer.parseInt(input.substring(0, 2));
+						if (twoDigits >= 0 && twoDigits <= 25) {
+							String remainder = input.substring(2);
+							String alternateOutput = output + (char) twoDigits;
+							outputs.add(new PossibleOutput(remainder, outputs, outputLimit, alternateOutput));
+						}
+					}
+					catch (NumberFormatException ignored) {}
+				}
+			}
 
+			//now parse the first character by itself
+			int oneDigit;
+			String oneLetter = input.substring(0, 1);
+			try {
+				oneDigit = Integer.parseInt(oneLetter);
+				output += (char) oneDigit;
+			}
+			catch (NumberFormatException ignored) {
+				output += oneLetter;
+			}
+			if (input.length() >= 1) input = input.substring(1);
 			return false;
 		}
 
