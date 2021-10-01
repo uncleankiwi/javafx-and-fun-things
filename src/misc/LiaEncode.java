@@ -123,7 +123,7 @@ public class LiaEncode {
 						twoDigits = Integer.parseInt(input.substring(0, 2));
 						if (twoDigits >= 0 && twoDigits <= 25) {
 							String remainder = input.substring(2);
-							String alternateOutput = output + (twoDigits + 'a');
+							String alternateOutput = output + (char) (twoDigits + (int)'a');
 							newOutputs.add(new PossibleOutput(remainder, outputs, newOutputs, outputLimit, alternateOutput));
 						}
 					}
@@ -136,7 +136,7 @@ public class LiaEncode {
 			String oneLetter = input.substring(0, 1);
 			try {
 				oneDigit = Integer.parseInt(oneLetter);
-				output += (char) (oneDigit + 'a');
+				output += (char) (oneDigit + (int)'a');
 			}
 			catch (NumberFormatException ignored) {
 				output += oneLetter;
