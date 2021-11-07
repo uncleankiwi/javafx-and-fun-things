@@ -19,6 +19,7 @@ public class ParseConsecutive {
 		test("");
 		test("982a");
 		test("gee");
+		test("78");
 	}
 
 	private static void test(String str) {
@@ -35,8 +36,7 @@ public class ParseConsecutive {
 	public static List<Long> parse(String str) {
 		if (str.length() == 0) throw new RuntimeException("String is empty");
 
-		for (int length = 1; length < str.length() / 2; length++) {
-			List<Long> results = new ArrayList<>();
+		for (int length = 1; length <= str.length() / 2; length++) {
 			long startingNumber;
 			try {
 				startingNumber = Long.parseLong(str.substring(0, length));
@@ -44,6 +44,7 @@ public class ParseConsecutive {
 			catch (NumberFormatException e) {
 				throw new RuntimeException("String cannot contain non-numerical characters");
 			}
+			List<Long> results = new ArrayList<>();
 			results.add(startingNumber);
 			results = parse(str.substring(length), results);
 			if (results != null) return results;
