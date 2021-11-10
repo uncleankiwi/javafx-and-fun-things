@@ -1,48 +1,107 @@
 package misc.eda;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /*
 	A function f(n) takes a number, squares every one of its digits, then returns the sum of those squares.
 	If n is such that f(f(f...f(n))) = 1, then n is a happy number.
-	Otherwise, f...f(n)) will loop between several numbers, one of which is 4. In this case, n is an unhappy number.
+	Otherwise, f...f(n) will loop between several numbers, one of which is 4. In this case, n is an unhappy number.
  */
 public class HappyNumbers {
 	public static void main(String[] args) {
-		isHappySteps(1235);
-		isHappySteps(84736);
-		isHappySteps(989);
-		isHappySteps(10000);
+		List<Integer> list = new ArrayList<>(get3DigitNumbers());
+		Collections.sort(list);
+		System.out.println(list);
+	}
+
+	/**
+	 * Gets a set of happy numbers from 1 to 999.
+	 * Memoizes results as it goes.
+	 * @return set of happy numbers.
+	 */
+	@SuppressWarnings("unused")
+	public static Set<Integer> get3DigitNumbers() {
+		Set<Integer> happySet = new HashSet<>();
+		Set<Integer> sadSet = new HashSet<>();
+		for (int i = 1; i <= 99; i++) {
+			List<Integer> tempList = new ArrayList<>();
+			tempList.add(i);
+
+			int k = i;
+			Boolean isHappy = null;
+
+			while (isHappy == null) {
+				int strippedInt = stripZeros(k);
+				if (happySet.contains(strippedInt)) isHappy = true;
+				else if (sadSet.contains(strippedInt)) isHappy = false;
+				else if (strippedInt == 1) isHappy = true;
+				else if (strippedInt == 4) isHappy = false;
+				else {
+					k = squaredDigits(strippedInt);
+					tempList.add(k);
+				}
+
+				if (isHappy == null) {
+					k = squaredDigits(strippedInt);
+					tempList.add(k);
+				}
+				else if (isHappy) {
+					happySet.addAll(tempList);
+				}
+				else {
+					sadSet.addAll(tempList);
+				}
+			}
+
+		}
+		return happySet;
 	}
 
 	/**
 	 * Determines whether a number is happy. Shows intermediate steps.
 	 * @param n input.
 	 */
+	@SuppressWarnings("unused")
 	public static void isHappySteps(int n) {
-		Boolean isHappy = null;
+		Intermediates intermediates = new Intermediates(n);
+		intermediates.resolve();
+		System.out.println(intermediates);
+	}
+
+	private static class Intermediates {
 		List<Integer> steps = new ArrayList<>();
-		steps.add(n);
-		while (isHappy == null) {
-			if (n == 1) isHappy = true;
-			else if (n == 4) isHappy = false;
-			else {
-				int strippedInt = stripZeros(n);
-				if (strippedInt == 1) isHappy = true;
-				else if (strippedInt == 4) isHappy = false;
-				n = squaredDigits(strippedInt);
-				steps.add(n);
+		Boolean isHappy = null;
+
+		Intermediates(int n) {
+			steps.add(n);
+		}
+
+		void resolve() {
+			int n = steps.get(0);
+			while (isHappy == null) {
+				if (n == 1) isHappy = true;
+				else if (n == 4) isHappy = false;
+				else {
+					int strippedInt = stripZeros(n);
+					if (strippedInt == 1) isHappy = true;
+					else if (strippedInt == 4) isHappy = false;
+					n = squaredDigits(strippedInt);
+					steps.add(n);
+				}
 			}
 		}
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = 0; i < steps.size(); i++) {
-			if (i != 0) stringBuilder.append(" -> ");
-			stringBuilder.append(steps.get(i));
+
+		@Override
+		public String toString() {
+			StringBuilder stringBuilder = new StringBuilder();
+			for (int i = 0; i < steps.size(); i++) {
+				if (i != 0) stringBuilder.append(" -> ");
+				stringBuilder.append(steps.get(i));
+			}
+			if (isHappy) stringBuilder.append(" HAPPY!");
+			else stringBuilder.append(" sad...");
+			return stringBuilder.toString();
 		}
-		if (isHappy) stringBuilder.append(" HAPPY!");
-		else stringBuilder.append(" sad...");
-		System.out.println(stringBuilder);
 	}
 
 	/**
