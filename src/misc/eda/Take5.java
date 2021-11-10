@@ -5,7 +5,7 @@ import java.util.Arrays;
 /*
 Given an array of integers,
 	- return 0 if the array is empty
-	- return the integers that has the greatest number of '5's in it
+	- return the integer that has the greatest number of '5's in it
 	- if there is more than one integer in the array with the greatest number of '5's, return the largest of those
 	- if none of the integers have '5's, return the first integer of the array
  */
