@@ -23,7 +23,7 @@ public class HappyNumbers {
 	public static Set<Integer> get3DigitNumbers() {
 		Set<Integer> happySet = new HashSet<>();
 		Set<Integer> sadSet = new HashSet<>();
-		for (int i = 1; i <= 99; i++) {
+		for (int i = 1; i <= 999; i++) {
 			List<Integer> tempList = new ArrayList<>();
 			tempList.add(i);
 
