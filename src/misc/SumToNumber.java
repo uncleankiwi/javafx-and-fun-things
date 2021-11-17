@@ -1,7 +1,5 @@
 package misc;
 
-import util.Combination;
-
 import java.util.*;
 
 /*
@@ -9,52 +7,57 @@ Find all the possible sets of single-digit numbers of a certain size that sum to
  */
 public class SumToNumber {
 	public static void main(String[] args) {
-		System.out.println(combinationNoRestriction(3, 7));
-		System.out.println(Combination.get(5, 3));
+		System.out.println(combination(3, 17, 1));
 	}
 
-	//test method: generate all possible combinations of a certain size
-	//ignores the sum-to-size restriction
+	//Test method: generate all possible combinations of a certain size.
+	//Ignores the sum-to-size restriction.
 	//The number of possible sets works out to (n+r-1)C(r) - calculate this
 	//with Combination.get(n + r - 1, r).
-	public static List<Tally> combinationNoRestriction(int size, int min) {
-		if (size == 1) {
-			List<Tally> outer = new ArrayList<>();
-			for (int i = min; i <= 9; i++) {
+	@SuppressWarnings("unused")
+	public static Set<Tally> combinationNoRestriction(int size, int min) {
+		Set<Tally> outer = new HashSet<>();
+		for (int i = min; i <= 9; i++) {
+			if (size == 1) {
 				Tally tally = new Tally(i);
 				outer.add(tally);
 			}
-			return outer;
-		}
-		else {
-			List<Tally> outermost = new ArrayList<>();
-			for (int i = min; i <= 9; i++) {
-				List<Tally> outer = combinationNoRestriction(size - 1, i);
-				for (Tally tally : outer) {
+			else {
+				Set<Tally> inner = combinationNoRestriction(size - 1, i);
+				for (Tally tally : inner) {
 					tally.add(i);
 				}
-				outermost.addAll(outer);
+				outer.addAll(inner);
 			}
-			return outermost;
 		}
+		return outer;
 	}
 
-	public static Set<Set<Integer>> combinations(int size, int n) {
-		for (int i = 1; i <= size; i++) {
-
+	/**
+	 * Find all the possible sets of single-digit numbers of a certain size that sum to a number n.
+	 * @param size Number of single digit numbers per set.
+	 * @param n The number that every set must add up to.
+	 * @param min Internal use - prevents duplicate answers. just set to 1.
+	 * @return The sets of numbers. May be empty.
+	 */
+	public static Set<Tally> combination(int size, int n, int min) {
+		Set<Tally> outer = new HashSet<>();
+		if (size == 1) {
+			if (n <= 9 && n >= min) {
+				Tally tally = new Tally(n);
+				outer.add(tally);
+			}
 		}
-		return null;
-	}
-
-	//min - the single digit may not be less than this
-	private static Set<Integer> complement(int n, int min) {
-		if (min > n) return null;
-		else if (n > 9) return null;
 		else {
-			Set<Integer> result = new HashSet<>();
-			result.add(n);
-			return result;
+			for (int i = min; i <= 9; i++) {
+				Set<Tally> inner = combination(size - 1,n - i, i);
+				for (Tally tally : inner) {
+					tally.add(i);
+				}
+				outer.addAll(inner);
+			}
 		}
+		return outer;
 	}
 
 	private static class Tally {
