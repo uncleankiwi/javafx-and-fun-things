@@ -34,6 +34,7 @@ public class HappyNumbersBackwards {
 		//that resolve to this number.
 		//e.g. if digits were 1, the results would return a set containing 13.
 		Set<UniqueNumber> upstream(int size) {
+			//todo
 			return null;
 		}
 
@@ -41,6 +42,7 @@ public class HappyNumbersBackwards {
 		//e.g. if this number were 13 and the size given is 3,
 		//it would return 13, 31, 103, 130, etc.
 		private Set<Integer> permutations(int size) {
+			//todo
 			return null;
 		}
 
