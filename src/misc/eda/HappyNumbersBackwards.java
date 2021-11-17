@@ -11,6 +11,9 @@ import java.util.Set;
 		1. zeroes in a happy number are ignored - 1, 10, 100 are all treated as 1.
 		2. order of digits is ignored - 13, 31 are all treated as 13.
 		3. when printing, the digits are displayed in ascending order.
+	Unlike the HappyNumbers class, this works backwards.
+	It takes the base case, 1, and works out all the 1 to n digit numbers that resolve to that,
+	until it reaches the point where all numbers obtained are already in the set of answers.
  */
 public class HappyNumbersBackwards {
 	public static void main(String[] args) {
