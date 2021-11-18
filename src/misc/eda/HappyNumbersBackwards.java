@@ -17,11 +17,10 @@ import java.util.*;
  */
 public class HappyNumbersBackwards {
 	public static void main(String[] args) {
-		testPermutations(253);
-		testPermutations(2552);
-		testPermutations(13);
+
 	}
 
+	@SuppressWarnings("unused")
 	private static void testPermutations(int n) {
 		UniqueNumber x = new UniqueNumber(n);
 		for (int i = 1; i <= 5; i++) {
@@ -52,7 +51,29 @@ public class HappyNumbersBackwards {
 		//that resolve to this number.
 		//e.g. if digits were 1, the results would return a set containing 13.
 		Set<UniqueNumber> upstream(int size) {
-			//todo
+			Set<UniqueNumber> uniqueNumbers = new HashSet<>();
+			Set<UniqueNumber> pending = new HashSet<>();
+			pending.add(this);
+			while (pending.size() > 1) {
+				Set<UniqueNumber> nextPending = new HashSet<>();
+				for (UniqueNumber n : pending) {
+					if (!uniqueNumbers.contains(n)) {
+						uniqueNumbers.add(n);
+						Set<Integer> permutations = new HashSet<>();
+						for (int i = 1; i <= size; i++) {
+							permutations.addAll(permutationsWrapper(size));
+						}
+						//nextPending.addAll()
+					}
+				}
+
+			}
+
+			return uniqueNumbers;
+		}
+
+		//gets every unique combination of digits that when individually squared, gives the sum
+		private Set<UniqueNumber> sumOfSquaresToNumber(int sum) {
 			return null;
 		}
 
