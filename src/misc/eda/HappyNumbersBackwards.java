@@ -36,16 +36,16 @@ public class HappyNumbersBackwards {
 		UniqueNumber(int n) {
 			digits = new HashMap<>();
 			for (char c : String.valueOf(n).toCharArray()) {
-				add(this.digits, c, false);
+				if (c != '0') {
+					size++;
+					add(this.digits, c);
+				}
 			}
 		}
 
-		private void add(Map<Character, Integer> tally, char c, boolean addZeroes) {
-			if (c != '0' || addZeroes) {
-				size++;
-				if (tally.containsKey(c)) tally.replace(c, tally.get(c));
-				else tally.put(c, 1);
-			}
+		private void add(Map<Character, Integer> tally, char c) {
+			if (tally.containsKey(c)) tally.replace(c, tally.get(c) + 1);
+			else tally.put(c, 1);
 		}
 
 		//gets a set of numbers with 1 to 'size' number of digits
@@ -60,8 +60,9 @@ public class HappyNumbersBackwards {
 		private Set<Integer> permutationsWrapper(int size) {
 			if (this.size > size) return new HashSet<>();
 			Map<Character, Integer> digitsCopy = new HashMap<>(digits);
+			//adding '0's if necessary
 			for (int i = 1; i <= size - this.size; i++) {
-				add(digitsCopy, '0', true);
+				add(digitsCopy, '0');
 			}
 			Set<Integer> integerSet = new HashSet<>();
 			Set<String> stringSet = permutations(digitsCopy, size);
