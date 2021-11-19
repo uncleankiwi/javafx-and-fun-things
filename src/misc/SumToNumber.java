@@ -7,7 +7,7 @@ Find all the possible sets of single-digit numbers of a certain size that sum to
  */
 public class SumToNumber {
 	public static void main(String[] args) {
-		System.out.println(squaredCombination(2, 50, 1));
+
 	}
 
 	//Test method: generate all possible combinations of a certain size.
@@ -40,6 +40,7 @@ public class SumToNumber {
 	 * @param min Internal use - prevents duplicate answers. just set to 1.
 	 * @return The sets of numbers. May be empty.
 	 */
+	@SuppressWarnings("unused")
 	public static Set<Tally> combination(int size, int n, int min) {
 		Set<Tally> outer = new HashSet<>();
 		if (size == 1) {
@@ -51,39 +52,6 @@ public class SumToNumber {
 		else {
 			for (int i = min; i <= 9; i++) {
 				Set<Tally> inner = combination(size - 1,n - i, i);
-				for (Tally tally : inner) {
-					tally.add(i);
-				}
-				outer.addAll(inner);
-			}
-		}
-		return outer;
-	}
-
-	/**
-	 * Find all the possible sets of single-digit numbers of a certain size that sum to a number n
-	 * after being individually squared.
-	 * @param size Number of single digit numbers per set.
-	 * @param n The number that every set must add up to.
-	 * @param min Internal use - prevents duplicate answers. just set to 1.
-	 * @return The sets of numbers. May be empty.
-	 */
-	public static Set<Tally> squaredCombination(int size, int n, int min) {
-		Set<Tally> outer = new HashSet<>();
-		if (size == 1) {
-			if (n <= 9 && n >= min * min) {
-				for (int i = min; i * i <= n; i++) {
-					if (i * i == n) {
-						Tally tally = new Tally(n);
-						outer.add(tally);
-						break;
-					}
-				}
-			}
-		}
-		else {
-			for (int i = min; i <= 9; i++) {
-				Set<Tally> inner = squaredCombination(size - 1,n - i * i, i);
 				for (Tally tally : inner) {
 					tally.add(i);
 				}

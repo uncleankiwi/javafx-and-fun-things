@@ -17,7 +17,11 @@ import java.util.*;
  */
 public class HappyNumbersBackwards {
 	public static void main(String[] args) {
-
+		UniqueNumber n = new UniqueNumber(1);
+		System.out.println(n.upstream(1));
+		System.out.println(n.upstream(2));
+		System.out.println(n.upstream(3));
+		System.out.println(n.upstream(4));
 	}
 
 	@SuppressWarnings("unused")
@@ -35,10 +39,7 @@ public class HappyNumbersBackwards {
 		UniqueNumber(int n) {
 			digits = new HashMap<>();
 			for (char c : String.valueOf(n).toCharArray()) {
-				if (c != '0') {
-					size++;
-					add(this.digits, c);
-				}
+				add(c);
 			}
 		}
 
@@ -47,14 +48,21 @@ public class HappyNumbersBackwards {
 			else tally.put(c, 1);
 		}
 
+		private void add(char c) {
+			if (c != '0') {
+				size++;
+				add(this.digits, c);
+			}
+		}
+
 		//gets a set of numbers with 1 to 'size' number of digits
 		//that resolve to this number.
 		//e.g. if digits were 1, the results would return a set containing 13.
-		Set<UniqueNumber> upstream(int size) {
+		public Set<UniqueNumber> upstream(int size) {
 			Set<UniqueNumber> uniqueNumbers = new HashSet<>();
 			Set<UniqueNumber> pending = new HashSet<>();
 			pending.add(this);
-			while (pending.size() > 1) {
+			while (pending.size() > 0) {
 				Set<UniqueNumber> nextPending = new HashSet<>();
 				for (UniqueNumber n : pending) {
 					if (!uniqueNumbers.contains(n)) {
@@ -63,18 +71,41 @@ public class HappyNumbersBackwards {
 						for (int i = 1; i <= size; i++) {
 							permutations.addAll(permutationsWrapper(size));
 						}
-						//nextPending.addAll()
+						for (int m : permutations) {
+							nextPending.addAll(sumOfSquaresToNumber(size, m, 1));
+						}
 					}
 				}
-
+				pending = nextPending;
 			}
 
 			return uniqueNumbers;
 		}
 
 		//gets every unique combination of digits that when individually squared, gives the sum
-		private Set<UniqueNumber> sumOfSquaresToNumber(int sum) {
-			return null;
+		private static Set<UniqueNumber> sumOfSquaresToNumber(int size, int n, int min) {
+			Set<UniqueNumber> outer = new HashSet<>();
+			if (size == 1) {
+				if (n <= 9 * 9 && n >= min * min) {
+					for (int i = min; i * i <= n && i <= 9; i++) {
+						if (i * i == n) {
+							UniqueNumber tally = new UniqueNumber(i);
+							outer.add(tally);
+						}
+					}
+
+				}
+			}
+			else {
+				for (int i = min; i <= 9; i++) {
+					Set<UniqueNumber> inner = sumOfSquaresToNumber(size - 1,n - i * i, i);
+					for (UniqueNumber tally : inner) {
+						tally.add(String.valueOf(i).toCharArray()[0]);
+					}
+					outer.addAll(inner);
+				}
+			}
+			return outer;
 		}
 
 		//wrapper for recursive method
