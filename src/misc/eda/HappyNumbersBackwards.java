@@ -18,10 +18,11 @@ import java.util.*;
 public class HappyNumbersBackwards {
 	public static void main(String[] args) {
 		UniqueNumber n = new UniqueNumber(1);
-		System.out.println(n.upstream(1));
-		System.out.println(n.upstream(2));
-		System.out.println(n.upstream(3));
+//		System.out.println(n.upstream(1));
+//		System.out.println(n.upstream(2));
+//		System.out.println(n.upstream(3));
 		System.out.println(n.upstream(4));
+//		System.out.println(n.upstream(5));
 	}
 
 	@SuppressWarnings("unused")
@@ -71,12 +72,16 @@ public class HappyNumbersBackwards {
 						for (int i = 1; i <= size; i++) {
 							permutations.addAll(permutationsWrapper(size));
 						}
+						System.out.println("permut" + permutations);	//todo
 						for (int m : permutations) {
-							nextPending.addAll(sumOfSquaresToNumber(size, m, 1));
+							for (int i = 1; i <= size; i++) {
+								nextPending.addAll(sumOfSquaresToNumber(i, m, 1));
+							}
 						}
 					}
 				}
 				pending = nextPending;
+				System.out.println("pending at end:" + pending);
 			}
 
 			return uniqueNumbers;
@@ -93,7 +98,6 @@ public class HappyNumbersBackwards {
 							outer.add(tally);
 						}
 					}
-
 				}
 			}
 			else {
