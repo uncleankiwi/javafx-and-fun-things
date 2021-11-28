@@ -18,11 +18,20 @@ import java.util.*;
 public class HappyNumbersBackwards {
 	public static void main(String[] args) {
 		UniqueNumber n = new UniqueNumber(1);
-//		System.out.println(n.upstream(1));
-//		System.out.println(n.upstream(2));
-//		System.out.println(n.upstream(3));
-		System.out.println(n.upstream(4));
-//		System.out.println(n.upstream(5));
+		printUpstream(n, 3, 3);
+	}
+
+	//This branches the given happy number up to sizeToCheck digits then prunes down to sizeToPrint for printing.
+	//This doesn't actually make any difference!
+	//When calculating 3-digit happy numbers, that is. None are missed when setting sizeToCheck = sizeToPrint = 3.
+	@SuppressWarnings("unused")
+	public static void printUpstream(UniqueNumber n, int sizeToCheck, int sizeToPrint) {
+		Set<UniqueNumber> set = n.upstream(sizeToCheck);
+		set.stream().sorted().forEach(x -> {
+			String str = x.toString();
+			if (str.length() <= sizeToPrint) System.out.print(x + ", ");
+		});
+		System.out.println();
 	}
 
 	@SuppressWarnings("unused")
@@ -33,7 +42,7 @@ public class HappyNumbersBackwards {
 		}
 	}
 
-	private static class UniqueNumber {
+	private static class UniqueNumber implements Comparable<UniqueNumber> {
 		private final Map<Character, Integer> digits;
 		private int size = 0;
 
@@ -68,11 +77,7 @@ public class HappyNumbersBackwards {
 				for (UniqueNumber n : pending) {
 					if (!uniqueNumbers.contains(n)) {
 						uniqueNumbers.add(n);
-						Set<Integer> permutations = new HashSet<>();
-						for (int i = 1; i <= size; i++) {
-							permutations.addAll(permutationsWrapper(size));
-						}
-						System.out.println("permut" + permutations);	//todo
+						Set<Integer> permutations = new HashSet<>(n.permutationsWrapper(size));
 						for (int m : permutations) {
 							for (int i = 1; i <= size; i++) {
 								nextPending.addAll(sumOfSquaresToNumber(i, m, 1));
@@ -81,7 +86,6 @@ public class HappyNumbersBackwards {
 					}
 				}
 				pending = nextPending;
-				System.out.println("pending at end:" + pending);
 			}
 
 			return uniqueNumbers;
@@ -182,6 +186,11 @@ public class HappyNumbersBackwards {
 		@Override
 		public int hashCode() {
 			return Objects.hash(digits);
+		}
+
+		@Override
+		public int compareTo(UniqueNumber o) {
+			return Integer.valueOf(this.toString()).compareTo(Integer.valueOf(o.toString()));
 		}
 	}
 }
