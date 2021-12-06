@@ -1,9 +1,6 @@
 package misc.eda;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
 Return all possible subsets of a list of integers from a list, with each subset being of a given size, and
@@ -29,8 +26,8 @@ public class SubsetSum {
 		System.out.println(tally.getSubsets(3, 3));
 	}
 
-	private static class Tally {
-		private final Map<Integer, Integer> tally = new HashMap<>();
+	private static class Tally implements Cloneable {
+		private Map<Integer, Integer> tally = new HashMap<>();
 
 		Tally(int[] arr) {
 			for (int n : arr) {
@@ -43,24 +40,76 @@ public class SubsetSum {
 			else tally.replace(n, tally.get(n) + 1);
 		}
 
+		@SuppressWarnings("SameParameterValue")
 		List<List<Integer>> getSubsets(int size, int sum) {
+			return getSubsets(this, size, sum);
+		}
+
+		private static List<List<Integer>> getSubsets(Tally t, int size, int sum) {
 			List<List<Integer>> parentList = new ArrayList<>();
 			if (size == 1) {
-				if (this.tally.containsKey(sum)) {
+				if (t.tally.containsKey(sum)) {
 					List<Integer> childList = new ArrayList<>();
 					childList.add(sum);
 					parentList.add(childList);
 				}
 			}
 			else if (size > 1) {
-				List<Integer> keyList = new ArrayList<>(this.tally.keySet());
-				for (int i = 0; i < keyList.size(); i++) {
+				Tally copy = t.clone();
+				while (copy.tally.size() > 0) {
+					//get any element in this tally
+					int currentInt = copy.tally.keySet().stream().findFirst().get();
 
+					//find all valid lists downstream, then append this element
+					Tally copy2 = copy.clone();
+					copy2.subtract(currentInt);
+					List<List<Integer>> childList = getSubsets(copy2, size - 1, sum - currentInt);
+					for (List<Integer> list : childList) {
+						list.add(currentInt);
+					}
+
+					//add results to list, then remove this element from tally
+					parentList.addAll(childList);
+					copy.remove(currentInt);
 				}
 			}
 			return parentList;
 		}
 
+		//removes 1 count from the given number in this tally
+		void subtract(int n) {
+			if (this.tally.containsKey(n)) {
+				if (this.tally.get(n) == 1) {
+					this.tally.remove(n);
+				}
+				else {
+					this.tally.replace(n, this.tally.get(n) - 1);
+				}
+			}
+			else {
+				throw new RuntimeException("Tally doesn't contain the key " + n);
+			}
+		}
 
+		//removes all counts of the given number in this tally
+		void remove(int n) {
+			if (this.tally.containsKey(n)) {
+				this.tally.remove(n);
+			}
+			else {
+				throw new RuntimeException("Tally doesn't contain the key " + n);
+			}
+		}
+
+		@Override
+		public Tally clone() {
+			try {
+				Tally clone = (Tally) super.clone();
+				clone.tally = new HashMap<>(this.tally);
+				return clone;
+			} catch (CloneNotSupportedException e) {
+				throw new AssertionError();
+			}
+		}
 	}
 }
