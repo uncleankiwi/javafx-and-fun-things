@@ -23,7 +23,7 @@ public class SubsetSum {
 
 	private static void test(int[] parent) {
 		Tally tally = new Tally(parent);
-		System.out.println(tally.getSubsets(3, 3));
+		System.out.println(tally.getSubsets(3, 0));
 	}
 
 	private static class Tally implements Cloneable {
