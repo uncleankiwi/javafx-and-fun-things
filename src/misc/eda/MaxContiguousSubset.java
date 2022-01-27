@@ -23,6 +23,9 @@ public class MaxContiguousSubset {
 		//side exclusion
 		test(new int[] {-1, 0, -1, 30, 3});
 		test(new int[] {4, -2, -2, 0});
+		test(new int[] {-2, -1, 5, 6, 7, -20, 3, 4, 1, -1, -1});
+		test(new int[] {-2, -1, 1, 3, 2, -20, 8, 8, 1, -1, -1});
+		test(new int[]{-8, 3, 3, 2, -100, 5, 6, 9, -100, 4, 4, 3, -9, -10});
 
 		//weird
 		test(new int[] {});
@@ -32,7 +35,40 @@ public class MaxContiguousSubset {
 	}
 
 	public static void test(int[] input) {
-		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(largestSubsequence(input)));
+//		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(largestSubsequence(input)));
+		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(bruteForceSubsequence(input)));
+	}
+
+	//O(n^2) brute force method that basically checks all possible subsequences
+	public static int[] bruteForceSubsequence(int[] input) {
+		Subsequence largestSub = new Subsequence();
+		for (int i = 0; i < input.length; i++) {
+			if (input[i] > 0) {
+				Subsequence subsequence = new Subsequence();
+				subsequence.start = i;
+				for (int j = i; j < input.length; j++) {
+					subsequence.total += input[j];
+					subsequence.end = j + 1;
+					if (subsequence.total > largestSub.total) {
+						largestSub.copy(subsequence);
+					}
+				}
+			}
+		}
+		return Arrays.copyOfRange(input, largestSub.start, largestSub.end);
+	}
+
+	//a subsection of an array summing total, and beginning from the indices. Start is inclusive, end is exclusive.
+	private static class Subsequence {
+		int start;
+		int end;
+		int total;
+
+		void copy(Subsequence sub) {
+			this.start = sub.start;
+			this.end = sub.end;
+			this.total = sub.total;
+		}
 	}
 
 	public static int[] largestSubsequence(int[] input) {
