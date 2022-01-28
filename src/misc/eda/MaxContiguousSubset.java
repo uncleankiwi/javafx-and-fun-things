@@ -26,6 +26,9 @@ public class MaxContiguousSubset {
 		test(new int[] {-2, -1, 5, 6, 7, -20, 3, 4, 1, -1, -1});
 		test(new int[] {-2, -1, 1, 3, 2, -20, 8, 8, 1, -1, -1});
 		test(new int[]{-8, 3, 3, 2, -100, 5, 6, 9, -100, 4, 4, 3, -9, -10});
+		test(new int[]{-8, 3, 3, 2, -4, 5, 6, 9, -100, 4, 4, 3, -9, -10});
+		test(new int[]{-8, 3, 3, 2, -100, 5, 6, 9, -7, 4, 4, 3, -9, -10});
+		test(new int[]{-8, 3, 3, 2, -2, 5, 6, 9, -3, 4, 4, 3, -9, -10});
 
 		//weird
 		test(new int[] {});
@@ -35,11 +38,12 @@ public class MaxContiguousSubset {
 	}
 
 	public static void test(int[] input) {
-//		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(largestSubsequence(input)));
-		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(bruteForceSubsequence(input)));
+		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(largestSubsequence(input)));
+//		System.out.println("testing: " + Arrays.toString(input) + " -> "  + Arrays.toString(bruteForceSubsequence(input)));
 	}
 
 	//O(n^2) brute force method that basically checks all possible subsequences
+	@SuppressWarnings("unused")
 	public static int[] bruteForceSubsequence(int[] input) {
 		Subsequence largestSub = new Subsequence();
 		for (int i = 0; i < input.length; i++) {
@@ -71,61 +75,39 @@ public class MaxContiguousSubset {
 		}
 	}
 
+	//O(n). At every index, determine if the previous element's sequence should be added to this element's
+	//base case: first positive element's sum and position memoized
+	//kth element: if k - 1's sequence total is negative, start a new sequence from k.
+	@SuppressWarnings("unused")
 	public static int[] largestSubsequence(int[] input) {
-
-		if (input.length == 0) return new int[0];
-
-		int[] arraySummedForward = new int[input.length];
-		int[] arraySummedBackwards = new int[input.length];
-		int largestForwardSum = -1;
-		int largestForwardSumIndex = -1;
-		int largestBackwardSum = -1;
-		int largestBackwardSumIndex = -1;
-
-		//going forwards to find elements at the end to omit
+		Subsequence largestSub = new Subsequence();
+		Subsequence[] subs = new Subsequence[input.length];
 		for (int i = 0; i < input.length; i++) {
+			Subsequence sub = new Subsequence();
+			subs[i] = sub;
+			//base case
 			if (i == 0) {
-				arraySummedForward[0] = input[0];
-				arraySummedBackwards[input.length - 1] = input[input.length - 1];
+				sub.start = i;
+				sub.end = i + 1;
+				sub.total = input[i];
 			}
+			//kth case
 			else {
-				arraySummedForward[i] = input[i] + arraySummedForward[i - 1];
-//				arraySummedBackwards[input.length - 1 - i] = input[input.length - 1 - i] + arraySummedBackwards[input.length - i];
+				//if k - 1's sequence total is negative
+				if (subs[i - 1].total < 0) {
+					sub.start = i;
+					sub.end = i + 1;
+					sub.total = input[i];
+				}
+				//if k - 1's sequence is positive, add it to this element's memoized sequence
+				else {
+					sub.start = subs[i - 1].start;
+					sub.end = i + 1;
+					sub.total = subs[i - 1].total + input[i];
+				}
 			}
-			if (arraySummedForward[i] > largestForwardSum) {
-				largestForwardSum = arraySummedForward[i];
-				largestForwardSumIndex = i;
-			}
-//			if (arraySummedBackwards[input.length - 1 - i] > largestBackwardSum) {
-//				largestBackwardSum = arraySummedBackwards[input.length - 1 - i];
-//				largestBackwardSumIndex = input.length - 1 - i;
-//			}
+			if (sub.total > largestSub.total) largestSub = sub;
 		}
-
-		//going backwards to determine how many elements at the front to omit
-
-		for (int i = largestForwardSumIndex; i >= 0; i--) {
-			if (i == largestForwardSumIndex) {
-				largestBackwardSumIndex = largestForwardSumIndex;
-			}
-			else {
-				arraySummedBackwards[i] = input[i] + arraySummedBackwards[i + 1];
-			}
-			if (arraySummedBackwards[i] > largestBackwardSum) {
-				largestBackwardSum = arraySummedBackwards[i];
-				largestBackwardSumIndex = i;
-			}
-		}
-
-		if (largestForwardSum < 0 && largestBackwardSum < 0) {
-			return new int[0];
-		}
-
-//		System.out.println("largest forward, backwards:" + largestForwardSumIndex + ":" + largestBackwardSumIndex);
-		return Arrays.copyOfRange(input, largestBackwardSumIndex, largestForwardSumIndex + 1);
-
-		//return output;
+		return Arrays.copyOfRange(input, largestSub.start, largestSub.end);
 	}
-
-
 }
