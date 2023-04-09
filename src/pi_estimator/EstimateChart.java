@@ -115,7 +115,9 @@ public class EstimateChart extends Application {
 		Text lblSpinner = new Text("Max digits to use:");
 		Button btnGraph = new Button("Graph");
 		btnGraph.setOnAction(event -> graph());
-		hBoxSpinner.getChildren().addAll(lblSpinner, spnDigits, btnGraph);
+		Button btnResetZoom = new Button("Reset zoom");
+		btnResetZoom.setOnAction(event -> resetZoom());
+		hBoxSpinner.getChildren().addAll(lblSpinner, spnDigits, btnGraph, btnResetZoom);
 
 		yAxis.setLabel("Closeness of estimate");
 		yAxis.setMinorTickVisible(false);
