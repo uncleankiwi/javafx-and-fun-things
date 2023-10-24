@@ -3,9 +3,7 @@ package rps_sim;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 class Arena extends Pane {
@@ -16,6 +14,12 @@ class Arena extends Pane {
 	private final Set<Token> tokens;
 	static final double WIDTH = 400;
 	static final double HEIGHT = 600;
+	final Set<Token> rockTokens;
+	final Set<Token> paperTokens;
+	final Set<Token> scissorsTokens;
+	private boolean running;
+	private Timer timer;
+	private static final long DELAY = 300;
 
 	Arena() {
 		ROCK_IMAGE = loadImage("rps_sim/rock.png");
@@ -29,33 +33,46 @@ class Arena extends Pane {
 		}
 		setMinWidth(WIDTH);
 		setMinHeight(HEIGHT);
+		rockTokens = new HashSet<>();
+		paperTokens = new HashSet<>();
+		scissorsTokens = new HashSet<>();
+		running = false;
 	}
 
 	void init() {
-		int type = 1;
+		Type[] typeArr = Type.values();
+		int index = 0;
 		for (Token token : tokens) {
 			token.randomPos();
+			token.setType(typeArr[index]);
 
-			switch (type) {
-				case 1:
-					token.setRock();
-					break;
-				case 2:
-					token.setPaper();
-					break;
-				default:
-					token.setScissors();
-			}
-
-			if (type == 3) {
-				type = 1;
+			if (index == typeArr.length - 1) {
+				index = 0;
 			}
 			else {
-				type++;
+				index++;
 			}
 		}
+	}
 
-
+	void startStop() {
+		running = !running;
+		if (running) {
+			timer = new Timer();
+			TimerTask task = new TimerTask() {
+				@Override
+				public void run() {
+					for (Token t : tokens) {
+						t.doMove();
+						t.doConsume();
+					}
+				}
+			};
+			timer.scheduleAtFixedRate(task, DELAY, DELAY);
+		}
+		else {
+			timer.cancel();
+		}
 	}
 
 	private Image loadImage(String url) {

@@ -27,7 +27,7 @@ public class RPSSim extends Application {
 		Button btnStart = new Button("Start");
 		vBoxButtons.getChildren().addAll(btnRandomize, btnStart);
 		btnRandomize.setOnAction(x -> arena.init());
-		btnStart.setOnAction(x -> arena.init());
+		btnStart.setOnAction(x -> arena.startStop());
 
 
 		HBox hBoxWrapper = new HBox();
