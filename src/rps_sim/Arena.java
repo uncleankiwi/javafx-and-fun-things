@@ -10,7 +10,7 @@ class Arena extends Pane {
 	private final Image ROCK_IMAGE;
 	private final Image PAPER_IMAGE;
 	private final Image SCISSORS_IMAGE;
-	private static final int TOKEN_COUNT = 2;
+	private static final int TOKEN_COUNT = 50;
 	private final Set<Token> tokens;
 	static final double WIDTH = 400;
 	static final double HEIGHT = 600;

@@ -91,32 +91,12 @@ class Token extends ImageView {
 			double y = target.getLayoutY() - getLayoutY();
 
 			bearing = Math.atan2(y, x);
-			if (bearing > 0) {
-				//3rd quadrant
-				if (x < 0) {
-					bearing += Math.PI;
-				}
-			}
-			else {
-				//2nd quadrant
-				if (x >= 0) {
-					bearing += Math.PI;
-				}
-				//4th quadrant
-				else {
-					bearing += 2 * Math.PI;
-				}
-			}
-
-			//todo rem
-			System.out.println(x + " " + y + " : " + (bearing / Math.PI * 180));
-
 		}
 		return bearing;
 	}
 
 	void doMove() {
-		Double bearing = averageBearing(null, getTargetBearing());
+		Double bearing = averageBearing(getRandomBearing(), getTargetBearing());
 
 		if (bearing != null) {
 			this.setLayoutX(setBounds(this.getLayoutX() + MOVE_DISTANCE * Math.cos(bearing), 0, Arena.WIDTH - WIDTH));
