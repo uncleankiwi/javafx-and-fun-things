@@ -40,12 +40,43 @@ class Token extends ImageView {
 		this.setLayoutY(yRange * random.nextDouble());
 	}
 
-	void doMove() {
-		double moveAngle = 2 * Math.PI * Math.random();
+	Double getRandomBearing() {
+		return 2 * Math.PI * Math.random();
+	}
 
+	Double averageBearing(Double a, Double b) {
+		if (a != null && b != null) {
+			//lemma: if two angles are more than 180 degrees apart, then taking their average will
+			//involve some 'wraparound' the 0 degree line. e.g. The average of 315 and 45 degrees is 0, not 180.
+			//One way of doing this is by taking the average, and then subtracting or adding 180 degrees
+			//(whichever doesn't make the result go out of the 0-360 range).
+			boolean wraparound = Math.abs(a - b) > Math.PI;
+			a += b;
+			a /= 2;
+			if (wraparound) {
+				if (a > Math.PI) {
+					a -= Math.PI;
+				}
+				else {
+					a += Math.PI;
+				}
+			}
+			return a;
+		}
+		else if (a != null) {
+			return a;
+		}
+		else {
+			return b;
+		}
+	}
+
+	Double getTargetBearing() {
+		Double bearing = null;
 		//looking if there are tokens that are eligible targets
 		Set<Token> targetSet = getTargetSet();
 		if (targetSet.size() != 0) {
+			//looking up nearest of those targets
 			Double greatestDistanceSquared = null;
 			target = null;
 			for (Token t : targetSet) {
@@ -58,7 +89,8 @@ class Token extends ImageView {
 
 			double x = target.getLayoutX() - getLayoutX();
 			double y = target.getLayoutY() - getLayoutY();
-			double bearing = Math.atan(y / x);
+
+			bearing = Math.atan2(y, x);
 			if (bearing > 0) {
 				//3rd quadrant
 				if (x < 0) {
@@ -70,30 +102,26 @@ class Token extends ImageView {
 				if (x >= 0) {
 					bearing += Math.PI;
 				}
+				//4th quadrant
 				else {
 					bearing += 2 * Math.PI;
 				}
 			}
 
-			//lemma: if two angles are more than 180 degrees apart, then taking their average will
-			//involve some 'wraparound' the 0 degree line. e.g. The average of 315 and 45 degrees is 0, not 180.
-			//One way of doing this is by taking the average, and then subtracting or adding 180 degrees
-			//(whichever doesn't make the result go out of the 0-360 range).
-			boolean wraparound = Math.abs(moveAngle - bearing) > Math.PI;
-			moveAngle += bearing;
-			moveAngle /= 2;
-			if (wraparound) {
-				if (moveAngle > Math.PI) {
-					moveAngle -= Math.PI;
-				}
-				else {
-					moveAngle += Math.PI;
-				}
-			}
-		}
+			//todo rem
+			System.out.println(x + " " + y + " : " + (bearing / Math.PI * 180));
 
-		this.setLayoutX(setBounds(this.getLayoutX() + MOVE_DISTANCE * Math.sin(moveAngle), 0, Arena.WIDTH - WIDTH));
-		this.setLayoutY(setBounds(this.getLayoutY() + MOVE_DISTANCE * Math.cos(moveAngle), 0, Arena.HEIGHT - HEIGHT));
+		}
+		return bearing;
+	}
+
+	void doMove() {
+		Double bearing = averageBearing(null, getTargetBearing());
+
+		if (bearing != null) {
+			this.setLayoutX(setBounds(this.getLayoutX() + MOVE_DISTANCE * Math.cos(bearing), 0, Arena.WIDTH - WIDTH));
+			this.setLayoutY(setBounds(this.getLayoutY() + MOVE_DISTANCE * Math.sin(bearing), 0, Arena.HEIGHT - HEIGHT));
+		}
 	}
 
 	//flip any valid pieces that this token currently overlaps
