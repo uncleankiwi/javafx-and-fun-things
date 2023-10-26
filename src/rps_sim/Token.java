@@ -54,12 +54,7 @@ class Token extends ImageView {
 			a += b;
 			a /= 2;
 			if (wraparound) {
-				if (a > Math.PI) {
-					a -= Math.PI;
-				}
-				else {
-					a += Math.PI;
-				}
+				a = reverseBearing(a);
 			}
 			return a;
 		}
@@ -71,15 +66,43 @@ class Token extends ImageView {
 		}
 	}
 
+	//get the opposite direction
+	Double reverseBearing(Double bearing) {
+		if (bearing == null) {
+			return null;
+		}
+		if (bearing > Math.PI) {
+			bearing -= Math.PI;
+		}
+		else {
+			bearing += Math.PI;
+		}
+		return bearing;
+	}
+
+	//find the nearest token that this token can be a target of, then reverses that bearing
+	//i.e. this token wants to run away in this direction to avoid getting flipped
+	Double getReversePredatorBearing() {
+		return reverseBearing(getPredatorBearing());
+	}
+
 	Double getTargetBearing() {
+		return getNearestBearing(getTargetSet());
+	}
+
+	Double getPredatorBearing() {
+		return getNearestBearing(getPredatorSet());
+	}
+
+	//gets the bearing of the nearest token in the given set
+	Double getNearestBearing(Set<Token> tokens) {
 		Double bearing = null;
 		//looking if there are tokens that are eligible targets
-		Set<Token> targetSet = getTargetSet();
-		if (targetSet.size() != 0) {
+		if (tokens.size() != 0) {
 			//looking up nearest of those targets
 			Double greatestDistanceSquared = null;
 			target = null;
-			for (Token t : targetSet) {
+			for (Token t : tokens) {
 				double tDistanceSquared = Math.pow(t.getLayoutX() - getLayoutX(), 2) + Math.pow(t.getLayoutY() - getLayoutY(), 2);
 				if (greatestDistanceSquared == null || tDistanceSquared < greatestDistanceSquared) {
 					target = t;
@@ -131,6 +154,24 @@ class Token extends ImageView {
 				throw new RuntimeException("Unhandled token type " + type);
 		}
 		return targetSet;
+	}
+
+	private Set<Token> getPredatorSet() {
+		Set<Token> predatorSet;
+		switch (type) {
+			case ROCK:
+				predatorSet = arena.paperTokens;
+				break;
+			case PAPER:
+				predatorSet = arena.scissorsTokens;
+				break;
+			case SCISSORS:
+				predatorSet = arena.rockTokens;
+				break;
+			default:
+				throw new RuntimeException("Unhandled token type " + type);
+		}
+		return predatorSet;
 	}
 
 	//ensure that the value k is such that min <= k <= max
