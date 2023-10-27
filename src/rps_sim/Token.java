@@ -2,6 +2,7 @@ package rps_sim;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import util.Pair;
 
 import java.util.Random;
 import java.util.Set;
@@ -27,8 +28,11 @@ If there are only 2 bearings (e.g. a and b), calculating the 'average' bearing i
 
 Things, however, are different if there are 3 bearings to take into consideration and each has its own weight.
 	A different approach involving vectors is needed:
-	1. calculate delta x and delta y for each bearing separately, factoring in distance d multiplied by bearing weight
-	2. add all delta x and delta y to get the net movement
+	1. calculate delta x and delta y for each bearing separately, factoring in distance d multiplied by bearing weight.
+		Bearings that are null (because there are no valid targets, for example) will cause the remaining
+		vectors to weigh more to keep distance travelled constant.
+	2. add all delta x and delta y to get the resulting vector
+	3. from that vector,
 
  */
 
@@ -45,7 +49,11 @@ class Token extends ImageView {
 	private final double WIDTH;
 	private final double HEIGHT;
 	Type type;
-	Token target = null;
+	Token targetMemo = null;
+	private final double TARGET_BEARING_WEIGHT = 4;
+	private final double PREDATOR_BEARING_WEIGHT = 3;
+	@SuppressWarnings("FieldCanBeLocal")
+	private final double RANDOM_BEARING_WEIGHT = 3;
 
 	Token(Image rockImage, Image paperImage, Image scissorsImage, Arena arena) {
 		ROCK_IMAGE = rockImage;
@@ -66,11 +74,11 @@ class Token extends ImageView {
 		this.setLayoutY(yRange * random.nextDouble());
 	}
 
-	Double getRandomBearing() {
+	private Double getRandomBearing() {
 		return 2 * Math.PI * Math.random();
 	}
 
-	Double averageBearing(Double a, Double b) {
+	private Double averageBearing(Double a, Double b) {
 		if (a != null && b != null) {
 			//lemma: if two angles are more than 180 degrees apart, then taking their average will
 			//involve some 'wraparound' the 0 degree line. e.g. The average of 315 and 45 degrees is 0, not 180.
@@ -93,7 +101,7 @@ class Token extends ImageView {
 	}
 
 	//get the opposite direction
-	Double reverseBearing(Double bearing) {
+	private Double reverseBearing(Double bearing) {
 		if (bearing == null) {
 			return null;
 		}
@@ -106,61 +114,125 @@ class Token extends ImageView {
 		return bearing;
 	}
 
-	//find the nearest token that this token can be a target of, then reverses that bearing
-	//i.e. this token wants to run away in this direction to avoid getting flipped
-	Double getReversePredatorBearing() {
-		return reverseBearing(getPredatorBearing());
+	private Token getNearestTarget() {
+		Token t = getNearestToken(getTargetSet());
+		targetMemo = t;
+		return t;
 	}
 
-	Double getTargetBearing() {
-		return getNearestBearing(getTargetSet());
-	}
-
-	Double getPredatorBearing() {
-		return getNearestBearing(getPredatorSet());
+	private Token getNearestPredator() {
+		return getNearestToken(getPredatorSet());
 	}
 
 	//gets the bearing of the nearest token in the given set
-	Double getNearestBearing(Set<Token> tokens) {
-		Double bearing = null;
-		//looking if there are tokens that are eligible targets
+	private Token getNearestToken(Set<Token> tokens) {
+		Token token = null;
 		if (tokens.size() != 0) {
-			//looking up nearest of those targets
 			Double greatestDistanceSquared = null;
-			target = null;
 			for (Token t : tokens) {
 				double tDistanceSquared = Math.pow(t.getLayoutX() - getLayoutX(), 2) + Math.pow(t.getLayoutY() - getLayoutY(), 2);
 				if (greatestDistanceSquared == null || tDistanceSquared < greatestDistanceSquared) {
-					target = t;
+					token = t;
 					greatestDistanceSquared = tDistanceSquared;
 				}
 			}
-
-			double x = target.getLayoutX() - getLayoutX();
-			double y = target.getLayoutY() - getLayoutY();
-
-			bearing = Math.atan2(y, x);
 		}
-		return bearing;
+		return token;
+	}
+
+	private double calcWeight(double weight, double otherWeight, Token otherToken) {
+		if (otherToken == null) {
+			return weight / (weight + RANDOM_BEARING_WEIGHT);
+		}
+		else {
+			return weight / (weight + otherWeight + RANDOM_BEARING_WEIGHT);
+		}
+	}
+
+	/*
+	A general use method for calculating the vectors for moving towards target and away from predator.
+	The vector for predator will take this result and reverse it.
+
+	We want to find vector components a and b such that:
+		a^2 + b^2 = (d * w)^2
+		and
+		a / b = x / y
+
+	Where d is the distance travelled, w is the weight, and x and y are the target token's coordinates.
+	 */
+	private Pair<Double> getTokenVector(Token token, Token otherToken, double weight, double otherWeight) {
+		Pair<Double> result = new Pair<>(0d,0d);
+		if (token != null) {
+			double w = calcWeight(weight, otherWeight, otherToken);
+			double dw = MOVE_DISTANCE * w;
+			double x = token.getLayoutX();
+			double y = token.getLayoutY();
+
+			//checking to see if x or y are 0
+			if (x == 0) {
+				result.y = y > 0 ? dw : -dw;
+			}
+			else if (y == 0) {
+				result.x = x > 0 ? dw : -dw;
+			}
+			else {
+				//solving the two equations in the comments above
+				result.x = Math.sqrt(
+						Math.pow(dw, 2) /
+								(1 + Math.pow(y / x, 2))
+				);
+				if (x < 0) {
+					result.x *= -1;
+				}
+				result.y = result.x * y / x;
+			}
+
+		}
+		return result;
+	}
+
+	private Pair<Double> getTargetVector(Token target, Token predator) {
+		return getTokenVector(target, predator, TARGET_BEARING_WEIGHT, PREDATOR_BEARING_WEIGHT);
+	}
+
+	private Pair<Double> getPredatorVector(Token target, Token predator) {
+		Pair<Double> v = getTokenVector(predator, target, PREDATOR_BEARING_WEIGHT, TARGET_BEARING_WEIGHT);
+		v.x = -v.x;
+		v.y = -v.y;
+		return v;
+	}
+
+	private Pair<Double>getRandomVector(Token target, Token predator) {
+		double dw = TARGET_BEARING_WEIGHT / (
+						(target != null ? TARGET_BEARING_WEIGHT : 0) +
+						(predator != null ? PREDATOR_BEARING_WEIGHT : 0) +
+						TARGET_BEARING_WEIGHT
+				) * MOVE_DISTANCE;
+		double randomAngle = 2 * Math.PI * Math.random();
+		Pair<Double> result = new Pair<>(0d, 0d);
+		result.x = dw * Math.sin(randomAngle);
+		result.y = dw * Math.cos(randomAngle);
+		return result;
 	}
 
 	void doMove() {
-		Double bearing = averageBearing(getRandomBearing(), getTargetBearing());
-
-		if (bearing != null) {
-			this.setLayoutX(setBounds(this.getLayoutX() + MOVE_DISTANCE * Math.cos(bearing), 0, Arena.WIDTH - WIDTH));
-			this.setLayoutY(setBounds(this.getLayoutY() + MOVE_DISTANCE * Math.sin(bearing), 0, Arena.HEIGHT - HEIGHT));
-		}
+		Token target = getNearestTarget();
+		Token predator = getNearestPredator();
+		Pair<Double> targetVector = getTargetVector(target, predator);
+		Pair<Double> predatorVector = getPredatorVector(target, predator);
+		Pair<Double> randomVector = getRandomVector(target, predator);
+		this.setLayoutX(setBounds(this.getLayoutX() + targetVector.x + predatorVector.x + randomVector.x, 0, Arena.WIDTH - WIDTH));
+		this.setLayoutY(setBounds(this.getLayoutY() + targetVector.y + predatorVector.y + randomVector.y, 0, Arena.HEIGHT - HEIGHT));
 	}
 
 	//flip any valid pieces that this token currently overlaps
 	void doConsume() {
-		if (target != null && isOverlapping(target)) {
-			target.setType(type);
+		if (targetMemo != null && isOverlapping(targetMemo)) {
+			targetMemo.setType(type);
 		}
 	}
 
-	boolean isOverlapping(Token other) {
+	private boolean isOverlapping(Token other) {
 		return (Math.abs(this.getLayoutX() - other.getLayoutX()) < WIDTH) && (Math.abs(this.getLayoutY() - other.getLayoutY()) < HEIGHT);
 	}
 
