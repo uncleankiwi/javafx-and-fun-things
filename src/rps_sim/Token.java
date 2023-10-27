@@ -6,6 +6,32 @@ import javafx.scene.image.ImageView;
 import java.util.Random;
 import java.util.Set;
 
+/*
+Notes about the logic contained in this class.
+
+Given:
+	1. The node moves a set distance d each frame.
+	2. The distance moved is in a direction that is the 'average' of all the bearings that matter, namely
+		a. the bearing towards its nearest valid target
+		b. a random bearing 360 degrees around itself
+		c. the bearing away from its nearest 'predator' - a token that this token is a target of
+
+If there are only 2 bearings (e.g. a and b), calculating the 'average' bearing is simply:
+	1. determining if the 0 degree line lies between the two bearings - if it is, there will be 'wraparound'
+		e.g. taking the average of 359 and 1 degrees is not simply (359 + 1)/2 = 180 degrees, but 0 degrees.
+		Another way of looking at this is that if one angle is 0-180 degrees and the other is 180-360 degrees,
+		there will be wraparound.
+	2. take the average: c = (a + b)/2
+	3. reverse the result direction if there is wraparound. Add or subtract 180 degrees such that the result is
+		within the 0-360 degree range.
+
+Things, however, are different if there are 3 bearings to take into consideration and each has its own weight.
+	A different approach involving vectors is needed:
+	1. calculate delta x and delta y for each bearing separately, factoring in distance d multiplied by bearing weight
+	2. add all delta x and delta y to get the net movement
+
+ */
+
 @SuppressWarnings("EnhancedSwitchMigration")
 class Token extends ImageView {
 	@SuppressWarnings("FieldCanBeLocal")
