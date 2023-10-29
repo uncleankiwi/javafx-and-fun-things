@@ -68,3 +68,8 @@ Negative values are underestimates of the number, and positive values are overes
 ![Pi estimator preview 1](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator1.PNG)
 
 ![Pi estimator preview 2](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/PiEstimator2.PNG)
+
+### RPS Simulator
+A clone of that famous picture on the internet.
+
+![RPS simulator preview](https://github.com/uncleankiwi/javafx-and-fun-things/blob/master/previews/rps_sim.png)
