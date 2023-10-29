@@ -19,7 +19,7 @@ class Arena extends Pane {
 	final Set<Token> scissorsTokens;
 	private boolean running;
 	private Timer timer;
-	private static final long DELAY = 300;
+	private static final long DELAY = 100;
 
 	Arena() {
 		ROCK_IMAGE = loadImage("rps_sim/rock.png");

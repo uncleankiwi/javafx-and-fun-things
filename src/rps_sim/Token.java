@@ -39,7 +39,7 @@ Things, however, are different if there are 3 bearings to take into consideratio
 @SuppressWarnings("EnhancedSwitchMigration")
 class Token extends ImageView {
 	@SuppressWarnings("FieldCanBeLocal")
-	private final double MOVE_DISTANCE = 5;
+	private final double MOVE_DISTANCE = 3;
 	private final Image ROCK_IMAGE;
 	private final Image PAPER_IMAGE;
 	private final Image SCISSORS_IMAGE;
@@ -51,7 +51,7 @@ class Token extends ImageView {
 	Type type;
 	Token targetMemo = null;
 	private final double TARGET_BEARING_WEIGHT = 4;
-	private final double PREDATOR_BEARING_WEIGHT = 3;
+	private final double PREDATOR_BEARING_WEIGHT = 1;
 	@SuppressWarnings("FieldCanBeLocal")
 	private final double RANDOM_BEARING_WEIGHT = 3;
 
