@@ -56,6 +56,10 @@ class Arena extends Pane {
 	}
 
 	void startStop() {
+		if (onlyOneTypeLeft() && !running) {
+			return;
+		}
+
 		running = !running;
 		if (running) {
 			timer = new Timer();
@@ -65,6 +69,9 @@ class Arena extends Pane {
 					for (Token t : tokens) {
 						t.doMove();
 						t.doConsume();
+						if (onlyOneTypeLeft()) {
+							startStop();
+						}
 					}
 				}
 			};
@@ -73,6 +80,20 @@ class Arena extends Pane {
 		else {
 			timer.cancel();
 		}
+	}
+
+	private boolean onlyOneTypeLeft() {
+		int nonEmptySets = 0;
+		if (!rockTokens.isEmpty()) {
+			nonEmptySets++;
+		}
+		if (!paperTokens.isEmpty()) {
+			nonEmptySets++;
+		}
+		if (!scissorsTokens.isEmpty()) {
+			nonEmptySets++;
+		}
+		return nonEmptySets <= 1;
 	}
 
 	private Image loadImage(String url) {
