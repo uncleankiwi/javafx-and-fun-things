@@ -74,46 +74,6 @@ class Token extends ImageView {
 		this.setLayoutY(yRange * random.nextDouble());
 	}
 
-	private Double getRandomBearing() {
-		return 2 * Math.PI * Math.random();
-	}
-
-	private Double averageBearing(Double a, Double b) {
-		if (a != null && b != null) {
-			//lemma: if two angles are more than 180 degrees apart, then taking their average will
-			//involve some 'wraparound' the 0 degree line. e.g. The average of 315 and 45 degrees is 0, not 180.
-			//One way of doing this is by taking the average, and then subtracting or adding 180 degrees
-			//(whichever doesn't make the result go out of the 0-360 range).
-			boolean wraparound = Math.abs(a - b) > Math.PI;
-			a += b;
-			a /= 2;
-			if (wraparound) {
-				a = reverseBearing(a);
-			}
-			return a;
-		}
-		else if (a != null) {
-			return a;
-		}
-		else {
-			return b;
-		}
-	}
-
-	//get the opposite direction
-	private Double reverseBearing(Double bearing) {
-		if (bearing == null) {
-			return null;
-		}
-		if (bearing > Math.PI) {
-			bearing -= Math.PI;
-		}
-		else {
-			bearing += Math.PI;
-		}
-		return bearing;
-	}
-
 	private Token getNearestTarget() {
 		Token t = getNearestToken(getTargetSet());
 		targetMemo = t;
@@ -149,80 +109,98 @@ class Token extends ImageView {
 		}
 	}
 
-	/*
-	A general use method for calculating the vectors for moving towards target and away from predator.
-	The vector for predator will take this result and reverse it.
 
-	We want to find vector components a and b such that:
-		a^2 + b^2 = (d * w)^2
+	/*
+		We want to find vector components a and b such that:
+		a^2 + b^2 = m^2
 		and
 		a / b = x / y
 
-	Where d is the distance travelled, w is the weight, and x and y are the target token's coordinates.
+	Where m is the magnitude, and x and y are the target token's coordinates.
+	Distance d doesn't factor in until all the vectors have been summed.
+
+	This method is used twice: once when getting vectors from the target and predator
+	(m = weight in this case) and again when calculating the net movement
+	of the token (m = distance d).
+	 */
+	private Pair<Double> scaleVector(double x, double y, double m) {
+		Pair<Double> result = new Pair<>(0d,0d);
+		//checking to see if x or y are 0
+		if (x == 0) {
+			result.y = y > 0 ? m : -m;
+		}
+		else if (y == 0) {
+			result.x = x > 0 ? m : -m;
+		}
+		else if (m != 0){
+			//solving the two equations in the comments above
+			result.x = Math.sqrt(
+					Math.pow(m, 2) /
+							(1 + Math.pow(y / x, 2))
+			);
+			if (x < 0) {
+				result.x *= -1;
+			}
+			result.y = result.x * y / x;
+		}
+		return result;
+	}
+
+	/*
+	A general use method for calculating the vectors for moving towards target and away from predator.
+	The vector for predator will take this result and reverse it.
 	 */
 	private Pair<Double> getTokenVector(Token token, Token otherToken, double weight, double otherWeight) {
 		Pair<Double> result = new Pair<>(0d,0d);
-		if (token != null) {
+		if (token != null && weight != 0) {
 			double w = calcWeight(weight, otherWeight, otherToken);
-			double dw = MOVE_DISTANCE * w;
-			double x = token.getLayoutX();
-			double y = token.getLayoutY();
+			double x = token.getLayoutX() - this.getLayoutX();
+			double y = token.getLayoutY() - this.getLayoutY();
 
-			//checking to see if x or y are 0
-			if (x == 0) {
-				result.y = y > 0 ? dw : -dw;
-			}
-			else if (y == 0) {
-				result.x = x > 0 ? dw : -dw;
-			}
-			else {
-				//solving the two equations in the comments above
-				result.x = Math.sqrt(
-						Math.pow(dw, 2) /
-								(1 + Math.pow(y / x, 2))
-				);
-				if (x < 0) {
-					result.x *= -1;
-				}
-				result.y = result.x * y / x;
-			}
-
+			result = scaleVector(x, y, w);
 		}
 		return result;
 	}
 
 	private Pair<Double> getTargetVector(Token target, Token predator) {
-		return getTokenVector(target, predator, TARGET_BEARING_WEIGHT, PREDATOR_BEARING_WEIGHT);
-	}
+			return getTokenVector(target, predator, TARGET_BEARING_WEIGHT, PREDATOR_BEARING_WEIGHT);
+		}
 
-	private Pair<Double> getPredatorVector(Token target, Token predator) {
-		Pair<Double> v = getTokenVector(predator, target, PREDATOR_BEARING_WEIGHT, TARGET_BEARING_WEIGHT);
-		v.x = -v.x;
-		v.y = -v.y;
-		return v;
-	}
+		private Pair<Double> getPredatorVector(Token target, Token predator) {
+			Pair<Double> v = getTokenVector(predator, target, PREDATOR_BEARING_WEIGHT, TARGET_BEARING_WEIGHT);
+			v.x = -v.x;
+			v.y = -v.y;
+			return v;
+		}
 
-	private Pair<Double>getRandomVector(Token target, Token predator) {
-		double dw = TARGET_BEARING_WEIGHT / (
-						(target != null ? TARGET_BEARING_WEIGHT : 0) +
-						(predator != null ? PREDATOR_BEARING_WEIGHT : 0) +
-						TARGET_BEARING_WEIGHT
-				) * MOVE_DISTANCE;
-		double randomAngle = 2 * Math.PI * Math.random();
-		Pair<Double> result = new Pair<>(0d, 0d);
-		result.x = dw * Math.sin(randomAngle);
-		result.y = dw * Math.cos(randomAngle);
-		return result;
-	}
+		@SuppressWarnings("ConstantValue")
+		private Pair<Double>getRandomVector(Token target, Token predator) {
+			Pair<Double> result = new Pair<>(0d, 0d);
+			if (RANDOM_BEARING_WEIGHT == 0) {
+				return result;
+			}
+			double w = RANDOM_BEARING_WEIGHT / ( (target != null ? TARGET_BEARING_WEIGHT : 0) +
+					(predator != null ? PREDATOR_BEARING_WEIGHT : 0) +
+					RANDOM_BEARING_WEIGHT);
+			double randomAngle = 2 * Math.PI * Math.random();
 
-	void doMove() {
-		Token target = getNearestTarget();
-		Token predator = getNearestPredator();
-		Pair<Double> targetVector = getTargetVector(target, predator);
-		Pair<Double> predatorVector = getPredatorVector(target, predator);
-		Pair<Double> randomVector = getRandomVector(target, predator);
-		this.setLayoutX(setBounds(this.getLayoutX() + targetVector.x + predatorVector.x + randomVector.x, 0, Arena.WIDTH - WIDTH));
-		this.setLayoutY(setBounds(this.getLayoutY() + targetVector.y + predatorVector.y + randomVector.y, 0, Arena.HEIGHT - HEIGHT));
+			result.x = w * Math.sin(randomAngle);
+			result.y = w * Math.cos(randomAngle);
+			return result;
+		}
+
+		void doMove() {
+			Token target = getNearestTarget();
+			Token predator = getNearestPredator();
+			Pair<Double> targetVector = getTargetVector(target, predator);
+			Pair<Double> predatorVector = getPredatorVector(target, predator);
+			Pair<Double> randomVector = getRandomVector(target, predator);
+		double deltaX = targetVector.x + predatorVector.x + randomVector.x;
+		double deltaY = targetVector.y + predatorVector.y + randomVector.y;
+		Pair<Double> netMovement = scaleVector(deltaX, deltaY, MOVE_DISTANCE);
+
+		this.setLayoutX(setBounds(this.getLayoutX() + netMovement.x, 0, Arena.WIDTH - WIDTH));
+		this.setLayoutY(setBounds(this.getLayoutY() + netMovement.y, 0, Arena.HEIGHT - HEIGHT));
 	}
 
 	//flip any valid pieces that this token currently overlaps
