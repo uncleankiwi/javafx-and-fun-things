@@ -28,12 +28,11 @@ If there are only 2 bearings (e.g. a and b), calculating the 'average' bearing i
 
 Things, however, are different if there are 3 bearings to take into consideration and each has its own weight.
 	A different approach involving vectors is needed:
-	1. calculate delta x and delta y for each bearing separately, factoring in distance d multiplied by bearing weight.
+	1. calculate delta x and delta y for each bearing separately and normalized to their respective weights.
 		Bearings that are null (because there are no valid targets, for example) will cause the remaining
 		vectors to weigh more to keep distance travelled constant.
 	2. add all delta x and delta y to get the resulting vector
-	3. from that vector,
-
+	3. Adjust the length of that final vector such that its distance is d, and move the token with it.
  */
 
 @SuppressWarnings("EnhancedSwitchMigration")
